@@ -7,6 +7,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import { Container, Flex } from "@chakra-ui/react";
+import { useAuth } from "./utils/AuthContext";
 import NavBar from "./components/NavBar/NavBar";
 import Home from "./pages/Home";
 import ErrorPage from "./pages/ErrorPage";
@@ -16,7 +17,8 @@ import TrainerPage from "./pages/train";
 import OHScramble from "./pages/OHScramble";
 import { ReactNode } from "react";
 import AboutPage from "./pages/About";
-
+import LoginPage from "./pages/LoginPage";
+import { AuthProvider } from "./utils/AuthContext";
 import Plausible from "plausible-tracker";
 
 export const plausible = Plausible({
@@ -27,9 +29,10 @@ export const plausible = Plausible({
 plausible.enableAutoPageviews();
 
 function Layout({ children }: { children: ReactNode }) {
+  const { isAuthenticated } = useAuth();
   return (
     <Flex direction="column" h="100vh">
-      <NavBar />
+      {isAuthenticated && <NavBar />}
       <Container className="content" px={0} pt={14} maxW="100vw">
         {children}
       </Container>
@@ -37,21 +40,22 @@ function Layout({ children }: { children: ReactNode }) {
   );
 }
 
+function ProtectedRoute() {
+  const { isAuthenticated } = useAuth();
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <Outlet />; 
+}
+
 const router = createBrowserRouter(
+
   createRoutesFromElements(
-    <Route
-      path="/"
-      element={
-        <Layout>
-          <Outlet />
-        </Layout>
-      }
-      errorElement={
-        <Layout>
-          <ErrorPage />
-        </Layout>
-      }
-    >
+    <Route path="/" element={ <Layout> <Outlet /> </Layout>} errorElement={<Layout><ErrorPage /></Layout>}>
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/" element={<ProtectedRoute />}>
       <Route index element={<Home />} />
       <Route path="train">
         <Route index element={<TrainerPage />} />
@@ -66,10 +70,19 @@ const router = createBrowserRouter(
         <Route path="ohscramble" element={<OHScramble />} />
       </Route>
       <Route path="about" element={<AboutPage />} />
+
+      </Route>
     </Route>
+
   )
 );
 
 export default function App() {
-  return <RouterProvider router={router} />;
+  return(
+    <AuthProvider>
+      <RouterProvider router={router} />;
+    </AuthProvider>
+  )
 }
+
+

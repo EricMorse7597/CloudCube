@@ -10,8 +10,11 @@ import {
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import Balancer from "react-wrap-balancer";
+import { useAuth } from "../utils/AuthContext";
+import { useTransform } from "framer-motion";
 
 export default function Home() {
+  const { userName } = useAuth();
   const mockupImage = useColorModeValue(
     "assets/mockup-light.webp",
     "/assets/mockup-dark.webp"
@@ -21,7 +24,7 @@ export default function Home() {
       <VStack spacing={6}>
         <VStack>
           <Balancer>
-            <Heading textAlign="center">crystalcube trainers</Heading>
+            <Heading textAlign="center">Welcome back {userName}</Heading>
           </Balancer>
           <Balancer>
             <Text align="center" fontSize="lg">
@@ -29,7 +32,7 @@ export default function Home() {
             </Text>
           </Balancer>
         </VStack>
-        <RouterLink to="train/">
+        <RouterLink to="/train">
           <Button colorScheme="blue">start training</Button>
         </RouterLink>
         <Image
