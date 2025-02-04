@@ -1,7 +1,32 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 import { useAuth } from "../utils/AuthContext";
-import { Navigate} from "react-router-dom";
+
+const styles = {
+  container: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "50vh",
+  },
+  buttonContainer:{
+    display: "flex",
+    justifyContent: "center",
+    paddingTop: "5%",
+    width: "fit-content",
+    margin: "0 auto",
+  }
+};
+
+const inputStyle: React.CSSProperties = { 
+  width: "60%",
+  padding: "0px 10px",
+  margin: "4px 0",
+  display: "inline-block",
+  border: "1px solid #ccc",
+  borderRadius: "4px",
+  boxSizing: "border-box",
+};
 
 export default function LoginPage() {
 
@@ -23,37 +48,46 @@ export default function LoginPage() {
   };
 
   return (
-    <div>
-      <h2>Login</h2>
+    
+    <div style={styles.container}>
+      
       <form onSubmit={handleSubmit}>
       <div>
-          <label>Username</label>
+        <h2>Login</h2>
+          <label style={{padding: "10px"}}>Username</label>
           <input
             type="username"
+            style={inputStyle}
             value={user}
             onChange={(e) => setUserName(e.target.value)}
             required
           />
         </div>
         <div>
-          <label>Email</label>
+          <label style={{padding: "10px"}}>Email</label>
           <input
             type="email"
+            style={inputStyle}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
         </div>
         <div>
-          <label>Password</label>
+          <label style={{padding: "10px"}}>Password</label>
           <input
             type="password"
+            style={inputStyle}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+          
         </div>
-        <button type="submit">Login</button>
+        <div style={styles.buttonContainer}>
+          <button style={{border:"1px solid #ccc", padding: "4px 10px"}}type="submit">Login</button>
+        </div>
+        
       </form>
     </div>
   );

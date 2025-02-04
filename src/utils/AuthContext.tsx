@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -17,7 +18,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = (user: string) =>{setIsAuthenticated(true); setUserName(user);}; 
 
-  const logout = () => setIsAuthenticated(false);
+  const logout = () => {setIsAuthenticated(false); } ;
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, userEmail, userName, login, logout }}>

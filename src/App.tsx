@@ -14,6 +14,7 @@ import ErrorPage from "./pages/ErrorPage";
 import CrossTrainerPage from "./pages/train/CrossTrainerPage";
 import EOStepTrainerPage from "./pages/train/EOStepTrainerPage";
 import TrainerPage from "./pages/train";
+import TestPage from "./pages/TestPage";
 import OHScramble from "./pages/OHScramble";
 import { ReactNode } from "react";
 import AboutPage from "./pages/About";
@@ -69,8 +70,8 @@ const router = createBrowserRouter(
       <Route path="tools">
         <Route path="ohscramble" element={<OHScramble />} />
       </Route>
-      <Route path="about" element={<AboutPage />} />
-
+      {/* <Route path="about" element={<AboutPage />} /> */}
+      <Route path="about" element={<TestPage />} />
       </Route>
     </Route>
 
