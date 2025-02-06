@@ -1,0 +1,340 @@
+@startuml ClassDiagram
+    title "Crystalcube UML Class Diagram"
+    skinparam linetype ortho
+    skinparam backgroundColor #EEEBDC
+
+    class Cube3x3{
+        +{method} isSolved(): boolean
+        +{method} setSolved(): this
+        +{method} resetToSolved(): this
+        +{method} nextMoves(): readonly Move3x3[]
+        +{method} history(): Move3x3p[]
+        +{method} stateData(): Facelet3x3
+        +{method} E0(): boolean[]
+        +{method} encode(): string
+        +{method} applyMove(move: Move3x3): this
+        +{method} applyMoves(moves: Move3x3[]): this
+        +{method} applyMask(mask: Cube3x3Mask): this 
+        +{method} print(): void
+        +{method} clone(): Cube3x3
+        +{method} resetHistory(): this
+        +{method} parseNotation(input: string): Move3x3[] | null
+    }
+
+    class Scrambler {
+        +{method} scrambler(options: TrainerOptions): Promse<Move3x3> | null
+        +{method} numOfMovesScramble(n: number, solutionOrientation: CubeOrientation,
+            shortScramble: boolean = false): Promise<Move3x3[] | null>
+        +{method} randomScramble(solutionOrientation: CubeOrientation,
+            shortScramble: boolean = false): Promse<Move3x3[]>
+        +{method} makeBetterScramble(originalScramble: Move3x3[], preRotation: RotationMove[]): map
+        +{method} makeShortScramble(scramble: Move3x3[], RotationMove[], numExtraMoves = 0): Moves3x3[]
+    }
+
+    class CrossTrainer {
+        +{method} CrossTrainer(): React Component
+        +{method} ShareButton(text: string): React Component
+        +{method} generateCopyText(scramble: Move3x3[], preRotation: RotationMove[],
+            solutions: Move3x3[][]): string
+        +{method} optimizePrerotationForCrossSolution(initialPrerotation: RotationMove[],
+            solution: Move3x3[]): SolutionWithPrerotation
+    }
+
+    class EOStepTrainer {
+        +{method} EOStepTrainer(): React Component
+        +{method} EOStepSelect({eoStep, setEOStep}: EOStepSelectProps): React Component
+        +{method} ShareButton(text: string): React Component
+        +{method} generateCopyText(scramble: Move3x3[], preRotation: RotationMove[],
+            solutions: Move3x3[][]): string
+    }
+
+    class Moves {
+      +{method} invertMove<M extends Move3x3>(move: M): M
+      +{method} invertMoves<M extends Move3x3>(moves: M[]): M[]
+      +{method} sameLayerOrAxis<M extends Move3x3>(a: M, b: M): boolean
+      +{method} isLayerMove(move: Move3x3): move is LayerMove
+      +{method} isCubeRotation(move: Move3x3): move is RotationMove
+      +{method} isFaceMove(move: Move3x3): move is FaceMove
+      +{method} isWideMove(move: Move3x3): move is WideMove
+      +{method} isSliceMove(move: Move3x3): move is SliceMove
+      +{method} layerOfLayerMove(move: LayerMove): Layer
+      +{method} axisOfRotation(move: RotationMove): Axis
+      +{method} movesAreParallel(a: Move3x3, b: Move3x3): boolean
+      +{method} isValidMove(move: string): move is Move3x3
+      +{method} randomMoves(length: number, moveSet?: readonly Move3x3[]): RandomMoveArray
+      +{method} appendRandomMove(moves: Move3x3[], moveSet?: readonly Move3x3[]): void
+      +{method} endsWithRedundantParallelMoves(solution: Move3x3[]): boolean
+      +{method} powerOfMove(move: Move3x3): MovePower
+      +{method} movePowerToSuffix(power: MovePower): string
+      +{method} translateMoves(moves: Move3x3[], rotations: Readonly<Array<RotationMove>>): Move3x3[]
+      +{method} translateMove(move: Move3x3, rotations: Readonly<Array<RotationMove>>): Move3x3
+      +{method} translateLayerMove(move: LayerMove, rotation: RotationMove): LayerMove
+      +{method} translateRotation(rotationToTranslate: RotationMove, rotation: RotationMove): RotationMove
+      +{method} nextElement<T>(arr: Array<T>, index: number): T
+      +{method} simplifyMoves(moves: Move3x3[]): Move3x3[]
+      +{method} cancelTwoMoves<M extends Move3x3>(a: M, b: M): boolean | M
+    }
+
+    interface Puzzle {
+      +isSolved(): boolean
+      +resetToSolved(): this
+      +resetHistory(): this
+      +nextMoves: Move[]
+      +history: Move[]
+      +encode(): string
+      +applyMove(move: Move): this
+      +applyMoves(moves: Move[]): this
+      +clone(): Puzzle
+    }
+
+    interface SolverOptions {
+      +pruningDepth: number
+      +depthLimit: number
+      +maxSolutionCount?: number
+    }
+
+    interface PrunerOptions {
+      +name: string
+      +pruningDepth: number
+    }
+
+    interface Cube3x3Mask {
+      +solvedFaceletIndices: FaceletIndex[]
+      +eoFaceletIndices?: FaceletIndex[]
+    }
+
+    interface PreferenceSelectProps {
+      +eoStep: EOStep
+      +orientation: CubeOrientation
+      +setOrientation(orientation: CubeOrientation): void
+      +shortScrambles: boolean
+      +setShortScrambles(shortScrambles: boolean): void
+    }
+
+
+    interface KeyboardControlsProps {
+      +enableHotkeys: boolean
+      +setEnableHotkeys(enable: boolean): void
+    }
+
+    interface EOStepLevelSelectProps {
+      +levelMode: LevelMode
+      +setLevelMode(mode: LevelMode): void
+      +numOfBadEdges: number
+      +setNumOfBadEdges(num: number): void
+      +numOfMoves: number
+      +setNumOfMoves(num: number): void
+      +numOfMovesConfig: NumOfMovesConfig
+    }
+
+    interface SelectNumOfBadEdgesProps {
+      +numOfBadEdges: number
+      +setNumOfBadEdges(nFlip: number): void
+    }
+
+    interface SelectNumOfMovesProps {
+      +numOfMoves: number
+      +setNumOfMoves(nMove: number): void
+      +numOfMovesConfig: NumOfMovesConfig
+    }
+
+    interface EOStepSelectProps {
+      +eoStep: EOStep
+      +setEOStep(step: EOStep): void
+    }
+
+    interface NumOfMovesConfig {
+      +min: number
+      +max: number
+      +iterationLimit: number
+    }
+
+    interface Actions {
+      +setLevelMode(mode: LevelMode): void
+      +setLevelNumOfMoves(num: number): void
+      +setSolutionOrientation(orientation: CubeOrientation): void
+      +setShortScrambles(shortScrambles: boolean): void
+      +setEnableHotkeys(enable: boolean): void
+      
+      +setChooseExecutionAngle(chooseExecutionAngle: boolean)?: void
+      
+      +getNumOfMovesConfig()?: NumOfMovesConfig
+      +setEOStep(eoStep: EOStep)?: void
+      +setLevelNumOfBadEdges(num: number)?: void
+    }
+
+    interface State {
+      +trainerOptions: TrainerOptions
+      +uiOptions: UIOptions
+      +actions: Actions
+    }
+
+    interface PuzzleConfig {
+        +solverConfig: SolverConfig
+        +isEOStep?: boolean
+    }
+
+    interface SolverConfig {
+        +moveSet: MoveSet<Moves3x3>
+        +mask: Cube3x3Mask
+        +pruningDepth: number
+        +depthLimit: number
+    }
+
+    interface PreferenceSelectProps {
+      +orientation: CubeOrientation
+      +setOrientation(orientation: CubeOrientation): void
+      +shortScrambles: boolean
+      +setShortScrambles(shortScrambles: boolean): void
+      +chooseExecutionAngle: boolean
+      +setChooseExecutionAngle(chooseExecutionAngle: boolean): void
+    }
+    
+    interface KeyboardControlsProps {
+      +enableHotkeys: boolean
+      +setEnableHotkeys(enable: boolean): void
+    }
+    
+    interface EOStepLevelSelectProps {
+      +levelMode: LevelMode
+      +setLevelMode(mode: LevelMode): void
+      +numOfMoves: number
+      +setNumOfMoves(num: number): void
+    }
+    
+    interface SelectNumOfMovesProps {
+      numOfMoves: number
+      setNumOfMoves(nMove: number): void
+      numOfMovesConfig: object
+    }
+    
+    interface TrainerOptions {
+      +levelMode: LevelMode
+      +numOfMoves: number
+      +solutionOrientation: CubeOrientation
+      +shortScrambles: boolean
+
+      +eoStep?: EOStep
+      +numOfBadEdges?: number
+      
+    }
+    
+    interface UIOptions {
+      enableHotkeys: boolean
+      chooseExecutionAngle?: boolean
+    }
+    
+    class SolutionsViewer {
+      +SolutionsViewer(props:SolutionsViewerProps): JSX.Element
+      +SelectSolution(props:SelectSolutionProps): JSX.Element
+      +Spoiler(props:SpoilerProps): JSX.Element
+      +CopySolutionButton(solutionText: string): JSX.Element    
+    }
+    
+    interface SolutionPlayerProps {
+      +scramble: Move3x3[]
+      +preRotation: RotationMove[]
+      +solution: Move3x3[]
+      +solutionAnnotation?: string[]
+      +mask?: Cube3x3Mask
+      +showEO?: boolean
+      +hideSolution?: boolean
+      +isLoading?: boolean
+      +enableHotkeys?: boolean
+    }
+    
+    interface SolutionMoveLabelProps {
+      +label: string | null
+      +moveAnnotation?: string
+      +isSelected?: boolean
+      +isPreviousMove?: boolean
+      +hide?: boolean
+    }
+    
+    interface ScrambleViewerProps {
+      +scrambleFailed?: boolean
+      +isLoading?: boolean
+      +scramble: Move[]
+      +setScramble(newScramble: Move[]): void
+      +notationParser(input: string): Move[] | null
+    }
+    
+    interface OrientationSelectProps {
+      +orientation: CubeOrientation
+      +setOrientation(orientation: CubeOrientation): void
+    }
+    
+    interface HelpButtonProps {
+      +modalTitle: string
+      +children: React.ReactNode
+      +buttonAriaLabel: string
+    }
+  
+    interface StickerProps {
+      +face: Face
+      +facelet: Facelet
+      +oriented: boolean
+      +label?: Face
+      +showHintSticker?: boolean
+    }
+    
+    interface CubieData {
+      +name: string
+      +position: [number, number, number]
+      +cubieFacelets: CubieFacelets
+      +oriented?: boolean
+      +label?: Face
+    }
+    
+    interface CubeProps {
+      +cube: Cube3x3
+      +showEO?: boolean
+      +disableControls?: boolean
+      +cameraPosition?: [number, number, number]
+      +showHintStickers?: boolean
+    }
+    
+    interface CubieProps {
+      +cubieFacelets: CubieFacelets
+      +oriented?: boolean
+      +label?: Face
+      +showHintStickers?: boolean
+    }
+
+    interface TrainerHelpers {
+      +SolutionPlayerProps
+      +ScrambleViewerProps
+    }
+
+    CrossTrainer "1" -- "1" Scrambler
+    CrossTrainer -- SolutionsViewer
+    EOStepTrainer "1" -- "1" Scrambler
+    EOStepTrainer -- SolutionsViewer
+    Scrambler -- SolutionsViewer
+    Scrambler "1" -- "1" Cube3x3
+    Cube3x3 "1" -- "many" Moves
+
+    CrossTrainer --|> NumOfMovesConfig
+    CrossTrainer --|> Cross
+    CrossTrainer --|> UIOptions
+    CrossTrainer --|> TrainerOptions
+    CrossTrainer --|> PrunerOptions
+    CrossTrainer --|> TrainerHelpers
+
+    EOStepTrainer --|> TrainerOptions
+    EOStepTrainer --|> PrunerOptions
+    EOStepTrainer --|> TrainerHelpers
+
+
+    Moves --|> Actions
+    Moves --|> State
+    Moves --|> CubieData
+
+    Cube3x3 --|> Puzzle
+    Cube3x3 --|> Cube3x3Mask
+    Cube3x3 --|> SolverOptions
+
+
+    Scrambler --|> SolverConfig
+    Scrambler --|> PuzzleConfig
+@enduml

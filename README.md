@@ -31,7 +31,7 @@ The trainer is powered by `crystalcube`'s own cube library with some functionali
 
 ## Development
 
-Make sure you have Node.js 19 or later installed!
+Make sure you have Node.js v20.18.1 installed!
 
 Install the dependencies:
 
