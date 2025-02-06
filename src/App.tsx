@@ -34,7 +34,7 @@ function Layout({ children }: { children: ReactNode }) {
   const { isAuthenticated } = useAuth();
   return (
     <Flex direction="column" h="50vh">
-      {isAuthenticated && <NavBar />}
+      <NavBar />
       <Container className="content" px={0} pt={14} maxW="100vw">
         {children}
       </Container>
@@ -42,40 +42,24 @@ function Layout({ children }: { children: ReactNode }) {
   );
 }
 
-function ProtectedRoute() {
-  const { isAuthenticated } = useAuth();
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />
-  }
-  return <Outlet />
-}
-
 const router = createBrowserRouter(
-
   createRoutesFromElements(
-    <Route path="/" element={ <Layout> <Outlet /> </Layout>} errorElement={<Layout><ErrorPage /></Layout>}>
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/" element={<ProtectedRoute />}>
-      <Route index element={<Home />} />
-      <Route path="train">
-        <Route index element={<TrainerPage />} />
-        <Route path="cross">
-          <Route index element={<CrossTrainerPage />} />
-        </Route>
-        <Route path="eo" element={<EOStepTrainerPage />} />
-      </Route>
-      {/* redirect for old /trainer path */}
-      <Route path="trainer" element={<Navigate to="/train" />} />
-      <Route path="tools">
-        <Route path="ohscramble" element={<OHScramble />} />
-      </Route>
-      {/* <Route path="about" element={<AboutPage />} /> */}
-      <Route path="about" element={<AboutPage />} />
-      </Route>
+    <Route
+    path="/"
+    element={<Layout><Outlet /></Layout>}
+    errorElement={<Layout><ErrorPage /></Layout>}>
+    <Route path="/login" element={<LoginPage />} />
+    <Route path="/register" element={<Register />} />
+    <Route path="/about" element={<AboutPage />} />
+    <Route index element={<Home />} />
+    <Route path="train">
+      <Route index element={<TrainerPage />} />
+      <Route path="cross" element={<CrossTrainerPage />} />
+      <Route path="eo" element={<EOStepTrainerPage />} />
     </Route>
-
+    <Route path="trainer" element={<Navigate to="/train" />} />
+    <Route path="tools/ohscramble" element={<OHScramble />} />
+  </Route>
   )
 );
 
@@ -86,5 +70,3 @@ export default function App() {
     </AuthProvider>
   )
 }
-
-

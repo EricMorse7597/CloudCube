@@ -10,27 +10,22 @@ import {
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import Balancer from "react-wrap-balancer";
-import { useAuth } from "../utils/AuthContext";
-import { useTransform } from "framer-motion";
 
 export default function Home() {
-  const { userName } = useAuth();
   const mockupImage = useColorModeValue(
     "assets/mockup-light.webp",
     "/assets/mockup-dark.webp"
   );
   return (
     <Container maxW="container.lg" py={12}>
-
       <VStack spacing={6}>
         <VStack>
-
           <Balancer>
-            <Heading textAlign="center">Welcome back {userName}</Heading>
+            <Heading textAlign="center">Crystalcube</Heading>
           </Balancer>
           <Balancer>
             <Text align="center" fontSize="lg">
-              improve the efficiency of your CFOP cross or ZZ EO
+              Improve the efficiency of your CFOP cross or ZZ EO
             </Text>
           </Balancer>
         </VStack>
@@ -38,8 +33,6 @@ export default function Home() {
         <RouterLink to="/train">
           <Button colorScheme="blue">start training</Button> 
         </RouterLink>
-
-        {/* <Button colorScheme="red" onClick={logout}>Logout</Button> */}
        
         <Image
           src={mockupImage}

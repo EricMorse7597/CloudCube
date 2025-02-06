@@ -18,6 +18,7 @@ import {
   Image,
   Badge,
   Container,
+  useToast,
 } from "@chakra-ui/react";
 import {
   HamburgerIcon,
@@ -34,7 +35,12 @@ import { useAuth } from "../../utils/AuthContext";
 export default function NavBar() {
   const { isOpen, onToggle, onClose } = useDisclosure();
   const navigate = useNavigate();
-  const { userName, logout } = useAuth();
+  const { userName, isAuthenticated, logout } = useAuth(); 
+  const toast = useToast();
+  const linkColor = useColorModeValue("gray.600", "gray.200");
+  const linkHoverColor = useColorModeValue("gray.800", "white");
+  const buttonColor = useColorModeValue("#EDF2F7", "#2C313D");
+  const popoverContentBgColor = useColorModeValue("white", "gray.800");
 
   return (
     <Box
@@ -51,20 +57,10 @@ export default function NavBar() {
     >
       <Container maxW="container.lg" p={0}>
         <Flex py={{ base: 2 }} px={{ base: 4 }}>
-          <Flex
-            flex={{ base: 1, md: "auto" }}
-            ml={-2}
-            display={{ base: "flex", md: "none" }}
-          >
+          <Flex flex={{ base: 1, md: "auto" }} ml={-2} display={{ base: "flex", md: "none" }}>
             <IconButton
               onClick={onToggle}
-              icon={
-                isOpen ? (
-                  <CloseIcon w={3} h={3} />
-                ) : (
-                  <HamburgerIcon w={5} h={5} />
-                )
-              }
+              icon={isOpen ? <CloseIcon w={3} h={3} /> : <HamburgerIcon w={5} h={5} />}
               variant="ghost"
               aria-label="Toggle Navigation"
             />
@@ -75,7 +71,7 @@ export default function NavBar() {
                 src="/assets/logo.svg"
                 boxSize="30px"
                 objectFit="contain"
-                onClick={() => navigate("")}
+                onClick={() => navigate("/")}
                 cursor="pointer"
                 draggable={false}
               />
@@ -86,7 +82,7 @@ export default function NavBar() {
                 color={useColorModeValue("gray.800", "white")}
                 fontWeight="semibold"
                 as={RouterLink}
-                to=""
+                to="/"
               >
                 crystalcube
               </Text>
@@ -99,17 +95,88 @@ export default function NavBar() {
             </Flex>
           </Flex>
 
-          <Stack
-            flex={{ base: 1, md: 0 }}
-            justify="flex-end"
-            direction="row"
-            spacing={6}
-            mr={-2}
-          >
-            <Button display={{ base: "none", md: "inline-flex" }} fontSize="sm" fontWeight={600} colorScheme="red" onClick={logout} >Logout</Button>
-            
-            <ColorModeSwitcher />
-          </Stack>
+        <Stack flex={{ base: 1, md: 0 }} justify="flex-end" direction="row" spacing={6} mr={-2}>
+          <ColorModeSwitcher />
+          
+          {/* User Section or Login/Sign-Up Buttons */}
+          <Flex align="center">
+            {isAuthenticated && userName ? (
+              <Popover trigger="hover" placement="bottom-start">
+                <PopoverTrigger>
+                  <Button
+                    fontWeight={500}
+                    color={linkColor}
+                    bg="none"
+                    _hover={{
+                      textDecoration: "none",
+                      color: linkHoverColor,
+                      bg: buttonColor,
+                    }}
+                  >
+                    {userName}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent
+                  border={0}
+                  boxShadow="xl"
+                  bg={popoverContentBgColor}
+                  p={4}
+                  rounded="xl"
+                  minW="sm"
+                >
+                  <Stack>
+                    <Button
+                      variant="link"
+                      onClick={() => {
+                        // navgitate to dashboard here
+                      }}
+                    >
+                      Dashboard
+                    </Button>
+                    <Button
+                      variant="link"
+                      onClick={() => {
+                        logout();
+                        toast({
+                          title: "Signed out successfully.",
+                          description: "You have been logged out.",
+                          status: "success",
+                          duration: 3000,
+                          isClosable: true,
+                          position: "bottom-left",
+                        });
+                      }}
+                    >
+                      Logout
+                    </Button>
+                  </Stack>
+                </PopoverContent>
+              </Popover>
+            ) : (
+              <>
+                <Button
+                  display={{ base: "none", md: "inline-flex" }}
+                  fontSize="sm"
+                  fontWeight={600}
+                  colorScheme="blue"
+                  marginRight={2}
+                  onClick={() => navigate("/login")}
+                >
+                  Sign In
+                </Button>
+                <Button
+                  display={{ base: "none", md: "inline-flex" }}
+                  fontSize="sm"
+                  fontWeight={600}
+                  colorScheme="green"
+                  onClick={() => navigate("/register")}
+                >
+                  Sign Up
+                </Button>
+              </>
+            )}
+          </Flex>
+        </Stack>
         </Flex>
 
         <Collapse in={isOpen} animateOpacity>
@@ -171,6 +238,7 @@ const DesktopNav = () => {
     </Stack>
   );
 };
+
 
 const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
   return (
