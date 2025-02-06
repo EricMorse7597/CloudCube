@@ -21,17 +21,19 @@ export default function Home() {
       <VStack spacing={6}>
         <VStack>
           <Balancer>
-            <Heading textAlign="center">crystalcube trainers</Heading>
+            <Heading textAlign="center">Crystalcube</Heading>
           </Balancer>
           <Balancer>
             <Text align="center" fontSize="lg">
-              improve the efficiency of your CFOP cross or ZZ EO
+              Improve the efficiency of your CFOP cross or ZZ EO
             </Text>
           </Balancer>
         </VStack>
-        <RouterLink to="train/">
-          <Button colorScheme="blue">start training</Button>
+        
+        <RouterLink to="/train">
+          <Button colorScheme="blue">start training</Button> 
         </RouterLink>
+       
         <Image
           src={mockupImage}
           fit="cover"
@@ -41,6 +43,7 @@ export default function Home() {
           filter="drop-shadow(0 0 10px rgb(212, 131, 242))"
         />
       </VStack>
+
     </Container>
   );
 }

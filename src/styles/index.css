@@ -1,0 +1,39 @@
+
+/* login and register pages: */
+
+.element-style{
+  max-width: 400px;
+  padding-top: 3%;
+  text-align: center;
+  margin: auto;
+}
+
+.input-style {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1.5px solid #ccc;
+    border-radius: 12px;
+}
+
+.button-style{
+    width: 25%;
+    padding: 8px;
+    margin: 10px;
+    border: 1.5px solid #ccc;
+    border-radius: 12px;
+}
+
+.error-message {
+    color: red;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.sucess-message {
+    color: white;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+
