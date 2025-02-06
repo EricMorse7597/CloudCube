@@ -29,10 +29,12 @@ import { ColorModeSwitcher } from "./ColorModeSwitcher";
 import { Link as RouterLink } from "react-router-dom";
 import NAV_ITEMS, { NavItem } from "./navItems";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../utils/AuthContext";
 
 export default function NavBar() {
   const { isOpen, onToggle, onClose } = useDisclosure();
   const navigate = useNavigate();
+  const { userName, logout } = useAuth();
 
   return (
     <Box
@@ -104,26 +106,8 @@ export default function NavBar() {
             spacing={6}
             mr={-2}
           >
-            {/* <Button
-              as="a"
-              fontSize="sm"
-              fontWeight={400}
-              variant="link"
-              href="#">
-              Sign In
-            </Button>
-            <Button
-              display={{ base: "none", md: "inline-flex" }}
-              fontSize="sm"
-              fontWeight={600}
-              color="white"
-              bg="cyan.500"
-              href="#"
-              _hover={{
-                bg: "cyan.400",
-              }}>
-              Sign Up
-            </Button> */}
+            <Button display={{ base: "none", md: "inline-flex" }} fontSize="sm" fontWeight={600} colorScheme="red" onClick={logout} >Logout</Button>
+            
             <ColorModeSwitcher />
           </Stack>
         </Flex>

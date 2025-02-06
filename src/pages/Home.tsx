@@ -21,8 +21,10 @@ export default function Home() {
   );
   return (
     <Container maxW="container.lg" py={12}>
+
       <VStack spacing={6}>
         <VStack>
+
           <Balancer>
             <Heading textAlign="center">Welcome back {userName}</Heading>
           </Balancer>
@@ -32,9 +34,13 @@ export default function Home() {
             </Text>
           </Balancer>
         </VStack>
+        
         <RouterLink to="/train">
-          <Button colorScheme="blue">start training</Button>
+          <Button colorScheme="blue">start training</Button> 
         </RouterLink>
+
+        {/* <Button colorScheme="red" onClick={logout}>Logout</Button> */}
+       
         <Image
           src={mockupImage}
           fit="cover"
@@ -44,6 +50,7 @@ export default function Home() {
           filter="drop-shadow(0 0 10px rgb(212, 131, 242))"
         />
       </VStack>
+
     </Container>
   );
 }

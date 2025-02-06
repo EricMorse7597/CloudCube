@@ -21,6 +21,7 @@ import AboutPage from "./pages/About";
 import LoginPage from "./pages/LoginPage";
 import { AuthProvider } from "./utils/AuthContext";
 import Plausible from "plausible-tracker";
+import Register from "./pages/RegisterPage"
 
 export const plausible = Plausible({
   domain: "crystalcuber.com",
@@ -32,7 +33,7 @@ plausible.enableAutoPageviews();
 function Layout({ children }: { children: ReactNode }) {
   const { isAuthenticated } = useAuth();
   return (
-    <Flex direction="column" h="100vh">
+    <Flex direction="column" h="50vh">
       {isAuthenticated && <NavBar />}
       <Container className="content" px={0} pt={14} maxW="100vw">
         {children}
@@ -45,10 +46,9 @@ function ProtectedRoute() {
   const { isAuthenticated } = useAuth();
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" replace />
   }
-
-  return <Outlet />; 
+  return <Outlet />
 }
 
 const router = createBrowserRouter(
@@ -56,6 +56,7 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={ <Layout> <Outlet /> </Layout>} errorElement={<Layout><ErrorPage /></Layout>}>
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<Register />} />
       <Route path="/" element={<ProtectedRoute />}>
       <Route index element={<Home />} />
       <Route path="train">
@@ -71,7 +72,7 @@ const router = createBrowserRouter(
         <Route path="ohscramble" element={<OHScramble />} />
       </Route>
       {/* <Route path="about" element={<AboutPage />} /> */}
-      <Route path="about" element={<TestPage />} />
+      <Route path="about" element={<AboutPage />} />
       </Route>
     </Route>
 
@@ -81,7 +82,7 @@ const router = createBrowserRouter(
 export default function App() {
   return(
     <AuthProvider>
-      <RouterProvider router={router} />;
+      <RouterProvider router={router} />
     </AuthProvider>
   )
 }
