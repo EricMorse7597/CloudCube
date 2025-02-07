@@ -62,7 +62,7 @@ function Timer() {
 
     return (
         <Stack align="center" justify="center" height="100h" spacing={4} mt={4}>
-            <Scramble onNewScramble={setScramble}/>
+            <Scramble onNewScramble={setScramble} />
             <HStack spacing={4}>
                 <Heading size="md">Timer</Heading>
             </HStack>
