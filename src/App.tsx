@@ -20,6 +20,7 @@ import { ReactNode, useEffect, useState } from "react";
 import AboutPage from "./pages/About";
 import LoginPage from "./pages/user/LoginPage";
 import { AuthProvider } from "./utils/AuthContext";
+import Timer from "./components/Timer";
 import Plausible from "plausible-tracker";
 import Register from "./pages/user/RegisterPage"
 import ProfilePage from "./pages/user/ProfilePage"
@@ -65,9 +66,16 @@ function createAppRouter(session: Session | null) {
         <Route path="trainer" element={<Navigate to="/train" />} />
         <Route path="tools/ohscramble" element={<OHScramble />} />
       </Route>
-    )
-  );
-}
+      {/* redirect for old /trainer path */}
+      <Route path="trainer" element={<Navigate to="/train" />} />
+      <Route path="tools">
+        <Route path="ohscramble" element={<OHScramble />} />
+      </Route>
+      <Route path="about" element={<AboutPage />} />
+      <Route path="timer" element={<Timer />} />
+    </Route>
+  )
+);
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null)
