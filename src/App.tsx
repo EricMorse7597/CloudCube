@@ -16,7 +16,7 @@ import TrainerPage from "./pages/train";
 import OHScramble from "./pages/OHScramble";
 import { ReactNode } from "react";
 import AboutPage from "./pages/About";
-
+import Timer from "./components/Timer";
 import Plausible from "plausible-tracker";
 
 export const plausible = Plausible({
@@ -66,6 +66,7 @@ const router = createBrowserRouter(
         <Route path="ohscramble" element={<OHScramble />} />
       </Route>
       <Route path="about" element={<AboutPage />} />
+      <Route path="timer" element={<Timer />} />
     </Route>
   )
 );
