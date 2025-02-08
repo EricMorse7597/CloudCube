@@ -122,14 +122,24 @@ export const relationships: Record<
    [FaceNames.up]: Colors.red,
    [FaceNames.down]: Colors.orange,
  };
- 
+
+
+export const relationships: Record<FaceNames, { above: FaceNames; below: FaceNames; next: FaceNames; prev: FaceNames }> = {
+   [FaceNames.front]: { above: FaceNames.up, below: FaceNames.down, next: FaceNames.right, prev: FaceNames.left },
+   [FaceNames.back]: { above: FaceNames.down, below: FaceNames.up, next: FaceNames.left, prev: FaceNames.right },
+   [FaceNames.left]: { above: FaceNames.up, below: FaceNames.down, next: FaceNames.front, prev: FaceNames.back },
+   [FaceNames.right]: { above: FaceNames.down, below: FaceNames.up, next: FaceNames.back, prev: FaceNames.front },
+   [FaceNames.up]: { above: FaceNames.back, below: FaceNames.front, next: FaceNames.right, prev: FaceNames.left },
+   [FaceNames.down]: { above: FaceNames.front, below: FaceNames.back, next: FaceNames.right, prev: FaceNames.left },
+};
+
  export interface Face {
    color: Colors;
-   tiles: Array<Colors>;
-   above: Face | null;
-   below: Face | null;
-   next: Face | null;
-   prev: Face | null;
+   tiles: Colors[];
+   above: Face;
+   below: Face;
+   next: Face;
+   prev: Face;
  
  }
 
