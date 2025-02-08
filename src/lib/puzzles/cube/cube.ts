@@ -1,4 +1,11 @@
-import { Colors, FaceNames, Faces, FaceColors } from "./constants";
+import {
+  Colors,
+  FaceNames,
+  Faces,
+  FaceColors,
+  Face,
+  relationships,
+} from "./constants";
 
 export class Cube {
   public readonly dims: number;
@@ -8,58 +15,23 @@ export class Cube {
   constructor(dims: number = 3) {
     this.dims = dims;
     const faceSize = dims * dims;
-    let previous: Faces = {} as Faces;
+
+    // initialize the cube faces
     for (let faceName of Object.values(FaceNames)) {
       this.faces[faceName] = {
         color: FaceColors[faceName],
         tiles: Array(faceSize).fill(FaceColors[faceName]),
-        above: null,
-        below: null,
-        next: null,
-        prev: null,
       };
     }
 
-    for (let faceName of Object.values(FaceNames)) {
+    // define the relationships between the faces
+    for (const faceName of Object.values(FaceNames)) {
       const face = this.faces[faceName];
-      switch (faceName) {
-        case FaceNames.front:
-          face.above = previous[FaceNames.up];
-          face.below = previous[FaceNames.down];
-          face.next = previous[FaceNames.right];
-          face.prev = previous[FaceNames.left];
-          break;
-        case FaceNames.back:
-          face.above = previous[FaceNames.up];
-          face.below = previous[FaceNames.down];
-          face.next = previous[FaceNames.left];
-          face.prev = previous[FaceNames.right];
-          break;
-        case FaceNames.left:
-          face.above = previous[FaceNames.up];
-          face.below = previous[FaceNames.down];
-          face.next = previous[FaceNames.front];
-          face.prev = previous[FaceNames.back];
-          break;
-        case FaceNames.right:
-          face.above = previous[FaceNames.up];
-          face.below = previous[FaceNames.down];
-          face.next = previous[FaceNames.back];
-          face.prev = previous[FaceNames.front];
-          break;
-        case FaceNames.up:
-          face.above = previous[FaceNames.back];
-          face.below = previous[FaceNames.front];
-          face.next = previous[FaceNames.right];
-          face.prev = previous[FaceNames.left];
-          break;
-        case FaceNames.down:
-          face.above = previous[FaceNames.front];
-          face.below = previous[FaceNames.back];
-          face.next = previous[FaceNames.right];
-          face.prev = previous[FaceNames.left];
-          break;
-      }
+      const { above, below, next, prev } = relationships[faceName];
+      face.above = this.faces[above];
+      face.below = this.faces[below];
+      face.next = this.faces[next];
+      face.prev = this.faces[prev];
     }
   }
 
@@ -97,7 +69,56 @@ export class Cube {
     }
   }
 
+  private getRow(face: Face, row: number): Colors[] {
+    const rowOffset = row * this.dims;
+    return face.tiles.slice(rowOffset, rowOffset + this.dims);
+  }
+
+  private GetColumn(face: Face, column: number): Colors[] {
+    return face.tiles.filter((_, index) => index % this.dims === column);
+  }
+
+  public rotateColumn(face: FaceNames, column: number, goUp: boolean): void {
+    let currentFace = this.faces[face];
+    let nextFace = goUp ? currentFace.above : currentFace.below;
+    let columnColors = this.GetColumn(currentFace, column);
+
+    do {
+      const nextColumn = this.GetColumn(nextFace, column);
+      nextFace.tiles = nextFace.tiles.map((color, index) =>
+        index % this.dims === column ? columnColors.shift()! : color
+      );
+      columnColors = nextColumn;
+      currentFace = nextFace;
+      nextFace = goUp ? currentFace.above : currentFace.below;
+    } while (currentFace !== this.faces[face]);
+  }
+
+  public rotateRow(face: FaceNames, row: number, goRight: boolean): void {
+    let currentFace = this.faces[face];
+    let nextFace = goRight ? currentFace.next : currentFace.prev;
+    let rowColors = this.getRow(currentFace, row);
+
+    do {
+      const nextRow = this.getRow(nextFace, row);
+      nextFace.tiles = nextFace.tiles.map((color, index) =>
+        index >= row * this.dims && index < (row + 1) * this.dims
+          ? rowColors.shift()!
+          : color
+      );
+      rowColors = nextRow;
+      currentFace = nextFace;
+      nextFace = goRight ? currentFace.next : currentFace.prev;
+    } while (currentFace !== this.faces[face]);
+  }
+
+  public rotateFace(face: FaceNames, goClockwise: boolean): void {
+    const currentFace = this.faces[face];
+    
+  }
 }
 
 const cube: Cube = new Cube();
+cube.printCube();
+cube.rotateFace(FaceNames.front, true);
 cube.printCube();
