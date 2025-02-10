@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../utils/SupabaseClient";
 import { Button } from "@chakra-ui/react";
 import { useAuth } from "../utils/AuthContext";
 import "../styles/index.css";
 
-export default function UpdateAccount() {
+export default function ProfilePage({ session }: { session: any}) {
+  const [loading, setLoading] = useState(true);
+  const [username, setUsername] = useState<string | null>(null);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newEmail, setNewEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -16,6 +18,18 @@ export default function UpdateAccount() {
   const { logout } = useAuth();
   const navigate = useNavigate();
 
+  async function getProfile() {
+    setLoading(true)
+    const { user } = session
+    const { data, error } = await supabase.from('profiles').select('username').eq('id', user.id).single();
+    // add error checking
+    if (data) session.username = data.username
+  }
+
+  // calls getProfile on page load
+  useEffect(() => {
+    getProfile()
+  })
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,7 +98,23 @@ export default function UpdateAccount() {
 
   return (
     <div style={{margin: "auto", padding: "3%"}}>
-        <h2 style={{fontWeight: "bold"}}>User Account Settings</h2>
+      <div className="element-style">
+        <h2 style={{fontWeight: "bold", textAlign: "center"}}>Profile</h2>
+        <div className="profile">
+          <div className="username">
+            <label htmlFor="username" style={{margin: "auto", padding: "3%"}}>Username</label>
+            <input id="username" type="text" value={session.username} disabled/>
+          </div>
+          <div className="email">
+            <label htmlFor="email" style={{margin: "auto", padding: "3%"}}>Email</label>
+            <input id="email" type="text" value={session.user.email} disabled/>
+          </div>
+        </div>
+      </div>
+      <br></br>
+      <hr></hr>
+      <br></br>
+        <h2 style={{fontWeight: "bold", textAlign: "center"}}>User Account Settings</h2>
         <div className="element-style-update-account">
             <h2>Update Email Address</h2>
             <form onSubmit={handleUpdate}>

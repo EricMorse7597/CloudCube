@@ -126,7 +126,7 @@ export default function NavBar() {
                     <Button
                       variant="link"
                       onClick={() => {
-                        // navgitate to dashboard here
+                        navigate("/profile")
                       }}
                     >
                       Dashboard
@@ -134,7 +134,7 @@ export default function NavBar() {
                     <Button
                       variant="link"
                       onClick={() => {
-                        navigate("/update")
+                        navigate("/profile")
                       }}
                     >
                       Settings
