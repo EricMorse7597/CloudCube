@@ -21,12 +21,12 @@ import OHScramble from "./pages/OHScramble";
 import { ReactNode, useEffect, useState } from "react";
 import { ReactNode, useEffect, useState } from "react";
 import AboutPage from "./pages/About";
-import LoginPage from "./pages/LoginPage";
+import LoginPage from "./pages/user/LoginPage";
 import { AuthProvider } from "./utils/AuthContext";
 import Timer from "./components/Timer";
 import Plausible from "plausible-tracker";
-import Register from "./pages/RegisterPage"
-import ProfilePage from "./pages/ProfilePage"
+import Register from "./pages/user/RegisterPage"
+import ProfilePage from "./pages/user/ProfilePage"
 import { Session } from '@supabase/supabase-js'
 import { supabase } from './utils/SupabaseClient'
 
@@ -91,7 +91,7 @@ export default function App() {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
     })
-  
+
     supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session)
     })
@@ -99,7 +99,7 @@ export default function App() {
 
   const router = createAppRouter(session)
 
-  return(
+  return (
     <AuthProvider>
       <RouterProvider router={router} />
     </AuthProvider>
