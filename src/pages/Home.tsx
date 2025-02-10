@@ -2,6 +2,7 @@ import {
   Button,
   Center,
   Container,
+  HStack,
   Heading,
   Image,
   Text,
@@ -29,9 +30,15 @@ export default function Home() {
             </Text>
           </Balancer>
         </VStack>
-        <RouterLink to="train/">
-          <Button colorScheme="blue">start training</Button>
-        </RouterLink>
+        <HStack spacing={4} justify="center">
+          <RouterLink to="train/">
+            <Button colorScheme="blue" size="md">Start Training</Button>
+          </RouterLink>
+          <RouterLink to="timer">
+            <Button colorScheme="teal" size="md">Start Timing</Button>
+          </RouterLink>
+        </HStack>
+        
         <Image
           src={mockupImage}
           fit="cover"
