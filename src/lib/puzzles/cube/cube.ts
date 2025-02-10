@@ -4,7 +4,6 @@ import {
   Face,
   Faces,
   FaceColors,
-  Face,
   relationships,
   directions,
 } from "./constants";
@@ -30,18 +29,17 @@ export class Cube {
     for (const faceName of Object.values(FaceNames)) {
       const face: Face = this.faces[faceName];
       const { above, below, next, prev } = relationships[faceName];
-      face.above = this.faces[above];
-      face.below = this.faces[below];
-      face.next = this.faces[next];
-      face.prev = this.faces[prev];
+      face.above = this.faces[above.name];
+      face.below = this.faces[below.name];
+      face.next = this.faces[next.name];
+      face.prev = this.faces[prev.name];
     }
   }
 
-  /* Returns true if the cube is in a solved state */
   public isSolved(): boolean {
     for (let faceName of Object.values(FaceNames)) {
-      const face: Face = this.faces[faceName];
-      const color: Colors = face.tiles[0];
+      const face = this.faces[faceName];
+      const color = face.tiles[0];
       for (let tile of face.tiles) {
         if (tile !== color) {
           return false;
@@ -51,7 +49,6 @@ export class Cube {
     return true;
   }
 
-  /* Debug tool to print the cube state */
   public printCube(): void {
     console.log();
     this.printFaces([[], this.faces.up.tiles]);
@@ -141,20 +138,32 @@ export class Cube {
     }
   }
 
-  /* Helper method to rotate the surrounding tiles on adjacent faces */
-  private rotateAdjacentTiles = (
-    faceName: FaceNames,
-    direction: directions
-  ): void => {
-    const relationship =
-      direction === directions.clockwise
-        ? Object.values(relationships[faceName])
-        : Object.values(relationships[faceName]).reverse();
 
-    let nextIndex,
-      curIndex = 0;
-    let nextRel,
-      currentRel = relationship[curIndex];
+
+  private rotateMatrix(matrix: any[][], goClockwise: boolean): any[][] {
+    const n = matrix.length;
+    const rotated = Array.from({ length: n }, () => Array(n).fill(null));
+  
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < n; j++) {
+        if (goClockwise) {
+          rotated[j][n - 1 - i] = matrix[i][j];
+        } else {
+          rotated[n - 1 - j][i] = matrix[i][j];
+        }
+      }
+    }
+  
+    return rotated;
+  }
+
+
+  public rotateAdjacentTiles = (faceName: FaceNames, goClockwise: boolean): void => {
+
+    const relationship = goClockwise? Object.values(relationships[faceName]): Object.values(relationships[faceName]).reverse();
+    
+    let nextIndex, curIndex = 0;
+    let nextRel, currentRel = relationship[curIndex];
     let newTiles;
 
     for (let i = 0; i < relationship.length + 1; i++) {
@@ -165,11 +174,11 @@ export class Cube {
 
       // rotate tiles correctly
       for (let j = 0; j < currentRel.side; j++) {
-        currentTiles = this.rotateMatrix(currentTiles, directions.clockwise);
+        currentTiles = this.rotateMatrix(currentTiles, true);
       }
 
       let tilesHolder = [...currentTiles[0]];
-
+      
       if (newTiles) {
         currentTiles[0] = [...newTiles];
       }
@@ -177,10 +186,7 @@ export class Cube {
 
       // rotate back
       for (let j = 0; j < currentRel.side; j++) {
-        currentTiles = this.rotateMatrix(
-          currentTiles,
-          directions.counterClockwise
-        );
+        currentTiles = this.rotateMatrix(currentTiles, false);
       }
 
       this.faces[currentRel.name].tiles = currentTiles.flat();
@@ -188,9 +194,19 @@ export class Cube {
       curIndex = nextIndex;
       currentRel = nextRel;
     }
-  };
 
-  /* Helper method to convert a 1D array to a 2D matrix. this helps with doing transformations */
+
+
+  }
+
+  public rotateFace(face: FaceNames, goClockwise: boolean): void {
+    const currentFace = this.faces[face];
+    const matrix = this.toMatrix(currentFace.tiles);
+    this.rotateAdjacentTiles(face, goClockwise);
+    currentFace.tiles = this.rotateMatrix(matrix, goClockwise).flat();
+    
+  }
+
   private toMatrix(array: Colors[]): Colors[][] {
     const matrix: Colors[][] = [];
     for (let i = 0; i < this.dims; i++) {
@@ -199,30 +215,9 @@ export class Cube {
     return matrix;
   }
 
-  /* Helper method to rotate the matrix */
-  private rotateMatrix(matrix: any[][], direction: directions): any[][] {
-    const len: number = matrix.length;
-    const rotated = Array.from({ length: len }, () => Array(len).fill(null));
-
-    for (let i = 0; i < len; i++) {
-      for (let j = 0; j < len; j++) {
-        if (direction === directions.clockwise) {
-          rotated[j][len - 1 - i] = matrix[i][j];
-        } else {
-          rotated[len - 1 - j][i] = matrix[i][j];
-        }
-      }
-    }
-
-    return rotated;
-  }
 }
 
 const cube: Cube = new Cube(3);
-cube.printCube();
-cube.performScramble(
-  "D2 F D' B L' F2 D R D F' U2 B U2 F' U2 F' U2 B' D2 F' L2"
-);
 cube.printCube();
 cube.rotateFace(FaceNames.front, true);
 cube.printCube();
