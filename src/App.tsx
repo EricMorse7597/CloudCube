@@ -18,11 +18,11 @@ import TestPage from "./pages/TestPage";
 import OHScramble from "./pages/OHScramble";
 import { ReactNode, useEffect, useState } from "react";
 import AboutPage from "./pages/About";
-import LoginPage from "./pages/LoginPage";
+import LoginPage from "./pages/user/LoginPage";
 import { AuthProvider } from "./utils/AuthContext";
 import Plausible from "plausible-tracker";
-import Register from "./pages/RegisterPage"
-import ProfilePage from "./pages/ProfilePage"
+import Register from "./pages/user/RegisterPage"
+import ProfilePage from "./pages/user/ProfilePage"
 import { Session } from '@supabase/supabase-js'
 import { supabase } from './utils/SupabaseClient'
 
@@ -48,23 +48,23 @@ function Layout({ children }: { children: ReactNode }) {
 function createAppRouter(session: Session | null) {
   return createBrowserRouter(
     createRoutesFromElements(
-    <Route
-      path="/"
-      element={<Layout><Outlet /></Layout>}
-      errorElement={<Layout><ErrorPage /></Layout>}>
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/about" element={<AboutPage />} />
-      <Route path="/profile" element={session != null ? <ProfilePage session={session}/> : <LoginPage/>} />
-      <Route index element={<Home />} />
-      <Route path="train">
-        <Route index element={<TrainerPage />} />
-        <Route path="cross" element={<CrossTrainerPage />} />
-        <Route path="eo" element={<EOStepTrainerPage />} />
+      <Route
+        path="/"
+        element={<Layout><Outlet /></Layout>}
+        errorElement={<Layout><ErrorPage /></Layout>}>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/profile" element={session != null ? <ProfilePage session={session} /> : <LoginPage />} />
+        <Route index element={<Home />} />
+        <Route path="train">
+          <Route index element={<TrainerPage />} />
+          <Route path="cross" element={<CrossTrainerPage />} />
+          <Route path="eo" element={<EOStepTrainerPage />} />
+        </Route>
+        <Route path="trainer" element={<Navigate to="/train" />} />
+        <Route path="tools/ohscramble" element={<OHScramble />} />
       </Route>
-      <Route path="trainer" element={<Navigate to="/train" />} />
-      <Route path="tools/ohscramble" element={<OHScramble />} />
-    </Route>
     )
   );
 }
@@ -76,7 +76,7 @@ export default function App() {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
     })
-  
+
     supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session)
     })
@@ -84,7 +84,7 @@ export default function App() {
 
   const router = createAppRouter(session)
 
-  return(
+  return (
     <AuthProvider>
       <RouterProvider router={router} />
     </AuthProvider>
