@@ -18,7 +18,7 @@ import TestPage from "./pages/TestPage";
 import OHScramble from "./pages/OHScramble";
 import { ReactNode, useEffect, useState } from "react";
 import AboutPage from "./pages/About";
-import LoginPage from "./pages/user/LoginPage";
+import LoginPage from "./pages/LoginPage";
 import { AuthProvider } from "./utils/AuthContext";
 import Timer from "./components/Timer";
 import Plausible from "plausible-tracker";
