@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 import { Container, Flex } from "@chakra-ui/react";
 import { useAuth } from "./utils/AuthContext";
+import { useAuth } from "./utils/AuthContext";
 import NavBar from "./components/NavBar/NavBar";
 import Home from "./pages/Home";
 import ErrorPage from "./pages/ErrorPage";
@@ -15,15 +16,17 @@ import CrossTrainerPage from "./pages/train/CrossTrainerPage";
 import EOStepTrainerPage from "./pages/train/EOStepTrainerPage";
 import TrainerPage from "./pages/train";
 import TestPage from "./pages/TestPage";
+import TestPage from "./pages/TestPage";
 import OHScramble from "./pages/OHScramble";
+import { ReactNode, useEffect, useState } from "react";
 import { ReactNode, useEffect, useState } from "react";
 import AboutPage from "./pages/About";
 import LoginPage from "./pages/LoginPage";
 import { AuthProvider } from "./utils/AuthContext";
 import Timer from "./components/Timer";
 import Plausible from "plausible-tracker";
-import Register from "./pages/user/RegisterPage"
-import ProfilePage from "./pages/user/ProfilePage"
+import Register from "./pages/RegisterPage"
+import ProfilePage from "./pages/ProfilePage"
 import { Session } from '@supabase/supabase-js'
 import { supabase } from './utils/SupabaseClient'
 
@@ -36,7 +39,9 @@ plausible.enableAutoPageviews();
 
 function Layout({ children }: { children: ReactNode }) {
   const { isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
   return (
+    <Flex direction="column" h="50vh">
     <Flex direction="column" h="50vh">
       <NavBar />
       <Container className="content" px={0} pt={14} maxW="100vw">
@@ -50,18 +55,19 @@ function createAppRouter(session: Session | null) {
   return createBrowserRouter(
     createRoutesFromElements(
       <Route
-        path="/"
         element={<Layout><Outlet /></Layout>}
         errorElement={<Layout><ErrorPage /></Layout>}>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<Register />} />
         <Route path="/about" element={<AboutPage />} />
-        <Route path="/profile" element={session != null ? <ProfilePage session={session} /> : <LoginPage />} />
-        <Route index element={<Home />} />
-        <Route path="train">
-          <Route index element={<TrainerPage />} />
-          <Route path="cross" element={<CrossTrainerPage />} />
-          <Route path="eo" element={<EOStepTrainerPage />} />
+        <Route path="/profile" element={session != null ? <ProfilePage session={session}/> : 
+    <LoginPage/>} />
+
+      <Route index element={<Home />} />
+      <Route path="train">
+        <Route index element={<TrainerPage />} />
+        <Route path="cross">
+          <Route index element={<CrossTrainerPage />} />
         </Route>
         <Route path="trainer" element={<Navigate to="/train" />} />
         <Route path="tools/ohscramble" element={<OHScramble />} />
@@ -74,8 +80,9 @@ function createAppRouter(session: Session | null) {
       <Route path="about" element={<AboutPage />} />
       <Route path="timer" element={<Timer />} />
     </Route>
-  )
-);
+    )
+  );
+}
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null)
@@ -84,7 +91,7 @@ export default function App() {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
     })
-
+  
     supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session)
     })
@@ -92,7 +99,7 @@ export default function App() {
 
   const router = createAppRouter(session)
 
-  return (
+  return(
     <AuthProvider>
       <RouterProvider router={router} />
     </AuthProvider>
