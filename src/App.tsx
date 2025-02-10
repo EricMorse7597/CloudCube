@@ -22,6 +22,7 @@ import LoginPage from "./pages/LoginPage";
 import { AuthProvider } from "./utils/AuthContext";
 import Plausible from "plausible-tracker";
 import Register from "./pages/RegisterPage"
+import UpdateAccount from "./pages/UpdateAccount"
 
 export const plausible = Plausible({
   domain: "crystalcuber.com",
@@ -51,6 +52,8 @@ const router = createBrowserRouter(
     <Route path="/login" element={<LoginPage />} />
     <Route path="/register" element={<Register />} />
     <Route path="/about" element={<AboutPage />} />
+    <Route path="/update" element={<UpdateAccount />} />
+
     <Route index element={<Home />} />
     <Route path="train">
       <Route index element={<TrainerPage />} />
