@@ -66,13 +66,13 @@ function Timer() {
             <HStack spacing={4}>
                 <Heading size="md">Timer</Heading>
             </HStack>
-            <Card p="1.5rem" w="85%">
+            <Card p="1.5rem" w="75%">
                 <Stack spacing={4} align="center">
                     <h1>Scramble: {scramble}</h1>
                 </Stack>
             </Card>
 
-            <Card p="4.5rem" w="50%" textAlign="center">
+            <Card p="6.5rem" w="40%" textAlign="center">
                 <Heading size="4xl">{time.toFixed(2)}s</Heading>
             </Card>
             <p>Press spacebar to start/stop the timer</p>
