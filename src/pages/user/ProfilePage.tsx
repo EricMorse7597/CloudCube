@@ -30,6 +30,7 @@ export default function ProfilePage({ session }: { session: any }) {
             session.username = data.username;
             session.avatar_url = data.avatar_url;
         }
+        setLoading(false)
     }
 
     // calls getProfile on page load
@@ -127,7 +128,8 @@ export default function ProfilePage({ session }: { session: any }) {
     };
 
     return (
-        <div style={{ margin: "auto", padding: "3%" }}>
+        loading ? 
+        (<div style={{ margin: "auto", padding: "3%" }}>
             <div className="element-style">
                 <h2 style={{ fontWeight: "bold", textAlign: "center" }}>Profile</h2>
                 <div className="profile" style={{ textAlign: "left", }}>
@@ -191,7 +193,8 @@ export default function ProfilePage({ session }: { session: any }) {
                     {errorMessage && <p className="error-message">{errorMessage}</p>}
                 </form>
             </div>
-        </div>
-
+        </div>)
+        :
+        (<h2>loading</h2>)
     );
 }

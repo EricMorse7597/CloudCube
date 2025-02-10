@@ -78,7 +78,7 @@ export default function Avatar({
                 <div className="avatar no-image" style={{ height: size, width: size }} ><img
                     width={size}
                     height={size}
-                    src={"/public/assets/default.png"}
+                    src={"/assets/default.png"}
                     alt="Avatar"
                     className="avatar image"
                     style={{ height: size, width: size }}
