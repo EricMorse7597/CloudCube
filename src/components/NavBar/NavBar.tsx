@@ -18,7 +18,6 @@ import {
   Image,
   Badge,
   Container,
-  useToast,
 } from "@chakra-ui/react";
 import {
   HamburgerIcon,
@@ -36,7 +35,6 @@ export default function NavBar() {
   const { isOpen, onToggle, onClose } = useDisclosure();
   const navigate = useNavigate();
   const { userName, isAuthenticated, logout } = useAuth(); 
-  const toast = useToast();
   const linkColor = useColorModeValue("gray.600", "gray.200");
   const linkHoverColor = useColorModeValue("gray.800", "white");
   const buttonColor = useColorModeValue("#EDF2F7", "#2C313D");
@@ -128,7 +126,7 @@ export default function NavBar() {
                     <Button
                       variant="link"
                       onClick={() => {
-                        // navgitate to dashboard here
+                        navigate("/profile")
                       }}
                     >
                       Dashboard
@@ -136,15 +134,15 @@ export default function NavBar() {
                     <Button
                       variant="link"
                       onClick={() => {
+                        navigate("/profile")
+                      }}
+                    >
+                      Settings
+                    </Button>
+                    <Button
+                      variant="link"
+                      onClick={() => {
                         logout();
-                        toast({
-                          title: "Signed out successfully.",
-                          description: "You have been logged out.",
-                          status: "success",
-                          duration: 3000,
-                          isClosable: true,
-                          position: "bottom-left",
-                        });
                       }}
                     >
                       Logout

@@ -1,11 +1,13 @@
 import { createContext, useState, useContext, useEffect } from "react";
 import { supabase } from "../utils/SupabaseClient";
+import { useToast } from "@chakra-ui/react";
 
 const AuthContext = createContext<any>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [userName, setUserName] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const toast = useToast();
 
   // Monitor the user's session
   useEffect(() => {
@@ -75,6 +77,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     await supabase.auth.signOut();  
     setUserName(null);
     setIsAuthenticated(false);
+    
+    toast({
+      title: "Signed out successfully.",
+      description: "You have been logged out.",
+      status: "success",
+      duration: 3000,
+      isClosable: true,
+      position: "bottom-left",
+    });
   };
 
   return (
