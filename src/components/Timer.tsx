@@ -3,6 +3,12 @@ import { useHotkeys } from "react-hotkeys-hook";
 import { randomScrambleForEvent } from "cubing/scramble";
 import { Alg } from "cubing/alg";
 import { get, set } from "lodash";
+import {
+    Card,
+    Stack,
+    HStack,
+    Heading
+} from "@chakra-ui/react";
 
 
 
@@ -55,12 +61,22 @@ function Timer() {
     }, [isRunning]);
 
     return (
-        <div>
+        <Stack align="center" justify="center" height="100h" spacing={4} mt={4}>
             <Scramble onNewScramble={setScramble}/>
-            <h2>Scramble: {scramble}</h2>
-            <h1>{time.toFixed(2)}s</h1>
+            <HStack spacing={4}>
+                <Heading size="md">Timer</Heading>
+            </HStack>
+            <Card p="1.5rem" w="85%">
+                <Stack spacing={4} align="center">
+                    <h1>Scramble: {scramble}</h1>
+                </Stack>
+            </Card>
+
+            <Card p="4.5rem" w="50%" textAlign="center">
+                <Heading size="4xl">{time.toFixed(2)}s</Heading>
+            </Card>
             <p>Press spacebar to start/stop the timer</p>
-        </div>
+        </Stack>
     );
 
 }
