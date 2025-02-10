@@ -14,6 +14,7 @@ import ErrorPage from "./pages/ErrorPage";
 import CrossTrainerPage from "./pages/train/CrossTrainerPage";
 import EOStepTrainerPage from "./pages/train/EOStepTrainerPage";
 import TrainerPage from "./pages/train";
+import TestPage from "./pages/TestPage";
 import OHScramble from "./pages/OHScramble";
 import { ReactNode, useEffect, useState } from "react";
 import AboutPage from "./pages/About";
@@ -85,7 +86,6 @@ export default function App() {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
     })
-
     supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session)
     })
