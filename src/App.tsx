@@ -22,6 +22,7 @@ import LoginPage from "./pages/LoginPage";
 import { AuthProvider } from "./utils/AuthContext";
 import Plausible from "plausible-tracker";
 import Register from "./pages/RegisterPage"
+import DefinitionsPage from "./pages/Definitions/definitions";
 
 export const plausible = Plausible({
   domain: "crystalcuber.com",
@@ -59,6 +60,7 @@ const router = createBrowserRouter(
     </Route>
     <Route path="trainer" element={<Navigate to="/train" />} />
     <Route path="tools/ohscramble" element={<OHScramble />} />
+    <Route path = "definitions" element = {<DefinitionsPage />} />
   </Route>
   )
 );
