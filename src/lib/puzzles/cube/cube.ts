@@ -3,7 +3,6 @@ import {
   FaceNames,
   Faces,
   FaceColors,
-  Face,
   relationships,
 } from "./constants";
 
@@ -28,11 +27,24 @@ export class Cube {
     for (const faceName of Object.values(FaceNames)) {
       const face = this.faces[faceName];
       const { above, below, next, prev } = relationships[faceName];
-      face.above = this.faces[above];
-      face.below = this.faces[below];
-      face.next = this.faces[next];
-      face.prev = this.faces[prev];
+      face.above = this.faces[above.name];
+      face.below = this.faces[below.name];
+      face.next = this.faces[next.name];
+      face.prev = this.faces[prev.name];
     }
+  }
+
+  public isSolved(): boolean {
+    for (let faceName of Object.values(FaceNames)) {
+      const face = this.faces[faceName];
+      const color = face.tiles[0];
+      for (let tile of face.tiles) {
+        if (tile !== color) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
   public printCube(): void {
@@ -69,56 +81,86 @@ export class Cube {
     }
   }
 
-  private getRow(face: Face, row: number): Colors[] {
-    const rowOffset = row * this.dims;
-    return face.tiles.slice(rowOffset, rowOffset + this.dims);
+
+
+  private rotateMatrix(matrix: any[][], goClockwise: boolean): any[][] {
+    const n = matrix.length;
+    const rotated = Array.from({ length: n }, () => Array(n).fill(null));
+  
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < n; j++) {
+        if (goClockwise) {
+          rotated[j][n - 1 - i] = matrix[i][j];
+        } else {
+          rotated[n - 1 - j][i] = matrix[i][j];
+        }
+      }
+    }
+  
+    return rotated;
   }
 
-  private GetColumn(face: Face, column: number): Colors[] {
-    return face.tiles.filter((_, index) => index % this.dims === column);
-  }
 
-  public rotateColumn(face: FaceNames, column: number, goUp: boolean): void {
-    let currentFace = this.faces[face];
-    let nextFace = goUp ? currentFace.above : currentFace.below;
-    let columnColors = this.GetColumn(currentFace, column);
+  public rotateAdjacentTiles = (faceName: FaceNames, goClockwise: boolean): void => {
 
-    do {
-      const nextColumn = this.GetColumn(nextFace, column);
-      nextFace.tiles = nextFace.tiles.map((color, index) =>
-        index % this.dims === column ? columnColors.shift()! : color
-      );
-      columnColors = nextColumn;
-      currentFace = nextFace;
-      nextFace = goUp ? currentFace.above : currentFace.below;
-    } while (currentFace !== this.faces[face]);
-  }
+    const relationship = goClockwise? Object.values(relationships[faceName]): Object.values(relationships[faceName]).reverse();
+    
+    let nextIndex, curIndex = 0;
+    let nextRel, currentRel = relationship[curIndex];
+    let newTiles;
 
-  public rotateRow(face: FaceNames, row: number, goRight: boolean): void {
-    let currentFace = this.faces[face];
-    let nextFace = goRight ? currentFace.next : currentFace.prev;
-    let rowColors = this.getRow(currentFace, row);
+    for (let i = 0; i < relationship.length + 1; i++) {
+      nextIndex = (curIndex + 1) % relationship.length;
+      nextRel = relationship[nextIndex];
 
-    do {
-      const nextRow = this.getRow(nextFace, row);
-      nextFace.tiles = nextFace.tiles.map((color, index) =>
-        index >= row * this.dims && index < (row + 1) * this.dims
-          ? rowColors.shift()!
-          : color
-      );
-      rowColors = nextRow;
-      currentFace = nextFace;
-      nextFace = goRight ? currentFace.next : currentFace.prev;
-    } while (currentFace !== this.faces[face]);
+      let currentTiles = this.toMatrix(this.faces[currentRel.name].tiles);
+
+      // rotate tiles correctly
+      for (let j = 0; j < currentRel.side; j++) {
+        currentTiles = this.rotateMatrix(currentTiles, true);
+      }
+
+      let tilesHolder = [...currentTiles[0]];
+      
+      if (newTiles) {
+        currentTiles[0] = [...newTiles];
+      }
+      newTiles = tilesHolder;
+
+      // rotate back
+      for (let j = 0; j < currentRel.side; j++) {
+        currentTiles = this.rotateMatrix(currentTiles, false);
+      }
+
+      this.faces[currentRel.name].tiles = currentTiles.flat();
+
+      curIndex = nextIndex;
+      currentRel = nextRel;
+    }
+
+
+
   }
 
   public rotateFace(face: FaceNames, goClockwise: boolean): void {
     const currentFace = this.faces[face];
+    const matrix = this.toMatrix(currentFace.tiles);
+    this.rotateAdjacentTiles(face, goClockwise);
+    currentFace.tiles = this.rotateMatrix(matrix, goClockwise).flat();
     
   }
+
+  private toMatrix(array: Colors[]): Colors[][] {
+    const matrix: Colors[][] = [];
+    for (let i = 0; i < this.dims; i++) {
+      matrix.push(array.slice(i * this.dims, (i + 1) * this.dims));
+    }
+    return matrix;
+  }
+
 }
 
-const cube: Cube = new Cube();
+const cube: Cube = new Cube(3);
 cube.printCube();
 cube.rotateFace(FaceNames.front, true);
 cube.printCube();
