@@ -7,19 +7,25 @@ import {
   Navigate,
 } from "react-router-dom";
 import { Container, Flex } from "@chakra-ui/react";
+import { useAuth } from "./utils/AuthContext";
 import NavBar from "./components/NavBar/NavBar";
 import Home from "./pages/Home";
 import ErrorPage from "./pages/ErrorPage";
 import CrossTrainerPage from "./pages/train/CrossTrainerPage";
 import EOStepTrainerPage from "./pages/train/EOStepTrainerPage";
 import TrainerPage from "./pages/train";
+import TestPage from "./pages/TestPage";
 import OHScramble from "./pages/OHScramble";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import AboutPage from "./pages/About";
 import LoginPage from "./pages/LoginPage";
 import { AuthProvider } from "./utils/AuthContext";
 import Timer from "./components/Timer";
 import Plausible from "plausible-tracker";
+import Register from "./pages/RegisterPage"
+import ProfilePage from "./pages/ProfilePage"
+import { Session } from '@supabase/supabase-js'
+import { supabase } from './utils/SupabaseClient'
 
 export const plausible = Plausible({
   domain: "crystalcuber.com",
@@ -29,8 +35,9 @@ export const plausible = Plausible({
 plausible.enableAutoPageviews();
 
 function Layout({ children }: { children: ReactNode }) {
+  const { isAuthenticated } = useAuth();
   return (
-    <Flex direction="column" h="100vh">
+    <Flex direction="column" h="50vh">
       <NavBar />
       <Container className="content" px={0} pt={14} maxW="100vw">
         {children}
@@ -39,21 +46,18 @@ function Layout({ children }: { children: ReactNode }) {
   );
 }
 
-const router = createBrowserRouter(
-  createRoutesFromElements(
-    <Route
-      path="/"
-      element={
-        <Layout>
-          <Outlet />
-        </Layout>
-      }
-      errorElement={
-        <Layout>
-          <ErrorPage />
-        </Layout>
-      }
-    >
+function createAppRouter(session: Session | null) {
+  return createBrowserRouter(
+    createRoutesFromElements(
+      <Route
+        element={<Layout><Outlet /></Layout>}
+        errorElement={<Layout><ErrorPage /></Layout>}>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/profile" element={session != null ? <ProfilePage session={session}/> : 
+    <LoginPage/>} />
+
       <Route index element={<Home />} />
       <Route path="train">
         <Route index element={<TrainerPage />} />
@@ -70,9 +74,28 @@ const router = createBrowserRouter(
       <Route path="about" element={<AboutPage />} />
       <Route path="timer" element={<Timer />} />
     </Route>
-  )
-);
+    )
+  );
+}
 
 export default function App() {
-  return <RouterProvider router={router} />;
+  const [session, setSession] = useState<Session | null>(null)
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session)
+    })
+  
+    supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session)
+    })
+  }, [])
+
+  const router = createAppRouter(session)
+
+  return(
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
+  )
 }
