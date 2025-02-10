@@ -16,6 +16,8 @@ import TrainerPage from "./pages/train";
 import OHScramble from "./pages/OHScramble";
 import { ReactNode } from "react";
 import AboutPage from "./pages/About";
+import LoginPage from "./pages/LoginPage";
+import { AuthProvider } from "./utils/AuthContext";
 import Timer from "./components/Timer";
 import Plausible from "plausible-tracker";
 
