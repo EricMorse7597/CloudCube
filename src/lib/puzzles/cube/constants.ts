@@ -25,11 +25,29 @@ export const FaceColors: Record<FaceNames, Colors> = {
   [FaceNames.down]: Colors.yellow,
 };
 
+export interface Face {
+  color: Colors;
+  tiles: Colors[];
+  above: Face;
+  below: Face;
+  next: Face;
+  prev: Face;
+}
+
+export type Faces = {
+  [key in FaceNames]: Face;
+};
+
 /* Used to define the relationships of adjacent faces relative to a given face */
 export type Relationships = "above" | "below" | "next" | "prev";
 
 /* Used to define the side the adjacent face meets the given face */
-export enum Sides { top, left, bottom, right };
+export enum Sides {
+  top,
+  left,
+  bottom,
+  right,
+}
 
 /* Defines the connections of adjacent faces to a provided face */
 export const relationships: Record<
@@ -72,17 +90,4 @@ export const relationships: Record<
     below: { name: FaceNames.back, side: Sides.bottom },
     prev: { name: FaceNames.left, side: Sides.bottom },
   },
-};
-
-export interface Face {
-  color: Colors;
-  tiles: Colors[];
-  above: Face;
-  below: Face;
-  next: Face;
-  prev: Face;
-}
-
-export type Faces = {
-  [key in FaceNames]: Face;
 };
