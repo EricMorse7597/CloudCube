@@ -216,10 +216,3 @@ export class Cube {
     return rotated;
   }
 }
-
-const cube: Cube = new Cube(3);
-cube.printCube();
-cube.performScramble(
-  "D2 F D' B L' F2 D R D F' U2 B U2 F' U2 F' U2 B' D2 F' L2"
-);
-cube.printCube();
