@@ -20,6 +20,7 @@ import { ReactNode, useEffect, useState } from "react";
 import AboutPage from "./pages/About";
 import LoginPage from "./pages/LoginPage";
 import { AuthProvider } from "./utils/AuthContext";
+import Timer from "./components/Timer";
 import Plausible from "plausible-tracker";
 import Register from "./pages/RegisterPage"
 import ProfilePage from "./pages/ProfilePage"
@@ -48,22 +49,30 @@ function Layout({ children }: { children: ReactNode }) {
 function createAppRouter(session: Session | null) {
   return createBrowserRouter(
     createRoutesFromElements(
-    <Route
-      path="/"
-      element={<Layout><Outlet /></Layout>}
-      errorElement={<Layout><ErrorPage /></Layout>}>
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/about" element={<AboutPage />} />
-      <Route path="/profile" element={session != null ? <ProfilePage session={session}/> : <LoginPage/>} />
+      <Route
+        element={<Layout><Outlet /></Layout>}
+        errorElement={<Layout><ErrorPage /></Layout>}>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/profile" element={session != null ? <ProfilePage session={session}/> : 
+    <LoginPage/>} />
+
       <Route index element={<Home />} />
       <Route path="train">
         <Route index element={<TrainerPage />} />
-        <Route path="cross" element={<CrossTrainerPage />} />
+        <Route path="cross">
+          <Route index element={<CrossTrainerPage />} />
+        </Route>
         <Route path="eo" element={<EOStepTrainerPage />} />
       </Route>
+      {/* redirect for old /trainer path */}
       <Route path="trainer" element={<Navigate to="/train" />} />
-      <Route path="tools/ohscramble" element={<OHScramble />} />
+      <Route path="tools">
+        <Route path="ohscramble" element={<OHScramble />} />
+      </Route>
+      <Route path="about" element={<AboutPage />} />
+      <Route path="timer" element={<Timer />} />
     </Route>
     )
   );

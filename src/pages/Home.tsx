@@ -2,6 +2,7 @@ import {
   Button,
   Center,
   Container,
+  HStack,
   Heading,
   Image,
   Text,
@@ -21,19 +22,23 @@ export default function Home() {
       <VStack spacing={6}>
         <VStack>
           <Balancer>
-            <Heading textAlign="center">Crystalcube</Heading>
+            <Heading textAlign="center">crystalcube trainers</Heading>
           </Balancer>
           <Balancer>
             <Text align="center" fontSize="lg">
-              Improve the efficiency of your CFOP cross or ZZ EO
+              improve the efficiency of your CFOP cross or ZZ EO
             </Text>
           </Balancer>
         </VStack>
+        <HStack spacing={4} justify="center">
+          <RouterLink to="train/">
+            <Button colorScheme="blue" size="md">Start Training</Button>
+          </RouterLink>
+          <RouterLink to="timer">
+            <Button colorScheme="teal" size="md">Start Timing</Button>
+          </RouterLink>
+        </HStack>
         
-        <RouterLink to="/train">
-          <Button colorScheme="blue">start training</Button> 
-        </RouterLink>
-       
         <Image
           src={mockupImage}
           fit="cover"
@@ -43,7 +48,6 @@ export default function Home() {
           filter="drop-shadow(0 0 10px rgb(212, 131, 242))"
         />
       </VStack>
-
     </Container>
   );
 }
