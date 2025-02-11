@@ -37,3 +37,11 @@
 }
 
 
+/* update account page: */
+
+.element-style-update-account{
+    max-width: 50%;
+    padding: 1%;
+    padding-top: 2%;
+    margin: auto;
+  }
