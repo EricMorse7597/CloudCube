@@ -17,12 +17,12 @@ export enum FaceNames {
 }
 
 export const FaceColors: Record<FaceNames, Colors> = {
-  [FaceNames.front]: Colors.white,
-  [FaceNames.back]: Colors.yellow,
-  [FaceNames.left]: Colors.blue,
-  [FaceNames.right]: Colors.green,
-  [FaceNames.up]: Colors.red,
-  [FaceNames.down]: Colors.orange,
+  [FaceNames.front]: Colors.green,
+  [FaceNames.back]: Colors.blue,
+  [FaceNames.left]: Colors.orange,
+  [FaceNames.right]: Colors.red,
+  [FaceNames.up]: Colors.white,
+  [FaceNames.down]: Colors.yellow,
 };
 
 /* Used to define the relationships of adjacent faces relative to a given face */
