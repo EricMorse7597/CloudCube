@@ -17,9 +17,8 @@ export class Cube {
     const faceSize: number = dims * dims;
 
     // initialize the cube faces
-    for (let faceName of Object.values(FaceNames)) {
-
-      // @ts-ignore: The other properties will be set in the next loop
+    for (const faceName of Object.values(FaceNames)) {
+      // @ts-ignore: The other properties will be set after
       this.faces[faceName] = {
         color: FaceColors[faceName],
         tiles: Array(faceSize).fill(FaceColors[faceName]),
@@ -199,51 +198,28 @@ export class Cube {
     return matrix;
   }
 
-  public setCube(movements: string): void {
-    const regex = new RegExp(`^([FBLRUD]2?'?( |$))+`);
-    if (!regex.test(movements)) {
-      throw new Error("Invalid scramble notation");
+  /* Helper method to rotate the matrix */
+  private rotateMatrix(matrix: any[][], direction: directions): any[][] {
+    const len: number = matrix.length;
+    const rotated = Array.from({ length: len }, () => Array(len).fill(null));
+
+    for (let i = 0; i < len; i++) {
+      for (let j = 0; j < len; j++) {
+        if (direction === directions.clockwise) {
+          rotated[j][len - 1 - i] = matrix[i][j];
+        } else {
+          rotated[len - 1 - j][i] = matrix[i][j];
+        }
+      }
     }
 
-    const moves = movements.split(" ");
-    for (const move of moves) {
-      console.log(move);
-      const direction: boolean = !move.includes("'");
-      let face: FaceNames;
-      switch (move[0]) {
-        case "B":
-          face = FaceNames.back;
-          break;
-        case "L":
-          face = FaceNames.left;
-          break;
-        case "R":
-          face = FaceNames.right;
-          break;
-        case "U":
-          face = FaceNames.up;
-          break;
-        case "D":
-          face = FaceNames.down;
-          break;
-        default:
-          face = FaceNames.front;
-          break;
-      }
-
-      let numRotations: number = (move.length > 1 && parseInt(move[1]) === 2)? 2 : 1;
-      console.log(face, direction, numRotations);
-      for (let i = 0; i < numRotations; i++) {
-        this.rotateFace(face, direction);
-        cube.printCube();
-      }
-
-    }
+    return rotated;
   }
-
 }
 
 const cube: Cube = new Cube(3);
 cube.printCube();
-cube.setCube("D2 F D' B L' F2 D R D F' U2 B U2 F' U2 F' U2 B' D2 F' L2");
+cube.performScramble(
+  "D2 F D' B L' F2 D R D F' U2 B U2 F' U2 F' U2 B' D2 F' L2"
+);
 cube.printCube();
