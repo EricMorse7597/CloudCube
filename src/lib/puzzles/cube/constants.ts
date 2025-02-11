@@ -16,6 +16,11 @@ export enum FaceNames {
   down = "down",
 }
 
+export enum directions {
+  clockwise,
+  counterClockwise,
+}
+
 export const FaceColors: Record<FaceNames, Colors> = {
   [FaceNames.front]: Colors.green,
   [FaceNames.back]: Colors.blue,
