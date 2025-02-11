@@ -1,25 +1,25 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "../utils/SupabaseClient";
-import "../styles/index.css";
+import { supabase } from "src/utils/SupabaseClient";
+import "src/styles/index.css";
 
 export default function Register() {
   const [email, setEmail] = useState("");
-  const [username, setUsername] = useState(""); 
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [successMessage, setSuccessMessage] = useState(""); 
-  const [errorMessage, setErrorMessage] = useState(""); 
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
 
 
-  
+
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-  
-    setSuccessMessage(""); 
-    setErrorMessage(""); 
-  
+
+    setSuccessMessage("");
+    setErrorMessage("");
+
     if (password.length < 6) {
       setErrorMessage("Password needs to be at least 6 characters.");
       return;
@@ -68,10 +68,10 @@ export default function Register() {
       console.error("Unexpected error:", err);
       setErrorMessage("An unexpected error occurred. Please try again.");
     }
-  
-    setUsername(""); 
-    setEmail(""); 
-    setPassword(""); 
+
+    setUsername("");
+    setEmail("");
+    setPassword("");
   };
 
   return (
@@ -79,7 +79,7 @@ export default function Register() {
       <h2>Register</h2>
       <form onSubmit={handleRegister}>
         <input
-          type="text" 
+          type="text"
           placeholder="Username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}

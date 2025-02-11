@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { useNavigate, Navigate } from "react-router-dom";
-import { useAuth } from "../utils/AuthContext";
-import { supabase } from "../utils/SupabaseClient";
+import { useAuth } from "src/utils/AuthContext";
+import { supabase } from "src/utils/SupabaseClient";
 import { useToast } from "@chakra-ui/react";
-import "../styles/index.css";
+import "src/styles/index.css";
 
 export default function LoginPage() {
 
   // identifier is used for to id both email and username
-  const [identifier, setIdentifier] = useState<string>(""); 
+  const [identifier, setIdentifier] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
@@ -18,14 +18,14 @@ export default function LoginPage() {
   if (isAuthenticated) {
     return <Navigate to="/" />;
   }
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-  
+
     let userEmail = identifier;
     const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier);
-  
+
     try {
       if (!isEmail) {
         console.log("Looking up email for username:", identifier);
@@ -36,31 +36,31 @@ export default function LoginPage() {
           .eq("username", identifier)
           .limit(1)
           .single();
-  
+
         if (error || !data?.email) {
           //console.error("Failed to fetch email for username:", error || data);
           throw new Error("Account doesn’t exist.");
         }
-  
+
         userEmail = data.email; // using the data of the user's session to find its email
         // console.log("Attempting login with:", userEmail, password);
       }
-  
+
       const { data, error } = await supabase.auth.signInWithPassword({
         email: userEmail,
         password,
       });
-  
+
       if (error) {
         if (error.message.includes("invalid_password")) {
           throw new Error("Wrong email or password.");
         }
         throw new Error("Unexpected error. Please try again later.");
       }
-  
+
       login(data.user.id);
       navigate("/");
-  
+
       toast({
         title: "Logged in successfully.",
         description: "You are logged in.",
@@ -69,7 +69,7 @@ export default function LoginPage() {
         isClosable: true,
         position: "bottom-left",
       });
-  
+
     } catch (err: any) {
       // a series of potential errors that could happen during a login session 
       let errorMessage = "Unexpected error.";
@@ -80,7 +80,7 @@ export default function LoginPage() {
       } else if (err.message.includes("Network")) {
         errorMessage = "Network error. Please check your connection.";
       }
-  
+
       setError(errorMessage);
 
       toast({
@@ -95,29 +95,29 @@ export default function LoginPage() {
   };
 
   return (
-    
+
     <div className="element-style">
       <h2>Login</h2>
       <form onSubmit={handleSubmit}>
         <input
-            type="text"
-            placeholder="Username or Email"
-            className="input-style"
-            value={identifier}
-            onChange={(e) => setIdentifier(e.target.value)}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            className="input-style"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          {error && <p className="error-message">{error}</p>}
-          <button className="button-style" type="submit">Login</button>
-          <button className="button-style" type="submit" onClick={() => navigate("/register", { replace: true })}>Sign Up</button>
+          type="text"
+          placeholder="Username or Email"
+          className="input-style"
+          value={identifier}
+          onChange={(e) => setIdentifier(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          className="input-style"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        {error && <p className="error-message">{error}</p>}
+        <button className="button-style" type="submit">Login</button>
+        <button className="button-style" type="submit" onClick={() => navigate("/register", { replace: true })}>Sign Up</button>
       </form>
     </div>
   );
