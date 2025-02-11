@@ -8,17 +8,13 @@ import {
 } from "react-router-dom";
 import { Container, Flex } from "@chakra-ui/react";
 import { useAuth } from "./utils/AuthContext";
-import { useAuth } from "./utils/AuthContext";
 import NavBar from "./components/NavBar/NavBar";
 import Home from "./pages/Home";
 import ErrorPage from "./pages/ErrorPage";
 import CrossTrainerPage from "./pages/train/CrossTrainerPage";
 import EOStepTrainerPage from "./pages/train/EOStepTrainerPage";
 import TrainerPage from "./pages/train";
-import TestPage from "./pages/TestPage";
-import TestPage from "./pages/TestPage";
 import OHScramble from "./pages/OHScramble";
-import { ReactNode, useEffect, useState } from "react";
 import { ReactNode, useEffect, useState } from "react";
 import AboutPage from "./pages/About";
 import LoginPage from "./pages/user/LoginPage";
@@ -39,9 +35,7 @@ plausible.enableAutoPageviews();
 
 function Layout({ children }: { children: ReactNode }) {
   const { isAuthenticated } = useAuth();
-  const { isAuthenticated } = useAuth();
   return (
-    <Flex direction="column" h="50vh">
     <Flex direction="column" h="50vh">
       <NavBar />
       <Container className="content" px={0} pt={14} maxW="100vw">
