@@ -1,23 +1,25 @@
 import {
   Colors,
   FaceNames,
+  Face,
   Faces,
   FaceColors,
   Face,
   relationships,
+  directions,
 } from "./constants";
 
 export class Cube {
-  public readonly dims: number;
-
-  public faces: Faces = {} as Faces;
+  public readonly dims: number; // dimensions of the cube
+  public faces: Faces = {} as Faces; // the faces of the cube
 
   constructor(dims: number = 3) {
     this.dims = dims;
-    const faceSize = dims * dims;
+    const faceSize: number = dims * dims;
 
     // initialize the cube faces
-    for (let faceName of Object.values(FaceNames)) {
+    for (const faceName of Object.values(FaceNames)) {
+      // @ts-ignore: The other properties will be set after
       this.faces[faceName] = {
         color: FaceColors[faceName],
         tiles: Array(faceSize).fill(FaceColors[faceName]),
@@ -26,7 +28,7 @@ export class Cube {
 
     // define the relationships between the faces
     for (const faceName of Object.values(FaceNames)) {
-      const face = this.faces[faceName];
+      const face: Face = this.faces[faceName];
       const { above, below, next, prev } = relationships[faceName];
       face.above = this.faces[above];
       face.below = this.faces[below];
@@ -35,6 +37,21 @@ export class Cube {
     }
   }
 
+  /* Returns true if the cube is in a solved state */
+  public isSolved(): boolean {
+    for (let faceName of Object.values(FaceNames)) {
+      const face: Face = this.faces[faceName];
+      const color: Colors = face.tiles[0];
+      for (let tile of face.tiles) {
+        if (tile !== color) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  /* Debug tool to print the cube state */
   public printCube(): void {
     console.log();
     this.printFaces([[], this.faces.up.tiles]);
@@ -47,6 +64,61 @@ export class Cube {
     this.printFaces([[], this.faces.down.tiles]);
   }
 
+  /* Rotates a face of the cube in a given direction */
+  public rotateFace(face: FaceNames, direction: directions): void {
+    const currentFace: Face = this.faces[face];
+    const matrix: Colors[][] = this.toMatrix(currentFace.tiles);
+    this.rotateAdjacentTiles(face, direction);
+    currentFace.tiles = this.rotateMatrix(matrix, direction).flat();
+  }
+
+  /* Scrambles the cube given a string in scramble notation */
+  public performScramble(movements: string): void {
+    /* Validate notation */
+    const regex: RegExp = new RegExp(`^([FBLRUD]2?'?( |$))+`);
+    if (!regex.test(movements)) {
+      throw new Error("Invalid scramble notation");
+    }
+
+    const moves: string[] = movements.split(" ");
+
+    /* Perform each move in the scramble */
+    for (const move of moves) {
+      const direction: directions = move.includes("'")
+        ? directions.counterClockwise
+        : directions.clockwise;
+      const numRotations: number =
+        move.length > 1 && parseInt(move[1]) === 2 ? 2 : 1;
+
+      let face: FaceNames;
+      switch (move[0]) {
+        case "B":
+          face = FaceNames.back;
+          break;
+        case "L":
+          face = FaceNames.left;
+          break;
+        case "R":
+          face = FaceNames.right;
+          break;
+        case "U":
+          face = FaceNames.up;
+          break;
+        case "D":
+          face = FaceNames.down;
+          break;
+        default:
+          face = FaceNames.front;
+          break;
+      }
+
+      for (let i = 0; i < numRotations; i++) {
+        this.rotateFace(face, direction);
+      }
+    }
+  }
+
+  /* Helper method to print multiple provided faces in an organized row */
   private printFaces(faces: Array<Colors>[]): void {
     /* Maps each colour to an emoji equivalent */
     const mapping: Record<Colors, string> = {
@@ -60,7 +132,7 @@ export class Cube {
 
     for (let row = 0; row < this.dims; row++) {
       for (let face of faces) {
-        const rowOffset = row * this.dims;
+        const rowOffset: number = row * this.dims;
         for (let tile = rowOffset; tile < rowOffset + this.dims; tile++) {
           process.stdout.write(face.length ? mapping[face[tile]] : "  ");
         }
@@ -69,56 +141,88 @@ export class Cube {
     }
   }
 
-  private getRow(face: Face, row: number): Colors[] {
-    const rowOffset = row * this.dims;
-    return face.tiles.slice(rowOffset, rowOffset + this.dims);
+  /* Helper method to rotate the surrounding tiles on adjacent faces */
+  private rotateAdjacentTiles = (
+    faceName: FaceNames,
+    direction: directions
+  ): void => {
+    const relationship =
+      direction === directions.clockwise
+        ? Object.values(relationships[faceName])
+        : Object.values(relationships[faceName]).reverse();
+
+    let nextIndex,
+      curIndex = 0;
+    let nextRel,
+      currentRel = relationship[curIndex];
+    let newTiles;
+
+    for (let i = 0; i < relationship.length + 1; i++) {
+      nextIndex = (curIndex + 1) % relationship.length;
+      nextRel = relationship[nextIndex];
+
+      let currentTiles = this.toMatrix(this.faces[currentRel.name].tiles);
+
+      // rotate tiles correctly
+      for (let j = 0; j < currentRel.side; j++) {
+        currentTiles = this.rotateMatrix(currentTiles, directions.clockwise);
+      }
+
+      let tilesHolder = [...currentTiles[0]];
+
+      if (newTiles) {
+        currentTiles[0] = [...newTiles];
+      }
+      newTiles = tilesHolder;
+
+      // rotate back
+      for (let j = 0; j < currentRel.side; j++) {
+        currentTiles = this.rotateMatrix(
+          currentTiles,
+          directions.counterClockwise
+        );
+      }
+
+      this.faces[currentRel.name].tiles = currentTiles.flat();
+
+      curIndex = nextIndex;
+      currentRel = nextRel;
+    }
+  };
+
+  /* Helper method to convert a 1D array to a 2D matrix. this helps with doing transformations */
+  private toMatrix(array: Colors[]): Colors[][] {
+    const matrix: Colors[][] = [];
+    for (let i = 0; i < this.dims; i++) {
+      matrix.push(array.slice(i * this.dims, (i + 1) * this.dims));
+    }
+    return matrix;
   }
 
-  private GetColumn(face: Face, column: number): Colors[] {
-    return face.tiles.filter((_, index) => index % this.dims === column);
-  }
+  /* Helper method to rotate the matrix */
+  private rotateMatrix(matrix: any[][], direction: directions): any[][] {
+    const len: number = matrix.length;
+    const rotated = Array.from({ length: len }, () => Array(len).fill(null));
 
-  public rotateColumn(face: FaceNames, column: number, goUp: boolean): void {
-    let currentFace = this.faces[face];
-    let nextFace = goUp ? currentFace.above : currentFace.below;
-    let columnColors = this.GetColumn(currentFace, column);
+    for (let i = 0; i < len; i++) {
+      for (let j = 0; j < len; j++) {
+        if (direction === directions.clockwise) {
+          rotated[j][len - 1 - i] = matrix[i][j];
+        } else {
+          rotated[len - 1 - j][i] = matrix[i][j];
+        }
+      }
+    }
 
-    do {
-      const nextColumn = this.GetColumn(nextFace, column);
-      nextFace.tiles = nextFace.tiles.map((color, index) =>
-        index % this.dims === column ? columnColors.shift()! : color
-      );
-      columnColors = nextColumn;
-      currentFace = nextFace;
-      nextFace = goUp ? currentFace.above : currentFace.below;
-    } while (currentFace !== this.faces[face]);
-  }
-
-  public rotateRow(face: FaceNames, row: number, goRight: boolean): void {
-    let currentFace = this.faces[face];
-    let nextFace = goRight ? currentFace.next : currentFace.prev;
-    let rowColors = this.getRow(currentFace, row);
-
-    do {
-      const nextRow = this.getRow(nextFace, row);
-      nextFace.tiles = nextFace.tiles.map((color, index) =>
-        index >= row * this.dims && index < (row + 1) * this.dims
-          ? rowColors.shift()!
-          : color
-      );
-      rowColors = nextRow;
-      currentFace = nextFace;
-      nextFace = goRight ? currentFace.next : currentFace.prev;
-    } while (currentFace !== this.faces[face]);
-  }
-
-  public rotateFace(face: FaceNames, goClockwise: boolean): void {
-    const currentFace = this.faces[face];
-    
+    return rotated;
   }
 }
 
-const cube: Cube = new Cube();
+const cube: Cube = new Cube(3);
+cube.printCube();
+cube.performScramble(
+  "D2 F D' B L' F2 D R D F' U2 B U2 F' U2 F' U2 B' D2 F' L2"
+);
 cube.printCube();
 cube.rotateFace(FaceNames.front, true);
 cube.printCube();
