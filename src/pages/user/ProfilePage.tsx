@@ -5,7 +5,6 @@ import { Button } from "@chakra-ui/react";
 import { useAuth } from "src/utils/AuthContext";
 import "src/styles/index.css";
 import Avatar from "src/components/User/Avatar"
-import { Session } from '@supabase/supabase-js';
 
 export default function ProfilePage({ session }: { session: any }) {
     const [loading, setLoading] = useState(true);
@@ -31,8 +30,8 @@ export default function ProfilePage({ session }: { session: any }) {
             return;
         }
         if (data) {
-            session.username = data.username;
-            session.avatar_url = data.avatar_url;
+            setUsername(data.username);
+            setAvatarUrl(data.avatar_url);
         }
         setLoading(false)
     }
@@ -52,10 +51,9 @@ export default function ProfilePage({ session }: { session: any }) {
 
             const { error } = await supabase.from('profiles').upsert({
                 id: session.user?.id as string,
-                username: session.username,
+                username: username,
                 email: session.user.email,
                 avatar_url,
-                // updated_at: new Date().toISOString(),
             })
             if (error) throw error
             alert('Profile Updated!')
@@ -122,7 +120,6 @@ export default function ProfilePage({ session }: { session: any }) {
     };
 
     // show current password confirm when user touches email/password update fields:
-
     const handleEmailChange = () => {
         setShowPasswordField(true);  // Show current password field when email is changing
     };
@@ -140,7 +137,7 @@ export default function ProfilePage({ session }: { session: any }) {
                     <div className="Avatar" style={{ display: "inline-block", verticalAlign: "middle", margin: "0px 20px" }}>
                         <Avatar
                             uid={session.user?.id ?? null}
-                            url={session.avatar_url}
+                            url={avatar_url}
                             size={100}
                             onUpload={(url) => {
                                 setAvatarUrl(url)
@@ -149,7 +146,7 @@ export default function ProfilePage({ session }: { session: any }) {
                         />
                     </div>
                     <div className="Information" style={{ display: "inline-block", verticalAlign: "middle" }}>
-                        <p>Username: {session.username}</p>
+                        <p>Username: {username}</p>
                         <p>Email: {session.user.email}</p>
                     </div>
                 </div>
