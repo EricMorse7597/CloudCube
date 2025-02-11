@@ -22,11 +22,11 @@ export default function Home() {
       <VStack spacing={6}>
         <VStack>
           <Balancer>
-            <Heading textAlign="center">Crystalcube</Heading>
+            <Heading textAlign="center">crystalcube trainers</Heading>
           </Balancer>
           <Balancer>
             <Text align="center" fontSize="lg">
-              Improve the efficiency of your CFOP cross or ZZ EO
+              improve the efficiency of your CFOP cross or ZZ EO
             </Text>
           </Balancer>
         </VStack>
@@ -48,7 +48,6 @@ export default function Home() {
           filter="drop-shadow(0 0 10px rgb(212, 131, 242))"
         />
       </VStack>
-
     </Container>
   );
 }

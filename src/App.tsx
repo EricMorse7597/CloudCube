@@ -55,26 +55,25 @@ function createAppRouter(session: Session | null) {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<Register />} />
         <Route path="/about" element={<AboutPage />} />
-        <Route path="/profile" element={session != null ? <ProfilePage session={session} /> :
-          <LoginPage />} />
+        <Route path="/profile" element={session != null ? <ProfilePage session={session}/> : 
+    <LoginPage/>} />
 
-        <Route index element={<Home />} />
-        <Route path="train">
-          <Route index element={<TrainerPage />} />
-          <Route path="cross">
-            <Route index element={<CrossTrainerPage />} />
-          </Route>
-          <Route path="trainer" element={<Navigate to="/train" />} />
-          <Route path="tools/ohscramble" element={<OHScramble />} />
+      <Route index element={<Home />} />
+      <Route path="train">
+        <Route index element={<TrainerPage />} />
+        <Route path="cross">
+          <Route index element={<CrossTrainerPage />} />
         </Route>
-        {/* redirect for old /trainer path */}
-        <Route path="trainer" element={<Navigate to="/train" />} />
-        <Route path="tools">
-          <Route path="ohscramble" element={<OHScramble />} />
-        </Route>
-        <Route path="about" element={<AboutPage />} />
-        <Route path="timer" element={<Timer />} />
+        <Route path="eo" element={<EOStepTrainerPage />} />
       </Route>
+      {/* redirect for old /trainer path */}
+      <Route path="trainer" element={<Navigate to="/train" />} />
+      <Route path="tools">
+        <Route path="ohscramble" element={<OHScramble />} />
+      </Route>
+      <Route path="about" element={<AboutPage />} />
+      <Route path="timer" element={<Timer />} />
+    </Route>
     )
   );
 }
