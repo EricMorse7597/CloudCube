@@ -17,6 +17,8 @@ export class Cube {
 
     // initialize the cube faces
     for (let faceName of Object.values(FaceNames)) {
+
+      // @ts-ignore: The other properties will be set in the next loop
       this.faces[faceName] = {
         color: FaceColors[faceName],
         tiles: Array(faceSize).fill(FaceColors[faceName]),
@@ -158,9 +160,51 @@ export class Cube {
     return matrix;
   }
 
+  public setCube(movements: string): void {
+    const regex = new RegExp(`^([FBLRUD]2?'?( |$))+`);
+    if (!regex.test(movements)) {
+      throw new Error("Invalid scramble notation");
+    }
+
+    const moves = movements.split(" ");
+    for (const move of moves) {
+      console.log(move);
+      const direction: boolean = !move.includes("'");
+      let face: FaceNames;
+      switch (move[0]) {
+        case "B":
+          face = FaceNames.back;
+          break;
+        case "L":
+          face = FaceNames.left;
+          break;
+        case "R":
+          face = FaceNames.right;
+          break;
+        case "U":
+          face = FaceNames.up;
+          break;
+        case "D":
+          face = FaceNames.down;
+          break;
+        default:
+          face = FaceNames.front;
+          break;
+      }
+
+      let numRotations: number = (move.length > 1 && parseInt(move[1]) === 2)? 2 : 1;
+      console.log(face, direction, numRotations);
+      for (let i = 0; i < numRotations; i++) {
+        this.rotateFace(face, direction);
+        cube.printCube();
+      }
+
+    }
+  }
+
 }
 
 const cube: Cube = new Cube(3);
 cube.printCube();
-cube.rotateFace(FaceNames.front, true);
+cube.setCube("D2 F D' B L' F2 D R D F' U2 B U2 F' U2 F' U2 B' D2 F' L2");
 cube.printCube();
