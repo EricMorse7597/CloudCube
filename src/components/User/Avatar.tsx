@@ -72,7 +72,7 @@ export default function Avatar({
                     src={avatarUrl}
                     alt="Avatar"
                     className="avatar image"
-                    style={{ height: size, width: size }}
+                    style={{ height: size, width: size, borderRadius: "50%" }}
                 />
             ) : (
                 <div className="avatar no-image" style={{ height: size, width: size }} ><img
@@ -84,7 +84,7 @@ export default function Avatar({
                     style={{ height: size, width: size }}
                 /></div>
             )}
-            <div style={{ width: size, textAlign: "center" }}>
+            <div style={{ width: size, textAlign: "center", margin: "20px 0px" }}>
                 <label className="avatarButton" htmlFor="single" style={{ border: "2px solid", borderRadius: "4px", padding: "8px 12px" }}>
                     {uploading ? 'Uploading ...' : 'Upload'}
                 </label>

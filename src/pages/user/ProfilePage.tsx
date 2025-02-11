@@ -26,6 +26,10 @@ export default function ProfilePage({ session }: { session: any }) {
         const { user } = session
         const { data, error } = await supabase.from('profiles').select('username, avatar_url').eq('id', user.id).single();
         // add error checking
+        if (error) {
+            alert('Error fetching user profile data: ' + error.message);
+            return;
+        }
         if (data) {
             session.username = data.username;
             session.avatar_url = data.avatar_url;
@@ -36,7 +40,7 @@ export default function ProfilePage({ session }: { session: any }) {
     // calls getProfile on page load
     useEffect(() => {
         getProfile()
-    })
+    }, []);
 
     async function updateProfile({
         avatar_url,
@@ -128,12 +132,12 @@ export default function ProfilePage({ session }: { session: any }) {
     };
 
     return (
-        loading ? 
+        !loading ? 
         (<div style={{ margin: "auto", padding: "3%" }}>
             <div className="element-style">
                 <h2 style={{ fontWeight: "bold", textAlign: "center" }}>Profile</h2>
                 <div className="profile" style={{ textAlign: "left", }}>
-                    <div className="Avatar" style={{ display: "inline-block", verticalAlign: "middle" }}>
+                    <div className="Avatar" style={{ display: "inline-block", verticalAlign: "middle", margin: "0px 20px" }}>
                         <Avatar
                             uid={session.user?.id ?? null}
                             url={session.avatar_url}
@@ -195,6 +199,6 @@ export default function ProfilePage({ session }: { session: any }) {
             </div>
         </div>)
         :
-        (<h2>loading</h2>)
+        (<h2 style={{margin: "auto", textAlign: "center"}}>loading</h2>)
     );
 }
