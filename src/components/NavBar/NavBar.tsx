@@ -34,7 +34,7 @@ import { useAuth } from "../../utils/AuthContext";
 export default function NavBar() {
   const { isOpen, onToggle, onClose } = useDisclosure();
   const navigate = useNavigate();
-  const { userName, isAuthenticated, logout } = useAuth(); 
+  const { userName, isAuthenticated, logout } = useAuth();
   const linkColor = useColorModeValue("gray.600", "gray.200");
   const linkHoverColor = useColorModeValue("gray.800", "white");
   const buttonColor = useColorModeValue("#EDF2F7", "#2C313D");
@@ -93,88 +93,80 @@ export default function NavBar() {
             </Flex>
           </Flex>
 
-        <Stack flex={{ base: 1, md: 0 }} justify="flex-end" direction="row" spacing={6} mr={-2}>
-          <ColorModeSwitcher />
-          
-          {/* User Section or Login/Sign-Up Buttons */}
-          <Flex align="center">
-            {isAuthenticated && userName ? (
-              <Popover trigger="hover" placement="bottom-start">
-                <PopoverTrigger>
-                  <Button
-                    fontWeight={500}
-                    color={linkColor}
-                    bg="none"
-                    _hover={{
-                      textDecoration: "none",
-                      color: linkHoverColor,
-                      bg: buttonColor,
-                    }}
+          <Stack flex={{ base: 1, md: 0 }} justify="flex-end" direction="row" spacing={6} mr={-2}>
+            <ColorModeSwitcher />
+
+            {/* User Section or Login/Sign-Up Buttons */}
+            <Flex align="center">
+              {isAuthenticated && userName ? (
+                <Popover trigger="hover" placement="bottom-start">
+                  <PopoverTrigger>
+                    <Button
+                      fontWeight={500}
+                      color={linkColor}
+                      bg="none"
+                      _hover={{
+                        textDecoration: "none",
+                        color: linkHoverColor,
+                        bg: buttonColor,
+                      }}
+                    >
+                      {userName}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    border={0}
+                    boxShadow="xl"
+                    bg={popoverContentBgColor}
+                    p={4}
+                    rounded="xl"
+                    minW="sm"
                   >
-                    {userName}
+                    <Stack>
+                      <Button
+                        variant="link"
+                        onClick={() => {
+                          navigate("/profile")
+                        }}
+                      >
+                        Dashboard
+                      </Button>
+                      <Button
+                        variant="link"
+                        onClick={() => {
+                          logout();
+                        }}
+                      >
+                        Logout
+                      </Button>
+                    </Stack>
+                  </PopoverContent>
+                </Popover>
+              ) : (
+                <>
+                  <Button
+                    display={{ base: "none", md: "inline-flex" }}
+                    fontSize="sm"
+                    fontWeight={600}
+                    colorScheme="blue"
+                    marginRight={2}
+                    onClick={() => navigate("/login")}
+                  >
+                    Sign In
                   </Button>
-                </PopoverTrigger>
-                <PopoverContent
-                  border={0}
-                  boxShadow="xl"
-                  bg={popoverContentBgColor}
-                  p={4}
-                  rounded="xl"
-                  minW="sm"
-                >
-                  <Stack>
-                    <Button
-                      variant="link"
-                      onClick={() => {
-                        navigate("/profile")
-                      }}
-                    >
-                      Dashboard
-                    </Button>
-                    <Button
-                      variant="link"
-                      onClick={() => {
-                        navigate("/profile")
-                      }}
-                    >
-                      Settings
-                    </Button>
-                    <Button
-                      variant="link"
-                      onClick={() => {
-                        logout();
-                      }}
-                    >
-                      Logout
-                    </Button>
-                  </Stack>
-                </PopoverContent>
-              </Popover>
-            ) : (
-              <>
-                <Button
-                  display={{ base: "none", md: "inline-flex" }}
-                  fontSize="sm"
-                  fontWeight={600}
-                  colorScheme="blue"
-                  marginRight={2}
-                  onClick={() => navigate("/login")}
-                >
-                  Sign In
-                </Button>
-                <Button
-                  display={{ base: "none", md: "inline-flex" }}
-                  fontSize="sm"
-                  fontWeight={600}
-                  colorScheme="green"
-                  onClick={() => navigate("/register")}
-                >
-                  Sign Up
-                </Button>
-              </>
-            )}
-          </Flex>
-        </Stack>
+                  <Button
+                    display={{ base: "none", md: "inline-flex" }}
+                    fontSize="sm"
+                    fontWeight={600}
+                    colorScheme="green"
+                    onClick={() => navigate("/register")}
+                  >
+                    Sign Up
+                  </Button>
+                </>
+              )}
+            </Flex>
+          </Stack>
         </Flex>
 
         <Collapse in={isOpen} animateOpacity>

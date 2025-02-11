@@ -16,7 +16,6 @@ export default function ProfilePage({ session }: { session: any }) {
 
     const [successMessage, setSuccessMessage] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
-    const [showPasswordField, setShowPasswordField] = useState(false);
     const { logout } = useAuth();
     const navigate = useNavigate();
 
@@ -119,65 +118,51 @@ export default function ProfilePage({ session }: { session: any }) {
         }
     };
 
-    // show current password confirm when user touches email/password update fields:
-    const handleEmailChange = () => {
-        setShowPasswordField(true);  // Show current password field when email is changing
-    };
-
-    const handlePasswordChange = () => {
-        setShowPasswordField(true);  // Show current password field when password is changing
-    };
-
     return (
-        !loading ? 
-        (<div style={{ margin: "auto", padding: "3%" }}>
-            <div className="element-style">
-                <h2 style={{ fontWeight: "bold", textAlign: "center" }}>Profile</h2>
-                <div className="profile" style={{ textAlign: "left", }}>
-                    <div className="Avatar" style={{ display: "inline-block", verticalAlign: "middle", margin: "0px 20px" }}>
-                        <Avatar
-                            uid={session.user?.id ?? null}
-                            url={avatar_url}
-                            size={100}
-                            onUpload={(url) => {
-                                setAvatarUrl(url)
-                                updateProfile({ avatar_url: url })
-                            }}
-                        />
-                    </div>
-                    <div className="Information" style={{ display: "inline-block", verticalAlign: "middle" }}>
-                        <p>Username: {username}</p>
-                        <p>Email: {session.user.email}</p>
+        !loading ?
+            (<div style={{ margin: "auto", padding: "3%" }}>
+                <div className="element-style">
+                    <h2 style={{ fontWeight: "bold", textAlign: "center" }}>Profile</h2>
+                    <div className="profile" style={{ textAlign: "left", }}>
+                        <div className="Avatar" style={{ display: "inline-block", verticalAlign: "middle", margin: "0px 20px" }}>
+                            <Avatar
+                                uid={session.user?.id ?? null}
+                                url={avatar_url}
+                                size={100}
+                                onUpload={(url) => {
+                                    setAvatarUrl(url)
+                                    updateProfile({ avatar_url: url })
+                                }}
+                            />
+                        </div>
+                        <div className="Information" style={{ display: "inline-block", verticalAlign: "middle" }}>
+                            <p>Username: {username}</p>
+                            <p>Email: {session.user.email}</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <hr style={{ margin: "20px" }}></hr>
-            <h2 style={{ fontWeight: "bold", textAlign: "center" }}>User Account Settings</h2>
-            <div className="element-style-update-account">
-                <h2>Update Email Address</h2>
-                <form onSubmit={handleUpdate}>
+                <hr style={{ margin: "20px" }}></hr>
+                <h2 style={{ fontWeight: "bold", textAlign: "center" }}>User Account Settings</h2>
+                <div className="element-style-update-account">
+                    <h2>Update Email Address</h2>
+                    <form onSubmit={handleUpdate}>
 
-                    <input
-                        type="email"
-                        placeholder="New Email (Optional)"
-                        value={newEmail}
-                        className="input-style"
-                        onChange={(e) => setNewEmail(e.target.value)}
-                        onFocus={handleEmailChange}
-                    />
+                        <input
+                            type="email"
+                            placeholder="New Email (Optional)"
+                            value={newEmail}
+                            className="input-style"
+                            onChange={(e) => setNewEmail(e.target.value)}
+                        />
 
-                    <h2>Update Password</h2>
-                    <input
-                        type="password"
-                        placeholder="New Password (Optional)"
-                        value={newPassword}
-                        className="input-style"
-                        onChange={(e) => setNewPassword(e.target.value)}
-                        onFocus={handlePasswordChange}
-                    />
-
-
-                    {showPasswordField && (
+                        <h2>Update Password</h2>
+                        <input
+                            type="password"
+                            placeholder="New Password (Optional)"
+                            value={newPassword}
+                            className="input-style"
+                            onChange={(e) => setNewPassword(e.target.value)}
+                        />
                         <div>
                             <input
                                 type="password"
@@ -187,15 +172,15 @@ export default function ProfilePage({ session }: { session: any }) {
                                 onChange={(e) => setCurrentPassword(e.target.value)}
                             />
                         </div>
-                    )}
 
-                    <Button float={"right"} type="submit" colorScheme="blue">Update Changes</Button>
-                    {successMessage && <p className="success-message">{successMessage}</p>}
-                    {errorMessage && <p className="error-message">{errorMessage}</p>}
-                </form>
-            </div>
-        </div>)
-        :
-        (<h2 style={{margin: "auto", textAlign: "center"}}>loading</h2>)
+
+                        <Button float={"right"} type="submit" colorScheme="blue">Update Changes</Button>
+                        {successMessage && <p className="success-message">{successMessage}</p>}
+                        {errorMessage && <p className="error-message">{errorMessage}</p>}
+                    </form>
+                </div>
+            </div>)
+            :
+            (<h2 style={{ margin: "auto", textAlign: "center" }}>loading</h2>)
     );
 }
