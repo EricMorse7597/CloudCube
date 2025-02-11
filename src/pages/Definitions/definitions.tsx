@@ -4,6 +4,7 @@ import {
     HStack,
     Heading,
     SimpleGrid,
+    Image,
 } from "@chakra-ui/react";
 
 const DefinitionsPage = () => {
@@ -12,32 +13,132 @@ const DefinitionsPage = () => {
             <HStack align="center" justify="center" spacing={4} mt={4}>
                 <Heading textAlign="center" size="md">Definitions</Heading>
             </HStack>
+            <Stack gap={10} p={4} align="center" justify="center">
+                <SimpleGrid columns={{base: 1, md: 2}} spacing={40}>
+                    <Card p="3.5rem" w="100%">
+                        <Heading size="md">CFOP</Heading>
+                        <p>Cross, F2L, OLL, PLL</p>
+                    </Card>
+                    <Card p="3.5rem" w="100%">
+                        <Heading size="md">ZZ</Heading>
+                        <p>EOLine, F2L, LL</p>
+                    </Card>
+                </SimpleGrid>
+            </Stack>
             <Stack gap={4} p={4}>
                 <SimpleGrid columns={{base: 1, md: 3}} spacing={4}>
                     <Card p="1.5rem" w="85%">
-                        <Heading size="md">R</Heading>
-                        <p>R</p>
+                        <HStack spacing={100}>
+                            <div>
+                                <Heading size="md">R</Heading>
+                                <p>Right face clockwise</p>
+                            </div>
+                            <Image src="/assets/r.png" alt="R" boxSize="75px" objectFit="contain" />
+                        </HStack>
                     </Card>
                     <Card p="1.5rem" w="85%">
-                        <Heading size="md">R'</Heading>
-                        <p>Definition 2</p>
+                        <HStack spacing={100}>
+                            <div>
+                                <Heading size="md">R'</Heading>
+                                <p>Right face counter clockwise</p>
+                            </div>
+                            <Image src="/assets/rprime.png" alt="R" boxSize="75px" objectFit="contain" />
+                        </HStack>
                     </Card>
                     <Card p="1.5rem" w="85%">
-                        <Heading size="md">L</Heading>
-                        <p>Definition 3</p>
+                        <HStack spacing={100}>
+                            <div>
+                                <Heading size="md">L</Heading>
+                                <p>Left face clockwise</p>
+                            </div>
+                            <Image src="/assets/l.png" alt="L" boxSize="75px" objectFit="contain" />
+                        </HStack>
                     </Card>
                     <Card p="1.5rem" w="85%">
-                        <Heading size="md">L'</Heading>
-                        <p>Definition 3</p>
+                        <HStack spacing={100}>
+                            <div>
+                                <Heading size="md">L'</Heading>
+                                <p>Left face counterclockwise</p>
+                            </div>
+                            <Image src="/assets/lprime.png" alt="L'" boxSize="75px" objectFit="contain" />
+                        </HStack>
                     </Card>
                     <Card p="1.5rem" w="85%">
-                        <Heading size="md">U</Heading>
-                        <p>Definition 3</p>
+                        <HStack spacing={100}>
+                            <div>
+                                <Heading size="md">U</Heading>
+                                <p>Up face clockwise</p>
+                            </div>
+                            <Image src="/assets/u.png" alt="U" boxSize="75px" objectFit="contain" />
+                        </HStack>
+                    </Card>
+                    <Card p="1.5rem" w="85%">
+                        <HStack spacing={100}>
+                            <div>
+                                <Heading size="md">U'</Heading>
+                                <p>Up face counterclockwise</p>
+                            </div>
+                            <Image src="/assets/uprime.png" alt="U'" boxSize="75px" objectFit="contain" />
+                        </HStack>
+                    </Card>
+                    <Card p="1.5rem" w="85%">
+                        <HStack spacing={100}>
+                            <div>
+                                <Heading size="md">D</Heading>
+                                <p>Down face clockwise</p>
+                            </div>
+                            <Image src="/assets/d.png" alt="D" boxSize="75px" objectFit="contain" />
+                        </HStack>
+                    </Card>
+                    <Card p="1.5rem" w="85%">
+                        <HStack spacing={100}>
+                            <div>
+                                <Heading size="md">D'</Heading>
+                                <p>Down face counterclockwise</p>
+                            </div>
+                            <Image src="/assets/dprime.png" alt="D'" boxSize="75px" objectFit="contain" />
+                        </HStack>
+                    </Card>
+                    <Card p="1.5rem" w="85%">
+                        <HStack spacing={100}>
+                            <div>
+                                <Heading size="md">F</Heading>
+                                <p>Front face clockwise</p>
+                            </div>
+                            <Image src="/assets/f.png" alt="F" boxSize="75px" objectFit="contain" />
+                        </HStack>
+                    </Card>
+                    <Card p="1.5rem" w="85%">
+                        <HStack spacing={100}>
+                            <div>
+                                <Heading size="md">F'</Heading>
+                                <p>Front face counterclockwise</p>
+                            </div>
+                            <Image src="/assets/fprime.png" alt="F'" boxSize="75px" objectFit="contain" />
+                        </HStack>
+                    </Card>
+                    <Card p="1.5rem" w="85%">
+                        <HStack spacing={100}>
+                            <div>
+                                <Heading size="md">B</Heading>
+                                <p>Back face clockwise</p>
+                            </div>
+                            <Image src="/assets/b.png" alt="B" boxSize="75px" objectFit="contain" />
+                        </HStack>
+                    </Card>
+                    <Card p="1.5rem" w="85%">
+                        <HStack spacing={100}>
+                            <div>
+                                <Heading size="md">B'</Heading>
+                                <p>Back face counterclockwise</p>
+                            </div>
+                            <Image src="/assets/bprime.png" alt="B'" boxSize="75px" objectFit="contain" />
+                        </HStack>
                     </Card>
                 </SimpleGrid>
             </Stack>
         </>
     );
-}
+};
 
 export default DefinitionsPage;

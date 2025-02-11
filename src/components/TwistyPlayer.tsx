@@ -12,7 +12,7 @@ export const TwistyPlayer = ({
   className,
   onTwistyInit,
   ...props
-}: TwistyPlayerExtendedConfig) => {2``
+}: TwistyPlayerExtendedConfig) => {
   const [, setTwisty] = React.useState<TP>();
   const spanRef = React.useRef<HTMLSpanElement | null>(null);
 
