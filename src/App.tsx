@@ -22,6 +22,7 @@ import LoginPage from "./pages/user/LoginPage";
 import { AuthProvider } from "./utils/AuthContext";
 import Timer from "./components/Timer";
 import Plausible from "plausible-tracker";
+import DefinitionsPage from "./pages/Definitions/definitions";
 import Register from "./pages/user/RegisterPage"
 import ProfilePage from "./pages/user/ProfilePage"
 import { Session } from '@supabase/supabase-js'
@@ -73,10 +74,14 @@ function createAppRouter(session: Session | null) {
       </Route>
       <Route path="about" element={<AboutPage />} />
       <Route path="timer" element={<Timer />} />
+      <Route path="definitions" element={<DefinitionsPage />} />
     </Route>
     )
   );
 }
+
+
+
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null)
