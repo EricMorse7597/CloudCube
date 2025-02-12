@@ -2,6 +2,7 @@ image: node:23
 
 stages:
   - build
+  - deploy
 
 cache:
   paths:
