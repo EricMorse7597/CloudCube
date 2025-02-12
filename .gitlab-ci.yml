@@ -2,7 +2,6 @@ image: node:23
 
 stages:
   - build
-  - test
   - deploy
 
 cache:
@@ -21,7 +20,7 @@ build:
     - yarn build                 
   artifacts:
     paths:
-      - dist
+      - build
     expire_in: 1 hour
 
 # Deploy to GitLab Pages
@@ -31,9 +30,10 @@ pages:
     - build
   script:
     - rm -rf public
-    - cp -r dist/* public/
+    - mkdir public   
+    - cp -r build/* public/  
   artifacts:
     paths:
       - public
   only:
-    - 23-t004-hostSite  
+    - 23-t004-hostSite
