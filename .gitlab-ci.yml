@@ -18,10 +18,10 @@ build:
   script:
     - yarn install --no-lockfile   
     - yarn build
-    - ls -la 
+    - ls -la dist 
   artifacts:
     paths:
-      - build 
+      - dist
     expire_in: 1 hour
 
 # Deploy to GitLab Pages
@@ -31,8 +31,8 @@ pages:
     - build
   script:
     - rm -rf public
-    - mkdir public   
-    - cp -r dist/* public/  
+    - mkdir public 
+    - cp -r dist/. public/  
   artifacts:
     paths:
       - public
