@@ -1,4 +1,4 @@
-image: node:18  
+image: node:18
 
 stages:
   - build
@@ -7,14 +7,10 @@ stages:
 cache:
   paths:
     - node_modules/
-    - yarn.lock
-
-variables:
-  YARN_NODE_LINKER: node-modules 
 
 before_script:
   - corepack enable
-  - yarn install
+  - yarn install --frozen-lockfile || yarn install --no-lockfile 
 
 build:
   stage: build
@@ -34,4 +30,4 @@ deploy:
     paths:
       - public
   only:
-    - 23-t004-hostSite  
+    - 23-t004-hostSite 
