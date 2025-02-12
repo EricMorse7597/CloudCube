@@ -24,16 +24,6 @@ build:
       - dist
     expire_in: 1 hour
 
-# Test stage (if applicable)
-test:
-  stage: test
-  script:
-    - yarn test
-  cache:
-    paths:
-      - node_modules/
-    policy: pull
-
 # Deploy to GitLab Pages
 pages:
   stage: deploy
