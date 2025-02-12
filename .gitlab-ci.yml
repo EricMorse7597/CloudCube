@@ -1,33 +1,44 @@
-image: node:18
+image: node:18  
 
 stages:
   - build
+  - test
   - deploy
 
 cache:
   paths:
     - node_modules/
 
-before_script:
-  - corepack enable
-  - yarn install --frozen-lockfile || yarn install --no-lockfile 
-
+# Build stage
 build:
   stage: build
   script:
-    - yarn build
+    - yarn install          
+    - yarn build            
   artifacts:
     paths:
-      - dist
+      - dist                
     expire_in: 1 hour
 
-deploy:
-  stage: deploy
+test:
+  stage: test
   script:
-    - mkdir -p public
-    - cp -r dist/* public/
+    - yarn test            
+  cache:
+    paths:
+      - node_modules/
+    policy: pull
+
+# Deploy stage to GitLab Pages
+pages:
+  stage: deploy
+  dependencies:
+    - build                
+  script:
+    - rm -rf public          
+    - cp -r dist/* public/  
   artifacts:
     paths:
-      - public
+      - public              
   only:
-    - 23-t004-hostSite 
+    - 23-t004-hostSite       
