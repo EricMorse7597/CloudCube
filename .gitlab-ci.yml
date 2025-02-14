@@ -27,4 +27,4 @@ deploy_prod:
     - yarn build
     - netlify deploy --dir "dist" --auth $AUTH_TOKEN --site $SITE_ID_PROD --prod
   only:
-    - 23-t004-hostSite
+    - main
