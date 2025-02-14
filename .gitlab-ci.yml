@@ -14,6 +14,7 @@ cache:
   paths:
     - ~/.netlify
   policy: pull-push
+  when: on_success
 
 before_script:
   - corepack enable
