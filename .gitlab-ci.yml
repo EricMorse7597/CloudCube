@@ -15,8 +15,9 @@ deploy_prod:
   stage: deploy
   script:
     - echo "REACT_APP_BASE_URL=https://culturenet-apis.netlify.app/.netlify/functions/api" >> ".env" 
-    - yarn install --no-lockfile
     - yarn build
-    - npx netlify-cli deploy --dir "build" --auth $AUTH_TOKEN --site $SITE_ID_PROD --prod
+    - ls -la  
+    - ls -la build  
+    - npx netlify-cli deploy --dir "./build" --auth $AUTH_TOKEN --site $SITE_ID_PROD --prod
   only:
     - 23-t004-hostSite
