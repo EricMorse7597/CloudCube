@@ -1,10 +1,23 @@
+image: node:latest
+
+stages:
+  - deploy
+
+cache:
+  paths:
+    - node_modules/
+
+before_script:
+  - corepack enable
+  - yarn install --frozen-lockfile || yarn install --no-lockfile
+
 deploy_prod:
   stage: deploy
   script:
     - echo "REACT_APP_BASE_URL=https://culturenet-apis.netlify.app/.netlify/functions/api" >> ".env" 
     - yarn build
-    - ls -la  # Check for direct
+    - ls -la  
     - ls -la dist  
-    - npx netlify-cli deploy --dir "dist" --auth $AUTH_TOKEN --site $SITE_ID_PROD --prod
+    - npx netlify-cli deploy --dir "./dist" --auth $AUTH_TOKEN --site $SITE_ID_PROD --prod
   only:
     - 23-t004-hostSite
