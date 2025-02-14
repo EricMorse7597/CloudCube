@@ -17,7 +17,7 @@ cache:
 
 before_script:
   - corepack enable
-  - yarn install --frozen-lockfile || yarn install --no-lockfile 
+  - yarn install --frozen-lockfile --silent || yarn install --no-lockfile --silent 
   - npm install -g netlify-cli 
 
 deploy_prod:
