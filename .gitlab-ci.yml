@@ -1,8 +1,7 @@
 image: node:latest
 
 stages:
-  - build
-  - deploy
+  - deploy 
 
 cache:
   key: yarn-dependencies
@@ -19,23 +18,12 @@ cache:
 before_script:
   - corepack enable
   - yarn install --frozen-lockfile || yarn install --no-lockfile 
+  - npm install -g netlify-cli 
 
-# Build Stage
-build:
-  stage: build
-  script:
-    - yarn build
-  artifacts:
-    paths:
-      - dist 
-    expire_in: 1 hour
-
-# Deploy Stage (Netlify)
 deploy_prod:
   stage: deploy
-  dependencies:
-    - build
   script:
-    - npx netlify deploy --dir "dist" --auth $AUTH_TOKEN --site $SITE_ID_PROD --prod
+    - yarn build
+    - netlify deploy --dir "dist" --auth $AUTH_TOKEN --site $SITE_ID_PROD --prod
   only:
     - 23-t004-hostSite
