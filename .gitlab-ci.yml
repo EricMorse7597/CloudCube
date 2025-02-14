@@ -10,9 +10,10 @@ cache:
     - ~/.netlify
 
 before_script:
-  - export NODE_ENV=production  # Faster dependency install
+  - export NODE_ENV=production 
   - corepack enable
-  - yarn install --frozen-lockfile --prefer-offline  # Use local cache
+  - yarn install --frozen-lockfile --prefer-offline  
+  - yarn global add typescript
 
 build:
   stage: build
