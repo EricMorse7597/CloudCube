@@ -56,11 +56,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
   }, []);
 
-  const login = async (user: any) => {
+  const login = async () => {
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+  
+    if (userError || !userData?.user?.id) {
+      console.error("Error fetching authenticated user:", userError);
+      return;
+    }
+  
     const { data, error } = await supabase
       .from("profiles")
       .select("username")
-      .eq("id", user.id)
+      .eq("id", userData.user.id)
       .single();
   
     if (error) {
@@ -69,9 +76,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   
     setUserName(data.username);
-    localStorage.setItem("username", data.username); 
+    localStorage.setItem("username", data.username);
     setIsAuthenticated(true);
-  };
+  };  
+  
   
   const logout = async () => {
     await supabase.auth.signOut();  

@@ -10,29 +10,25 @@ cache:
 
 before_script:
   - corepack enable
-  - yarn install --frozen-lockfile || yarn install --no-lockfile
+  - yarn install --frozen-lockfile || yarn install --no-lockfile 
 
 # Build stage
 build:
   stage: build
   script:
-    - echo "REACT_APP_BASE_URL=https://culturenet-apis.netlify.app/.netlify/functions/api" >> ".env"
-    - echo "REACT_APP_SUPABASE_URL=$SUPABASE_URL" >> ".env"
-    - echo "REACT_APP_SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY" >> ".env"
+    - echo "VITE_SUPABASE_URL=$SUPABASE_URL" >> ".env"
+    - echo "VITE_SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY" >> ".env"
     - yarn build
+    - ls -la dist 
   artifacts:
     paths:
       - dist
     expire_in: 1 hour
 
-# Deploy stage
+# Deploy to Netlify
 deploy_prod:
   stage: deploy
-  dependencies:
-    - build
   script:
-    - mkdir -p public  
-    - cp -r dist/. public/  
-    - npx netlify-cli deploy --dir "public" --auth $AUTH_TOKEN --site $SITE_ID_PROD --prod
+    - netlify deploy --dir "dist" --auth $AUTH_TOKEN --site $SITE_ID_PROD --prod
   only:
     - 23-t004-hostSite
