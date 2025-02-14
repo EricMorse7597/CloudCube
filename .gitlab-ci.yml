@@ -1,4 +1,4 @@
-image: node:latest
+image: node:latest 
 
 stages:
   - build
@@ -25,10 +25,13 @@ build:
       - dist
     expire_in: 1 hour
 
-# Deploy to Netlify
+# Deploy stage
 deploy_prod:
   stage: deploy
   script:
+    - npm install -g netlify-cli  
     - netlify deploy --dir "dist" --auth $AUTH_TOKEN --site $SITE_ID_PROD --prod
   only:
     - 23-t004-hostSite
+  dependencies:
+    - build
