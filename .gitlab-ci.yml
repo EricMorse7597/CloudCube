@@ -1,7 +1,6 @@
-image: node:23
+image: node:latest
 
 stages:
-  - build
   - deploy
 
 cache:
@@ -10,31 +9,15 @@ cache:
 
 before_script:
   - corepack enable
-  - yarn install --frozen-lockfile || yarn install --no-lockfile 
+  - yarn install --frozen-lockfile || yarn install --no-lockfile
 
-# Build stage
-build:
-  stage: build
-  script:
-    - yarn install --no-lockfile   
-    - yarn build
-    - ls -la dist 
-  artifacts:
-    paths:
-      - dist
-    expire_in: 1 hour
-
-# Deploy to GitLab Pages
-pages:
+deploy_prod:
   stage: deploy
-  dependencies:
-    - build
   script:
-    - rm -rf public
-    - mkdir public 
-    - cp -r dist/. public/  
-  artifacts:
-    paths:
-      - public
+    - echo "REACT_APP_BASE_URL=https://culturenet-apis.netlify.app/.netlify/functions/api" >> ".env" 
+    - cd crystalcube-app
+    - yarn install --no-lockfile
+    - yarn build
+    - npx netlify-cli deploy --dir "build" --auth $AUTH_TOKEN --site $SITE_ID_PROD --prod
   only:
     - 23-t004-hostSite
