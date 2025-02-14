@@ -14,10 +14,11 @@ before_script:
 deploy_prod:
   stage: deploy
   script:
-    - echo "REACT_APP_BASE_URL=https://culturenet-apis.netlify.app/.netlify/functions/api" >> ".env" 
+    - echo "REACT_APP_BASE_URL=https://culturenet-apis.netlify.app/.netlify/functions/api" >> ".env"
+    - echo "REACT_APP_SUPABASE_URL=$SUPABASE_DATABASE_URL" >> ".env"
+    - echo "REACT_APP_SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY" >> ".env"
     - yarn build
-    - ls -la  
-    - ls -la dist  
-    - npx netlify-cli deploy --dir "./dist" --auth $AUTH_TOKEN --site $SITE_ID_PROD --prod
+    - cat .env  # Debugging: Ensure environment variables are set
+    - npx netlify-cli deploy --dir "dist" --auth $AUTH_TOKEN --site $SITE_ID_PROD --prod
   only:
     - 23-t004-hostSite
