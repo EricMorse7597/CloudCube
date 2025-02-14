@@ -5,21 +5,15 @@ stages:
   - deploy
 
 cache:
-  key: yarn-dependencies
   paths:
     - node_modules/
-  policy: pull-push
-
-  key: netlify-cache
-  paths:
     - ~/.netlify
-  policy: pull-push
 
 before_script:
+  - export NODE_ENV=production  # Faster dependency install
   - corepack enable
-  - yarn install --frozen-lockfile || yarn install --no-lockfile 
+  - yarn install --frozen-lockfile --prefer-offline  # Use local cache
 
-# Build Stage
 build:
   stage: build
   script:
@@ -29,14 +23,11 @@ build:
       - dist
     expire_in: 1 hour
 
-# Deploy Stage (Netlify)
 deploy_prod:
   stage: deploy
   dependencies:
     - build
-  before_script:
-    - npm install -g netlify-cli 
   script:
-    - netlify deploy --dir "dist" --auth $AUTH_TOKEN --site $SITE_ID_PROD --prod
+    - npx netlify deploy --dir "dist" --auth $AUTH_TOKEN --site $SITE_ID_PROD --prod
   only:
     - 23-t004-hostSite
