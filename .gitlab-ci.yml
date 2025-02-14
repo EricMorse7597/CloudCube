@@ -1,36 +1,42 @@
-image: node:latest 
+image: node:latest
 
 stages:
   - build
   - deploy
 
 cache:
+  key: yarn-dependencies
   paths:
     - node_modules/
+  policy: pull-push
+
+  key: netlify-cache
+  paths:
+    - ~/.netlify
+  policy: pull-push
 
 before_script:
   - corepack enable
   - yarn install --frozen-lockfile || yarn install --no-lockfile 
 
-# Build stage
+# Build Stage
 build:
   stage: build
   script:
-    - echo "VITE_SUPABASE_URL=$SUPABASE_URL" >> ".env"
-    - echo "VITE_SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY" >> ".env"
     - yarn build
   artifacts:
     paths:
       - dist
     expire_in: 1 hour
 
-# Deploy stage
+# Deploy Stage (Netlify)
 deploy_prod:
   stage: deploy
+  dependencies:
+    - build
+  before_script:
+    - npm install -g netlify-cli 
   script:
-    - npm install -g netlify-cli  
     - netlify deploy --dir "dist" --auth $AUTH_TOKEN --site $SITE_ID_PROD --prod
   only:
     - 23-t004-hostSite
-  dependencies:
-    - build
