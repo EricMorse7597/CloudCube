@@ -13,4 +13,12 @@ export default defineConfig({
   define: {
     'APP_VERSION': JSON.stringify(process.env.npm_package_version),
   },
+  build: {
+    rollupOptions: {
+      onwarn(warning, warn) {
+        if (warning.message.includes('"use client"')) return; 
+        warn(warning); 
+      },
+    },
+  },
 })
