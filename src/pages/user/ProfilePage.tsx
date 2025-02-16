@@ -1,7 +1,7 @@
 import { useEffect, useId, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "src/utils/SupabaseClient";
-import { Button } from "@chakra-ui/react";
+import { Button, Grid, GridItem } from "@chakra-ui/react";
 import { useAuth } from "src/utils/AuthContext";
 import "src/styles/index.css";
 import Avatar from "src/components/User/Avatar"
@@ -120,66 +120,67 @@ export default function ProfilePage({ session }: { session: any }) {
 
     return (
         !loading ?
-            (<div style={{ margin: "auto", padding: "3%" }}>
-                <div className="element-style">
+            (
+                <div style={{ margin: "auto", padding: "3%" }}>
                     <h2 style={{ fontWeight: "bold", textAlign: "center" }}>Profile</h2>
-                    <div className="profile" style={{ textAlign: "left", }}>
-                        <div className="Avatar" style={{ display: "inline-block", verticalAlign: "middle", margin: "0px 20px" }}>
-                            <Avatar
-                                uid={session.user?.id ?? null}
-                                url={avatar_url}
-                                size={100}
-                                onUpload={(url) => {
-                                    setAvatarUrl(url)
-                                    updateProfile({ avatar_url: url })
-                                }}
-                            />
-                        </div>
-                        <div className="Information" style={{ display: "inline-block", verticalAlign: "middle" }}>
-                            <p>Username: {username}</p>
-                            <p>Email: {session.user.email}</p>
+                    <div className="element-style">
+                        <div className="profile" style={{ textAlign: "left", }}>
+                            <div className="Avatar" style={{ display: "inline-block", verticalAlign: "top", margin: "0px 20px" }}>
+                                <Avatar
+                                    uid={session.user?.id ?? null}
+                                    url={avatar_url}
+                                    size={100}
+                                    onUpload={(url) => {
+                                        setAvatarUrl(url)
+                                        updateProfile({ avatar_url: url })
+                                    }}
+                                />
+                            </div>
+                            <div className="Information" style={{ display: "inline-block", verticalAlign: "top" }}>
+                                <p>Username: {username}</p>
+                                <p>Email: {session.user.email}</p>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <hr style={{ margin: "20px" }}></hr>
-                <h2 style={{ fontWeight: "bold", textAlign: "center" }}>User Account Settings</h2>
-                <div className="element-style-update-account">
-                    <h2>Update Email Address</h2>
-                    <form onSubmit={handleUpdate}>
+                    <hr style={{ margin: "20px" }}></hr>
+                    <h2 style={{ fontWeight: "bold", textAlign: "center" }}>User Account Settings</h2>
+                    <div className="element-style-update-account">
+                        <form onSubmit={handleUpdate}>
+                            <h3>Update Email Address</h3>
+                            <input
+                                type="email"
+                                placeholder="New Email (Optional)"
+                                value={newEmail}
+                                className="input-style"
+                                onChange={(e) => setNewEmail(e.target.value)}
+                            />
 
-                        <input
-                            type="email"
-                            placeholder="New Email (Optional)"
-                            value={newEmail}
-                            className="input-style"
-                            onChange={(e) => setNewEmail(e.target.value)}
-                        />
-
-                        <h2>Update Password</h2>
-                        <input
-                            type="password"
-                            placeholder="New Password (Optional)"
-                            value={newPassword}
-                            className="input-style"
-                            onChange={(e) => setNewPassword(e.target.value)}
-                        />
-                        <div>
+                            <h3>Update Password</h3>
                             <input
                                 type="password"
-                                placeholder="Current Password (Required)"
-                                value={currentPassword}
+                                placeholder="New Password (Optional)"
+                                value={newPassword}
                                 className="input-style"
-                                onChange={(e) => setCurrentPassword(e.target.value)}
+                                onChange={(e) => setNewPassword(e.target.value)}
                             />
-                        </div>
 
+                            <h3>Confirm Password</h3>
+                            <div>
+                                <input
+                                    type="password"
+                                    placeholder="Current Password (Required)"
+                                    value={currentPassword}
+                                    className="input-style"
+                                    onChange={(e) => setCurrentPassword(e.target.value)}
+                                />
+                            </div>
 
-                        <Button float={"right"} type="submit" colorScheme="blue">Update Changes</Button>
-                        {successMessage && <p className="success-message">{successMessage}</p>}
-                        {errorMessage && <p className="error-message">{errorMessage}</p>}
-                    </form>
-                </div>
-            </div>)
+                            <Button float={"right"} type="submit" colorScheme="blue">Update Profile</Button>
+                            {successMessage && <p className="success-message">{successMessage}</p>}
+                            {errorMessage && <p className="error-message">{errorMessage}</p>}
+                        </form>
+                    </div>
+                </div>)
             :
             (<h2 style={{ margin: "auto", textAlign: "center" }}>loading</h2>)
     );

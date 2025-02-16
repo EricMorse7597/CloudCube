@@ -105,6 +105,7 @@ export default function NavBar() {
                       fontWeight={500}
                       color={linkColor}
                       bg="none"
+                      onClick={() => navigate("/profile")}
                       _hover={{
                         textDecoration: "none",
                         color: linkHoverColor,
@@ -143,7 +144,7 @@ export default function NavBar() {
                   </PopoverContent>
                 </Popover>
               ) : (
-                <>
+                <div style={{ display: "flex" }}>
                   <Button
                     display={{ base: "none", md: "inline-flex" }}
                     fontSize="sm"
@@ -163,7 +164,7 @@ export default function NavBar() {
                   >
                     Sign Up
                   </Button>
-                </>
+                </div>
               )}
             </Flex>
           </Stack>
