@@ -25,6 +25,7 @@ import Plausible from "plausible-tracker";
 import DefinitionsPage from "./pages/Definitions/definitions";
 import Register from "./pages/user/RegisterPage"
 import ProfilePage from "./pages/user/ProfilePage"
+import RecoverPage from "./pages/user/RecoverPage"
 import { Session } from '@supabase/supabase-js'
 import { supabase } from './utils/SupabaseClient'
 
@@ -75,6 +76,7 @@ function createAppRouter(session: Session | null) {
       <Route path="about" element={<AboutPage />} />
       <Route path="timer" element={<Timer />} />
       <Route path="definitions" element={<DefinitionsPage />} />
+      <Route path="recover" element={<RecoverPage />} />
     </Route>
     )
   );
