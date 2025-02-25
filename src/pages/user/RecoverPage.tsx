@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "src/utils/SupabaseClient";
-import { Grid, GridItem } from "@chakra-ui/react";
+import { Button, Grid, GridItem } from "@chakra-ui/react";
 import "src/styles/index.css";
 
 
@@ -15,16 +15,14 @@ export default function RecoverPage() {
     const [errorMessage, setErrorMessage] = useState("");
     const navigate = useNavigate();
 
-    const handleRegister = async (e: React.FormEvent) => {
+    const [newPassword, setNewPassword] = useState("");
+    const [confirmNewPassword, setConfirmNewPassword] = useState("");
+
+    const handleRecoveryEmail = async (e: React.FormEvent) => {
         e.preventDefault();
 
         setSuccessMessage("");
         setErrorMessage("");
-
-        if (password.length < 6) {
-            setErrorMessage("Password needs to be at least 6 characters.");
-            return;
-        }
 
         try {
 
@@ -52,17 +50,46 @@ export default function RecoverPage() {
         setPassword("");
     };
 
+    const handleRecoveryPassword = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        setSuccessMessage("");
+        setErrorMessage("");
+
+        const updates: any = {};
+        if (newPassword) {
+            if (newPassword.length < 6) {
+                setErrorMessage("Password needs to be at least 6 characters.");
+                return;
+            }
+            if (newPassword !== confirmNewPassword) {
+                setErrorMessage("New password and confirm password do not match.");
+                return;
+            } updates.password = newPassword;
+        }
+
+        try {
+
+
+        } catch (err) {
+            console.error("Unexpected error:", err);
+            setErrorMessage("An unexpected error occurred. Please try again.");
+        }
+
+        setUsername("");
+        setEmail("");
+        setPassword("");
+    };
+
     return (
         <div className="element-style">
-            
-            <form onSubmit={handleRegister}>
+            <h1 className="title">Reset your Password</h1>
+            <form onSubmit={handleRecoveryEmail}>
                 <Grid
                     templateColumns="repeat(1, 1fr)"
                 >
-                    <h1>Reset your Password</h1>
                     <p>We will send you an email to reset your password</p>
                     <GridItem>
-                        
                         <input
                             type="email"
                             placeholder="Email"
@@ -73,9 +100,38 @@ export default function RecoverPage() {
                         />
                     </GridItem>
                     <GridItem>
-                        <button type="submit" className="button-style">Send Email</button>
+                        <Button type="submit" colorScheme="blue">Send Email</Button>
                     </GridItem>
                 </Grid>
+            </form>
+
+            <form onSubmit={handleRecoveryPassword}>
+                <Grid
+                    templateColumns="repeat(1, 1fr)"
+                >
+
+                    <GridItem>
+                    <input
+                        type="password"
+                        placeholder="New Password"
+                        value={newPassword}
+                        className="input-style"
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        />
+                    <input
+                        type="password"
+                        placeholder="Confirm New Password"
+                        value={confirmNewPassword}
+                        className="input-style"
+                        onChange={(e) => setConfirmNewPassword(e.target.value)}
+                    />
+                    </GridItem>
+
+                    <GridItem>
+                        <Button type="submit" colorScheme="blue">Update Password</Button>
+                    </GridItem>
+                </Grid>
+                
             </form>
             {successMessage && <p className="success-message">{successMessage}</p>}
             {errorMessage && <p className="error-message">{errorMessage}</p>}
