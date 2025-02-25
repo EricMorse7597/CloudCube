@@ -7,11 +7,11 @@ export interface NavItem {
 
 const NAV_ITEMS: Array<NavItem> = [
   {
-    label: "timer",
+    label: "Timer",
     href: "timer",
   },
   {
-    label: "trainers",
+    label: "Trainers",
     href: "train",
     children: [
       {
@@ -25,22 +25,32 @@ const NAV_ITEMS: Array<NavItem> = [
     ],
   },
   {
-    label: "tools",
+    label: "Tools",
     children: [
       {
-        label: "one handed scrambles",
+        label: "One Handed Scrambles",
         href: "tools/ohscramble",
       },
       {
-        label: "definitions",
+        label: "Definitions",
         href: "definitions",
       },
     ],
   },
   {
-    label: "about",
+    label: "About",
     href: "about",
   },
+  // {
+  //   label: "",
+  //   href: "dashboard",
+  //   children: [
+  //     {
+  //       label: "logout",
+  //       href: "logout",
+  //     }
+  //   ]
+  // }
 ];
 
 export default NAV_ITEMS;

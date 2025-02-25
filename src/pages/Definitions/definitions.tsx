@@ -27,7 +27,7 @@ const DefinitionsPage = () => {
           </Card>
         </SimpleGrid>
       </Stack>
-      <Stack gap={4} p={4}>
+      <Stack gap={10} p={4} align="center">
         <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
           <Card p="1.5rem" w="85%">
             <HStack spacing={100}>
