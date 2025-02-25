@@ -66,7 +66,7 @@ export default function NavBar() {
           <Flex flex={{ base: 2 }} justify={{ base: "center", md: "start" }}>
             <HStack>
               <Image
-                src="/assets/logo.svg"
+                src={useColorModeValue("/assets/Cloud_Cube_Logo_Black.svg", "/assets/Cloud_Cube_Logo_White.svg")}
                 boxSize="30px"
                 objectFit="contain"
                 onClick={() => navigate("/")}
@@ -82,7 +82,7 @@ export default function NavBar() {
                 as={RouterLink}
                 to="/"
               >
-                crystalcube
+                Cloud Cube
               </Text>
               <Flex display={{ base: "none", sm: "flex" }}>
                 <VersionBadge />

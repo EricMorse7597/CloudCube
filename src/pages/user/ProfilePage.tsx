@@ -13,6 +13,7 @@ export default function ProfilePage({ session }: { session: any }) {
     const [currentPassword, setCurrentPassword] = useState("");
     const [newEmail, setNewEmail] = useState("");
     const [newPassword, setNewPassword] = useState("");
+    const [confirmNewPassword, setConfirmNewPassword] = useState("");
 
     const [successMessage, setSuccessMessage] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
@@ -80,7 +81,7 @@ export default function ProfilePage({ session }: { session: any }) {
             return;
         }
 
-        const email = userData.user.email;
+        const email = session.user.email;
 
         const { error: signInError } = await supabase.auth.signInWithPassword({
             email: email!,
@@ -94,7 +95,16 @@ export default function ProfilePage({ session }: { session: any }) {
 
         const updates: any = {};
         if (newEmail) updates.email = newEmail;
-        if (newPassword) updates.password = newPassword;
+        if (newPassword) {
+            if (newPassword.length < 6) {
+                setErrorMessage("Password needs to be at least 6 characters.");
+                return;
+            }
+            if (newPassword !== confirmNewPassword) {
+                setErrorMessage("New password and confirm password do not match.");
+                return;
+            } updates.password = newPassword;
+        }
 
         if (Object.keys(updates).length === 0) {
             setErrorMessage("Please enter a new email or password to update.");
@@ -163,12 +173,19 @@ export default function ProfilePage({ session }: { session: any }) {
                                 className="input-style"
                                 onChange={(e) => setNewPassword(e.target.value)}
                             />
+                            <input
+                                type="password"
+                                placeholder="Confirm New Password"
+                                value={confirmNewPassword}
+                                className="input-style"
+                                onChange={(e) => setConfirmNewPassword(e.target.value)}
+                            />
 
                             <h3>Confirm Password</h3>
                             <div>
                                 <input
                                     type="password"
-                                    placeholder="Current Password (Required)"
+                                    placeholder="Old Password (Required)"
                                     value={currentPassword}
                                     className="input-style"
                                     onChange={(e) => setCurrentPassword(e.target.value)}
