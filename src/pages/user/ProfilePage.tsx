@@ -20,20 +20,32 @@ export default function ProfilePage({ session }: { session: any }) {
     const navigate = useNavigate();
 
     async function getProfile() {
-        setLoading(true)
-        const { user } = session
-        const { data, error } = await supabase.from('profiles').select('username, avatar_url').eq('id', user.id).single();
-        // add error checking
+        setLoading(true);
+        
+        const { user } = session;
+        const { data, error } = await supabase
+            .from("profiles")
+            .select("username, avatar_url")
+            .eq("id", user.id)
+            .maybeSingle(); 
+    
         if (error) {
-            alert('Error fetching user profile data: ' + error.message);
+            alert("Error fetching user profile data: " + error.message);
+            setLoading(false);
             return;
         }
-        if (data) {
-            setUsername(data.username);
-            setAvatarUrl(data.avatar_url);
+    
+        if (!data) {
+            console.warn("No user profile found.");
+            setLoading(false);
+            return;
         }
-        setLoading(false)
+    
+        setUsername(data.username);
+        setAvatarUrl(data.avatar_url);
+        setLoading(false);
     }
+    
 
     // calls getProfile on page load
     useEffect(() => {
