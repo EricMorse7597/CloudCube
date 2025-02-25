@@ -97,12 +97,14 @@ export default function LoginPage() {
     return (
 
         <div className="element-style">
-            <h1>Login</h1>
             <form onSubmit={handleSubmit}>
                 <Grid
                     templateColumns="repeat(1, 1fr)"
+                    gap={1.5}
                 >
+                  <h1>Login</h1>
                     <GridItem>
+                        
                         <input
                             type="text"
                             placeholder="Username or Email"
@@ -124,6 +126,9 @@ export default function LoginPage() {
                     </GridItem>
                     <GridItem>
                         <a href="/register" className="registerPrompt">Don't yet have an account, Sign Up here!</a>
+                    </GridItem>
+                    <GridItem >
+                        <a href="/recover" className="registerPrompt">Forgot Password?</a>
                     </GridItem>
                     <GridItem>
                         <button className="button-style" type="submit">Login</button>
