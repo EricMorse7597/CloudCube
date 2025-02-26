@@ -136,6 +136,9 @@ export default function NavBar() {
                         variant="link"
                         onClick={() => {
                           logout();
+                          setTimeout(() => {
+                            window.location.assign("/login");
+                          }, 2500);
                         }}
                       >
                         Logout
