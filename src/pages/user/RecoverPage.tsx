@@ -10,7 +10,8 @@ import "src/styles/index.css";
 // 2. component for password reset after the user clicks on the password reset link 
 
 export default function RecoverPage() {
-    const [email, setEmail] = useState("");
+    // const [email, setEmail] = useState("");
+    const [identifier, setIdentifier] = useState<string>("");
     const [successMessage, setSuccessMessage] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const navigate = useNavigate();
@@ -28,25 +29,44 @@ export default function RecoverPage() {
 
     const handleRecoveryEmail = async (e: React.FormEvent) => {
         e.preventDefault();
-    
         setSuccessMessage("");
         setErrorMessage("");
     
-        try {
-            // checking to see if email exists in the profiles table first
-            const { data: profile, error: profileError } = await supabase
-                .from("profiles")
-                .select("email")
-                .eq("email", email)
-                .single();
+        let userEmail = identifier;
+        const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier);
     
-            if (profileError || !profile) {
+        try {
+            if (!isEmail) {
+                console.log("Looking up email for username:", identifier);
+    
+                // Fetch the email based on username from the profiles table
+                const { data, error } = await supabase
+                    .from("profiles")
+                    .select("email")
+                    .eq("username", identifier)
+                    .limit(1)
+                    .single();
+    
+                if (error || !data?.email) {
+                    throw new Error("Account doesn’t exist.");
+                }
+                userEmail = data.email;
+            }
+
+            const { data: profileData, error: profileError } = await supabase
+            .from("profiles")
+            .select("email")
+            .eq("email", userEmail)
+            .limit(1)
+            .single();
+
+            if (profileError || !profileData?.email) {
                 setErrorMessage("Email not found. Please enter a registered email.");
                 return;
             }
     
-            // using the useEffect to reset the password  
-            const { error } = await supabase.auth.resetPasswordForEmail(email, {
+            // Proceed with sending reset email since the email is valid
+            const { error } = await supabase.auth.resetPasswordForEmail(userEmail, {
                 redirectTo: `${window.location.origin}/recover?type=recovery`,
             });
     
@@ -60,11 +80,9 @@ export default function RecoverPage() {
             setErrorMessage("An unexpected error occurred. Please try again.");
         }
     
-        setEmail("");
-    };
+        setIdentifier("");
+    };      
     
-    
-
     const handleRecoveryPassword = async (e: React.FormEvent) => {
 
         e.preventDefault();
@@ -118,12 +136,12 @@ export default function RecoverPage() {
                         <p>We will send you an email to reset your password</p>
                         <GridItem>
                             <input
-                                type="email"
-                                placeholder="Email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
+                                type="text"
+                                placeholder="Username or Email"
                                 className="input-style"
+                                value={identifier}
+                                onChange={(e) => setIdentifier(e.target.value)}
+                                required
                             />
                         </GridItem>
                         <GridItem>
