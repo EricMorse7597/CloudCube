@@ -33,15 +33,19 @@ function Timer() {
     const [time, setTime] = useState(0);
     const [scramble, setScramble] = useState("");
 
-    useHotkeys('space', () => {
-        setIsRunning(prevState => {
+    useHotkeys("space", (event) => {
+        if ( event.type === "keydown" && !isRunning) {
+            return;
+        }
+
+        setIsRunning((prevState) => {
             if (!prevState) {
                 setTime(0); // Reset the timer when stopping
                 getNewScramble();
             }
             return !prevState;
         });
-    });
+    }, {keyup: true});
 
     const getNewScramble = useCallback(async (): Promise<void> => {
         const newScramble = await randomScrambleForEvent("333");
