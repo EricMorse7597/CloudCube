@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "src/utils/SupabaseClient";
-import { Grid, GridItem } from "@chakra-ui/react";
+import { Grid, GridItem, Image } from "@chakra-ui/react";
 import "src/styles/index.css";
 
 export default function Register() {
@@ -65,7 +65,6 @@ export default function Register() {
                 localStorage.setItem("registeredEmail", email); 
                 localStorage.setItem("registeredUsername", username);
                 setRegisteredUsername(username);
-                setSuccessMessage(`Welcome, ${username}! Check your email for a confirmation link.`);
                 setIsRegistered(true);
             }
     
@@ -156,16 +155,18 @@ export default function Register() {
                 {errorMessage && <p className="error-message">{errorMessage}</p>}
                 </div>
             ) : (
-                <div className="element-style2">
-                    <h2>Hello, {storedUsername}!</h2>
-                    <p>Please check your email and verify your account before logging in.</p>
+                <div className="element-style-verify">
+                    <Image src="/assets/mail.png" width="70px" height="90px" objectFit="contain" m="auto"></Image>
+                    <h2 className="title">Hello, {storedUsername}!</h2>
+                    <p>We have sent a verification link to your email, please verify your account before logging in.&emsp;</p>
                     <p>If you didn't receive the email, click below to resend it.</p>
+                    <br></br>
                     <button 
                         onClick={handleResendVerificationEmail} 
                         className="button-style" 
                         disabled={loading}
                     >
-                        {loading ? "Resending..." : "Resend Verification Email"}
+                        {loading ? "Resending..." : "Resend Email"}
                     </button>
                     <button onClick={() => navigate("/login")} className="button-style">
                         Go to Login

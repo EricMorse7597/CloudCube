@@ -8,7 +8,8 @@
   margin: auto;
 }
 
-.element-style2{
+.element-style-verify{
+    max-width: fit-content;
     padding-top: 3%;
     text-align: center;
     margin: auto;
