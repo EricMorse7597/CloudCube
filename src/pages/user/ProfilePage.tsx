@@ -133,9 +133,14 @@ export default function ProfilePage({ session }: { session: any }) {
             setNewEmail("");
             setNewPassword("");
 
-            setTimeout(async () => {
-                logout();
-                navigate("/login");
+            await supabase.auth.signOut();
+            
+            setTimeout(() => {
+                navigate("/login", { replace: true });
+            }, 2000);
+
+            setTimeout(() => {
+                window.location.assign("/login");
             }, 2500);
         }
     };

@@ -37,10 +37,10 @@
     margin-top: 10px;
 }
 
-.sucess-message {
+.success-message {
     color: white;
     font-size: 14px;
-    margin-top: 10px;
+    margin-top: 3%;
 }
 
 
@@ -52,3 +52,9 @@
     padding-top: 2%;
     margin: auto;
   }
+
+.title{
+    font-weight: bold;
+    font-size: large;
+    padding-bottom: 2%;
+}
