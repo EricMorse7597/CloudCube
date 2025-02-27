@@ -60,8 +60,11 @@ export default function Timer({ session }: { session: any }) {
         try {
             setLoading(true)
 
-            const { error } = await supabase.from('solve').upsert({
-                id: session.user?.id as string,
+            console.log('uuid: ' + session.user?.id as string)
+            console.log('scramble: ' + scramble)
+            console.log('time: ' + time)
+            const { error } = await supabase.from('solve').insert({
+                user_id: session.user?.id as string,
                 scramble: scramble,
                 solve_time: time,
             })
@@ -127,3 +130,7 @@ export default function Timer({ session }: { session: any }) {
     );
 
 }
+
+// fd77bfd2-15e7-4028-8ca4-e8169c5cb3da
+
+// fd77bfd2-15e7-4028-8ca4-e8169c5cb3da
