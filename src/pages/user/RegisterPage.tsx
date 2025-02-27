@@ -72,13 +72,14 @@ export default function Register() {
             console.error("Unexpected error:", err);
             setErrorMessage("An unexpected error occurred. Please try again.");
         }
-    
+        
+        // clear everything after "enter"
         setUsername("");
-        setPassword(""); // Keep email in state
+        setPassword("");
     };
 
     const handleResendVerificationEmail = async () => {
-        const storedEmail = localStorage.getItem("registeredEmail");
+        const storedEmail = localStorage.getItem("registeredEmail"); // once we stored the email, we can use it to resend that email
         
         if (!storedEmail) {
             setErrorMessage("Email is required to resend verification.");
@@ -100,11 +101,11 @@ export default function Register() {
             console.error("Error resending verification email:", error.message);
             setErrorMessage(error.message || "Failed to resend verification email. Please try again later.");
         } else {
-            setSuccessMessage("Verification email resent. Check your inbox!");
+            setSuccessMessage("Verification email resent. Check your inbox!"); // quick message before going to the next component
         }
     };
 
-    const storedUsername = localStorage.getItem("registeredUsername");
+    const storedUsername = localStorage.getItem("registeredUsername"); // to use this username under return
 
     return (
         <div>
@@ -161,11 +162,7 @@ export default function Register() {
                     <p>We have sent a verification link to your email, please verify your account before logging in.&emsp;</p>
                     <p>If you didn't receive the email, click below to resend it.</p>
                     <br></br>
-                    <button 
-                        onClick={handleResendVerificationEmail} 
-                        className="button-style" 
-                        disabled={loading}
-                    >
+                    <button onClick={handleResendVerificationEmail} className="button-style" disabled={loading}>
                         {loading ? "Resending..." : "Resend Email"}
                     </button>
                     <button onClick={() => navigate("/login")} className="button-style">
