@@ -37,9 +37,7 @@ export default function Timer({ session }: { session: any }) {
 
     async function getProfile() {
         setLoading(true)
-        console.log('session: ' + session)
         const { user } = session
-        console.log('user: ' + user)
         const { data, error } = await supabase.from('profiles').select('username, avatar_url').eq('id', user.id).single();
         // add error checking
         if (error) {
@@ -61,8 +59,6 @@ export default function Timer({ session }: { session: any }) {
             setLoading(true)
 
             console.log('uuid: ' + session.user?.id as string)
-            console.log('scramble: ' + scramble)
-            console.log('time: ' + time)
             const { error } = await supabase.from('solve').insert({
                 user_id: session.user?.id as string,
                 scramble: scramble,
@@ -101,8 +97,6 @@ export default function Timer({ session }: { session: any }) {
         } else if (!isRunning && time !== 0) {
             if (session != null)
             {
-                console.log("time: " + time)
-                console.log("scramble: " + scramble)
                 updateSolves();
             }
             clearInterval(timer);
