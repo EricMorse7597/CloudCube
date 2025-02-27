@@ -7,8 +7,25 @@ import {
   Image,
 } from "@chakra-ui/react";
 
+import DefinitionCard from "src/components/Definitions/DefinitionCard";
+
+import DEFINITION_ITEMS, { DefinitionItem } from "src/components/Definitions/definitionItems";
+
 const DefinitionsPage = () => {
   return (
+    <div>
+      {DEFINITION_ITEMS.map((item: DefinitionItem) => (
+        <DefinitionCard label={item.label} text={item.text} imgHref={item.imgHref} />
+      ))}
+    </div>
+  );
+};
+
+export default DefinitionsPage;
+
+
+/**
+ * 
     <>
       <HStack align="center" justify="center" spacing={4} mt={4}>
         <Heading textAlign="center" size="md">
@@ -212,7 +229,4 @@ const DefinitionsPage = () => {
         </SimpleGrid>
       </Stack>
     </>
-  );
-};
-
-export default DefinitionsPage;
+ */
