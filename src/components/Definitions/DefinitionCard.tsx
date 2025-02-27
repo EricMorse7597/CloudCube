@@ -7,8 +7,8 @@ import {
 
 export default function DefinitionCard({ label, text, imgHref }: { label: string, text: string, imgHref: string | undefined }) {
     return (
-        <Card p="1.5rem" w="85%">
-            <HStack spacing={100}>
+        <Card p="1.5rem" w="30%" justify={"center"}>
+            <HStack >
                 <div>
                     <Heading size="md">{label}</Heading>
                     <p>{text}</p>
