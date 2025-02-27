@@ -33,7 +33,7 @@ const DefinitionsPage = () => {
         justify={"center"}
         align={"stretch"}
       >
-        {DEFINITION_ITEMS.map((item: DefinitionItem) => {
+        {DEFINITION_ITEMS.sort((a, b) => a.label.localeCompare(b.label)).map((item: DefinitionItem) => {
           if (item.label.includes(searchBox.toUpperCase()) || item.label.includes(searchBox.toLowerCase())) {
             return <DefinitionCard key={item.label.replace(" ", "_")} label={item.label} text={item.text} imgHref={item.imgHref} />
           }
