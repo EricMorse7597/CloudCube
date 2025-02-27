@@ -54,16 +54,15 @@ export default function Timer({ session }: { session: any }) {
 
     useEffect(() => {
         if (session != null) getProfile()
-    }, []);
+    }, [session != null]);
 
-    async function updateSolves(time: number) {
+    async function updateSolves() {
         try {
             setLoading(true)
 
             const { error } = await supabase.from('solve').upsert({
                 id: session.user?.id as string,
-                username: username,
-                scramble: "test",
+                scramble: scramble,
                 solve_time: time,
             })
             if (error) throw error
@@ -97,7 +96,12 @@ export default function Timer({ session }: { session: any }) {
                 setTime(prevTime => prevTime + .01);
             }, 10);
         } else if (!isRunning && time !== 0) {
-            if (session != null) updateSolves(time);
+            if (session != null)
+            {
+                console.log("time: " + time)
+                console.log("scramble: " + scramble)
+                updateSolves();
+            }
             clearInterval(timer);
         }
         return () => clearInterval(timer);
