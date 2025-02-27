@@ -17,15 +17,15 @@ export default function Register() {
 
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
-
+    
         setSuccessMessage("");
         setErrorMessage("");
-
+    
         if (password.length < 6) {
             setErrorMessage("Password needs to be at least 6 characters.");
             return;
         }
-
+    
         try {
             // Check if email already exists
             const { data: emailData } = await supabase
@@ -33,24 +33,24 @@ export default function Register() {
                 .select("email")
                 .eq("email", email)
                 .single();
-
+    
             if (emailData) {
                 setErrorMessage("This email is already associated with an existing account.");
                 return;
             }
-
+    
             // Check if username already exists
             const { data: usernameData } = await supabase
                 .from("profiles")
                 .select("username")
                 .eq("username", username)
                 .single();
-
+    
             if (usernameData) {
                 setErrorMessage("Username already exists. Please choose a different one.");
                 return;
             }
-
+    
             const { data, error } = await supabase.auth.signUp({
                 email,
                 password,
@@ -58,46 +58,54 @@ export default function Register() {
                     data: { username, email },
                 },
             });
-
+    
             if (error) {
                 setErrorMessage("Sorry, couldn't register you at this time.");
             } else if (data) {
+                localStorage.setItem("registeredEmail", email); 
+                localStorage.setItem("registeredUsername", username);
                 setRegisteredUsername(username);
                 setSuccessMessage(`Welcome, ${username}! Check your email for a confirmation link.`);
                 setIsRegistered(true);
             }
-
+    
         } catch (err) {
             console.error("Unexpected error:", err);
             setErrorMessage("An unexpected error occurred. Please try again.");
         }
-
+    
         setUsername("");
-        setEmail("");
-        setPassword("");
+        setPassword(""); // Keep email in state
     };
 
     const handleResendVerificationEmail = async () => {
+        const storedEmail = localStorage.getItem("registeredEmail");
+        
+        if (!storedEmail) {
+            setErrorMessage("Email is required to resend verification.");
+            return;
+        }
+    
         setSuccessMessage("");
         setErrorMessage("");
         setLoading(true);
-
+    
         const { error } = await supabase.auth.resend({
             type: "signup",
-            email,
-            options: {
-                emailRedirectTo: email
-            }
+            email: storedEmail,
         });
-
+    
         setLoading(false);
-
+    
         if (error) {
-            setErrorMessage("Failed to resend verification email. Please try again later.");
+            console.error("Error resending verification email:", error.message);
+            setErrorMessage(error.message || "Failed to resend verification email. Please try again later.");
         } else {
             setSuccessMessage("Verification email resent. Check your inbox!");
         }
     };
+
+    const storedUsername = localStorage.getItem("registeredUsername");
 
     return (
         <div>
@@ -149,7 +157,7 @@ export default function Register() {
                 </div>
             ) : (
                 <div className="element-style2">
-                   
+                    <h2>Hello, {storedUsername}!</h2>
                     <p>Please check your email and verify your account before logging in.</p>
                     <p>If you didn't receive the email, click below to resend it.</p>
                     <button 
