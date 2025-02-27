@@ -73,7 +73,7 @@ function createAppRouter(session: Session | null) {
         <Route path="ohscramble" element={<OHScramble />} />
       </Route>
       <Route path="about" element={<AboutPage />} />
-      <Route path="timer" element={<Timer />} />
+      <Route path="timer" element={session != null ? <Timer session={session}/> : <Timer session={null}/>} />
       <Route path="definitions" element={<DefinitionsPage />} />
     </Route>
     )

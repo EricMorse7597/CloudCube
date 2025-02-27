@@ -3,14 +3,14 @@ import { useHotkeys } from "react-hotkeys-hook";
 import { randomScrambleForEvent } from "cubing/scramble";
 import { Alg } from "cubing/alg";
 import { get, set } from "lodash";
+import { supabase } from "src/utils/SupabaseClient";
+import { useAuth } from "src/utils/AuthContext";
 import {
     Card,
     Stack,
     HStack,
     Heading
 } from "@chakra-ui/react";
-
-
 
 function Scramble({ onNewScramble }: { onNewScramble: (scramble: string) => void }) {
     const getNewScramble = useCallback(async (): Promise<void> => {
@@ -25,13 +25,55 @@ function Scramble({ onNewScramble }: { onNewScramble: (scramble: string) => void
     return null;
 }
 
-
-
 // This is a simple timer component that starts and stops when the spacebar is pressed
-function Timer() {
+export default function Timer({ session }: { session: any }) {
+    const [loading, setLoading] = useState(true);
+    const [username, setUsername] = useState<string | null>(null);
     const [isRunning, setIsRunning] = useState(false);
     const [time, setTime] = useState(0);
     const [scramble, setScramble] = useState("");
+    const { logout } = useAuth();
+    const [successMessage, setSuccessMessage] = useState("");
+
+    async function getProfile() {
+        setLoading(true)
+        console.log('session: ' + session)
+        const { user } = session
+        console.log('user: ' + user)
+        const { data, error } = await supabase.from('profiles').select('username, avatar_url').eq('id', user.id).single();
+        // add error checking
+        if (error) {
+            alert('Error fetching user profile data: ' + error.message);
+            return;
+        }
+        if (data) {
+            setUsername(data.username);
+        }
+        setLoading(false)
+    }
+
+    useEffect(() => {
+        if (session != null) getProfile()
+    }, []);
+
+    async function updateSolves(time: number) {
+        try {
+            setLoading(true)
+
+            const { error } = await supabase.from('solve').upsert({
+                id: session.user?.id as string,
+                username: username,
+                scramble: "test",
+                solve_time: time,
+            })
+            if (error) throw error
+            alert('Solve time added!')
+        } catch (error) {
+            alert('Error adding solve time' + error)
+        } finally {
+            setLoading(false)
+        }
+    }
 
     useHotkeys('space', () => {
         setIsRunning(prevState => {
@@ -55,6 +97,7 @@ function Timer() {
                 setTime(prevTime => prevTime + .01);
             }, 10);
         } else if (!isRunning && time !== 0) {
+            if (session != null) updateSolves(time);
             clearInterval(timer);
         }
         return () => clearInterval(timer);
@@ -80,5 +123,3 @@ function Timer() {
     );
 
 }
-
-export default Timer;
