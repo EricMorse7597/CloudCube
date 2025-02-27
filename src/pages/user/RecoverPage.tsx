@@ -48,7 +48,8 @@ export default function RecoverPage() {
                     .single();
     
                 if (error || !data?.email) {
-                    throw new Error("Account doesn’t exist.");
+                    setErrorMessage("Username not found. Please enter a registered username.");
+                    return; 
                 }
                 userEmail = data.email;
             }
