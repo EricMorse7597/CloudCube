@@ -9,6 +9,7 @@ import {
     HStack,
     Heading
 } from "@chakra-ui/react";
+import { space } from "@chakra-ui/system";
 
 
 
@@ -33,25 +34,35 @@ function Timer() {
     const [time, setTime] = useState(0);
     const [scramble, setScramble] = useState("");
     const [isHolding, setIsHolding] = useState(false);
+    const [timeout, setTimeout] = useState(0);
+    const [spaceDownTime, setSpaceDownTime] = useState<number | null>(null);
 
     useHotkeys('space', (event) => {
-        if (event.type === 'keydown' && !isRunning) {
+        if (event.type === 'keydown' && !isRunning && !spaceDownTime) {
             setIsHolding(true);
+            setSpaceDownTime(Date.now());
+            console.log("Space before: " +spaceDownTime);
         }
     });
 
     useHotkeys('space', (event) => {
+        const holdDuration = Date.now() - spaceDownTime;
+        console.log("Space after: " +spaceDownTime);
+        setSpaceDownTime(null);
         if (event.type === 'keyup') {
             setIsHolding(false);
-            setIsRunning((prevState) => {
-                if (!prevState) {
-                    setTime(0); // Reset the timer when starting
-                    getNewScramble();
-                }
-                return !prevState;
-            });
+            if (holdDuration > 300){
+                console.log(holdDuration);
+                setIsRunning((prevState) => {
+                    if (!prevState) {
+                        setTime(0); // Reset the timer when starting
+                        getNewScramble();
+                    }
+                    return !prevState;
+                });
+            }
         }
-    }, {keyup: true});
+    }, { keyup: true });
 
     const getNewScramble = useCallback(async (): Promise<void> => {
         const newScramble = await randomScrambleForEvent("333");
