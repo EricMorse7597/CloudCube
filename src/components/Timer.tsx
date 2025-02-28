@@ -32,19 +32,25 @@ function Timer() {
     const [isRunning, setIsRunning] = useState(false);
     const [time, setTime] = useState(0);
     const [scramble, setScramble] = useState("");
+    const [isHolding, setIsHolding] = useState(false);
 
-    useHotkeys("space", (event) => {
-        if ( event.type === "keydown" && !isRunning) {
-            return;
+    useHotkeys('space', (event) => {
+        if (event.type === 'keydown' && !isRunning) {
+            setIsHolding(true);
         }
+    });
 
-        setIsRunning((prevState) => {
-            if (!prevState) {
-                setTime(0); // Reset the timer when stopping
-                getNewScramble();
-            }
-            return !prevState;
-        });
+    useHotkeys('space', (event) => {
+        if (event.type === 'keyup') {
+            setIsHolding(false);
+            setIsRunning((prevState) => {
+                if (!prevState) {
+                    setTime(0); // Reset the timer when starting
+                    getNewScramble();
+                }
+                return !prevState;
+            });
+        }
     }, {keyup: true});
 
     const getNewScramble = useCallback(async (): Promise<void> => {
@@ -77,7 +83,7 @@ function Timer() {
             </Card>
 
             <Card p="6.5rem" w="40%" textAlign="center">
-                <Heading size="4xl">{time.toFixed(2)}s</Heading>
+                <Heading style={{ color: isHolding ? 'green' : 'white' }} size="4xl">{time.toFixed(2)}s</Heading>
             </Card>
             <p>Press spacebar to start/stop the timer</p>
         </Stack>
