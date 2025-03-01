@@ -1,25 +1,20 @@
 image: node:latest
 
 stages:
-  - deploy 
+  - deploy
 
 cache:
-  key: yarn-dependencies
+  key: yarn-cache
   paths:
-    - node_modules/
+    - .yarn-cache/
   policy: pull-push
-
-  # Netlify CLI caching
-  key: netlify-cache
-  paths:
-    - ~/.netlify
-  policy: pull-push
-  when: on_success
 
 before_script:
   - corepack enable
-  - yarn install --frozen-lockfile --silent || yarn install --no-lockfile --silent 
-  - npm install -g netlify-cli 
+  - rm -rf node_modules yarn.lock 
+  - yarn config set cache-folder .yarn-cache
+  - yarn install --frozen-lockfile --silent
+  - npm install -g netlify-cli
 
 deploy_prod:
   stage: deploy
@@ -27,4 +22,4 @@ deploy_prod:
     - yarn build
     - netlify deploy --dir "dist" --auth $AUTH_TOKEN --site $SITE_ID_PROD --prod
   only:
-    - main
+    - test-u019
