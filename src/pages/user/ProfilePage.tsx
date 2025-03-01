@@ -1,7 +1,7 @@
 import { useEffect, useId, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "src/utils/SupabaseClient";
-import { Button } from "@chakra-ui/react";
+import { Button, Grid, GridItem } from "@chakra-ui/react";
 import { useAuth } from "src/utils/AuthContext";
 import "src/styles/index.css";
 import Avatar from "src/components/User/Avatar"
@@ -13,6 +13,7 @@ export default function ProfilePage({ session }: { session: any }) {
     const [currentPassword, setCurrentPassword] = useState("");
     const [newEmail, setNewEmail] = useState("");
     const [newPassword, setNewPassword] = useState("");
+    const [confirmNewPassword, setConfirmNewPassword] = useState("");
 
     const [successMessage, setSuccessMessage] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
@@ -20,20 +21,32 @@ export default function ProfilePage({ session }: { session: any }) {
     const navigate = useNavigate();
 
     async function getProfile() {
-        setLoading(true)
-        const { user } = session
-        const { data, error } = await supabase.from('profiles').select('username, avatar_url').eq('id', user.id).single();
-        // add error checking
+        setLoading(true);
+        
+        const { user } = session;
+        const { data, error } = await supabase
+            .from("profiles")
+            .select("username, avatar_url")
+            .eq("id", user.id)
+            .maybeSingle(); 
+    
         if (error) {
-            alert('Error fetching user profile data: ' + error.message);
+            alert("Error fetching user profile data: " + error.message);
+            setLoading(false);
             return;
         }
-        if (data) {
-            setUsername(data.username);
-            setAvatarUrl(data.avatar_url);
+    
+        if (!data) {
+            console.warn("No user profile found.");
+            setLoading(false);
+            return;
         }
-        setLoading(false)
+    
+        setUsername(data.username);
+        setAvatarUrl(data.avatar_url);
+        setLoading(false);
     }
+    
 
     // calls getProfile on page load
     useEffect(() => {
@@ -80,7 +93,7 @@ export default function ProfilePage({ session }: { session: any }) {
             return;
         }
 
-        const email = userData.user.email;
+        const email = session.user.email;
 
         const { error: signInError } = await supabase.auth.signInWithPassword({
             email: email!,
@@ -94,7 +107,16 @@ export default function ProfilePage({ session }: { session: any }) {
 
         const updates: any = {};
         if (newEmail) updates.email = newEmail;
-        if (newPassword) updates.password = newPassword;
+        if (newPassword) {
+            if (newPassword.length < 6) {
+                setErrorMessage("Password needs to be at least 6 characters.");
+                return;
+            }
+            if (newPassword !== confirmNewPassword) {
+                setErrorMessage("New password and confirm password do not match.");
+                return;
+            } updates.password = newPassword;
+        }
 
         if (Object.keys(updates).length === 0) {
             setErrorMessage("Please enter a new email or password to update.");
@@ -111,75 +133,88 @@ export default function ProfilePage({ session }: { session: any }) {
             setNewEmail("");
             setNewPassword("");
 
-            setTimeout(async () => {
-                logout();
-                navigate("/login");
+            await supabase.auth.signOut();
+            
+            setTimeout(() => {
+                navigate("/login", { replace: true });
+            }, 2000);
+
+            setTimeout(() => {
+                window.location.assign("/login");
             }, 2500);
         }
     };
 
     return (
         !loading ?
-            (<div style={{ margin: "auto", padding: "3%" }}>
-                <div className="element-style">
+            (
+                <div style={{ margin: "auto", padding: "3%" }}>
                     <h2 style={{ fontWeight: "bold", textAlign: "center" }}>Profile</h2>
-                    <div className="profile" style={{ textAlign: "left", }}>
-                        <div className="Avatar" style={{ display: "inline-block", verticalAlign: "middle", margin: "0px 20px" }}>
-                            <Avatar
-                                uid={session.user?.id ?? null}
-                                url={avatar_url}
-                                size={100}
-                                onUpload={(url) => {
-                                    setAvatarUrl(url)
-                                    updateProfile({ avatar_url: url })
-                                }}
-                            />
-                        </div>
-                        <div className="Information" style={{ display: "inline-block", verticalAlign: "middle" }}>
-                            <p>Username: {username}</p>
-                            <p>Email: {session.user.email}</p>
+                    <div className="element-style">
+                        <div className="profile" style={{ textAlign: "left", }}>
+                            <div className="Avatar" style={{ display: "inline-block", verticalAlign: "top", margin: "0px 20px" }}>
+                                <Avatar
+                                    uid={session.user?.id ?? null}
+                                    url={avatar_url}
+                                    size={100}
+                                    onUpload={(url) => {
+                                        setAvatarUrl(url)
+                                        updateProfile({ avatar_url: url })
+                                    }}
+                                />
+                            </div>
+                            <div className="Information" style={{ display: "inline-block", verticalAlign: "top" }}>
+                                <p>Username: {username}</p>
+                                <p>Email: {session.user.email}</p>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <hr style={{ margin: "20px" }}></hr>
-                <h2 style={{ fontWeight: "bold", textAlign: "center" }}>User Account Settings</h2>
-                <div className="element-style-update-account">
-                    <h2>Update Email Address</h2>
-                    <form onSubmit={handleUpdate}>
+                    <hr style={{ margin: "20px" }}></hr>
+                    <h2 style={{ fontWeight: "bold", textAlign: "center" }}>User Account Settings</h2>
+                    <div className="element-style-update-account">
+                        <form onSubmit={handleUpdate}>
+                            <h3>Update Email Address</h3>
+                            <input
+                                type="email"
+                                placeholder="New Email (Optional)"
+                                value={newEmail}
+                                className="input-style"
+                                onChange={(e) => setNewEmail(e.target.value)}
+                            />
 
-                        <input
-                            type="email"
-                            placeholder="New Email (Optional)"
-                            value={newEmail}
-                            className="input-style"
-                            onChange={(e) => setNewEmail(e.target.value)}
-                        />
-
-                        <h2>Update Password</h2>
-                        <input
-                            type="password"
-                            placeholder="New Password (Optional)"
-                            value={newPassword}
-                            className="input-style"
-                            onChange={(e) => setNewPassword(e.target.value)}
-                        />
-                        <div>
+                            <h3>Update Password</h3>
                             <input
                                 type="password"
-                                placeholder="Current Password (Required)"
-                                value={currentPassword}
+                                placeholder="New Password (Optional)"
+                                value={newPassword}
                                 className="input-style"
-                                onChange={(e) => setCurrentPassword(e.target.value)}
+                                onChange={(e) => setNewPassword(e.target.value)}
                             />
-                        </div>
+                            <input
+                                type="password"
+                                placeholder="Confirm New Password"
+                                value={confirmNewPassword}
+                                className="input-style"
+                                onChange={(e) => setConfirmNewPassword(e.target.value)}
+                            />
 
+                            <h3>Confirm Password</h3>
+                            <div>
+                                <input
+                                    type="password"
+                                    placeholder="Old Password (Required)"
+                                    value={currentPassword}
+                                    className="input-style"
+                                    onChange={(e) => setCurrentPassword(e.target.value)}
+                                />
+                            </div>
 
-                        <Button float={"right"} type="submit" colorScheme="blue">Update Changes</Button>
-                        {successMessage && <p className="success-message">{successMessage}</p>}
-                        {errorMessage && <p className="error-message">{errorMessage}</p>}
-                    </form>
-                </div>
-            </div>)
+                            <Button float={"right"} type="submit" colorScheme="blue">Update Profile</Button>
+                            {successMessage && <p className="success-message">{successMessage}</p>}
+                            {errorMessage && <p className="error-message">{errorMessage}</p>}
+                        </form>
+                    </div>
+                </div>)
             :
             (<h2 style={{ margin: "auto", textAlign: "center" }}>loading</h2>)
     );

@@ -66,7 +66,7 @@ export default function NavBar() {
           <Flex flex={{ base: 2 }} justify={{ base: "center", md: "start" }}>
             <HStack>
               <Image
-                src="/assets/logo.svg"
+                src={useColorModeValue("/assets/Cloud_Cube_Logo_Black.svg", "/assets/Cloud_Cube_Logo_White.svg")}
                 boxSize="30px"
                 objectFit="contain"
                 onClick={() => navigate("/")}
@@ -82,7 +82,7 @@ export default function NavBar() {
                 as={RouterLink}
                 to="/"
               >
-                crystalcube
+                Cloud Cube
               </Text>
               <Flex display={{ base: "none", sm: "flex" }}>
                 <VersionBadge />
@@ -105,6 +105,7 @@ export default function NavBar() {
                       fontWeight={500}
                       color={linkColor}
                       bg="none"
+                      onClick={() => navigate("/profile")}
                       _hover={{
                         textDecoration: "none",
                         color: linkHoverColor,
@@ -135,6 +136,9 @@ export default function NavBar() {
                         variant="link"
                         onClick={() => {
                           logout();
+                          setTimeout(() => {
+                            window.location.assign("/login");
+                          }, 2500);
                         }}
                       >
                         Logout
@@ -143,7 +147,7 @@ export default function NavBar() {
                   </PopoverContent>
                 </Popover>
               ) : (
-                <>
+                <div style={{ display: "flex" }}>
                   <Button
                     display={{ base: "none", md: "inline-flex" }}
                     fontSize="sm"
@@ -163,7 +167,7 @@ export default function NavBar() {
                   >
                     Sign Up
                   </Button>
-                </>
+                </div>
               )}
             </Flex>
           </Stack>
