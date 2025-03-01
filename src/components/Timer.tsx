@@ -9,10 +9,12 @@ import {
     Card,
     Stack,
     HStack,
-    Heading
+    Heading,
+    useToast
 } from "@chakra-ui/react";
 import { space } from "@chakra-ui/system";
-import { color } from "framer-motion";
+import { color, warning } from "framer-motion";
+import { fail } from "assert";
 
 function Scramble({ onNewScramble }: { onNewScramble: (scramble: string) => void }) {
     const getNewScramble = useCallback(async (): Promise<void> => {
@@ -38,6 +40,69 @@ export default function Timer({ session }: { session: any }) {
     const [spaceDownTime, setSpaceDownTime] = useState(0);
     const [delayTime, setDelayTime] = useState(0);
     const [colorDelay, setColorDelay] = useState(false);
+
+    const { logout } = useAuth();
+    const toast = useToast()
+
+    const showSuccess = () => {
+        toast({
+            title: 'Success!',
+            description: 'Added solve time successfully.',
+            duration: 5000,
+            isClosable: true,
+            status: "success",
+            position: "bottom"
+        })
+    }
+
+    const showFailure = () => {
+        toast({
+            title: 'Error',
+            description: 'Failed to add solve time',
+            duration: 5000,
+            isClosable: true,
+            status: "error",
+            position: "bottom"
+        })
+    }
+
+    async function getProfile() {
+        setLoading(true)
+        const { user } = session
+        const { data, error } = await supabase.from('profiles').select('username, avatar_url').eq('id', user.id).single();
+        // add error checking
+        if (error) {
+            alert('Error fetching user profile data: ' + error.message);
+            return;
+        }
+        if (data) {
+            setUsername(data.username);
+        }
+        setLoading(false)
+    }
+
+    useEffect(() => {
+        if (session != null) getProfile()
+    }, [session != null]);
+
+    async function updateSolves() {
+        try {
+            setLoading(true)
+            const { error } = await supabase.from('solve').insert({
+                user_id: session.user?.id as string,
+                scramble: scramble,
+                solve_time: time,
+            })
+            if (error) throw error
+            //alert('Solve time added!')
+            showSuccess()
+        } catch (error) {
+            // alert('Error adding solve time' + error)
+            showFailure()
+        } finally {
+            setLoading(false)
+        }
+    }
 
     useHotkeys('space', (event) => {
         if (event.type === 'keydown' && !isRunning && !spaceDownTime) {
@@ -76,6 +141,9 @@ export default function Timer({ session }: { session: any }) {
                 setTime(prevTime => prevTime + .01);
             }, 10);
         } else if (!isRunning && time !== 0) {
+            if (session != null) {
+                updateSolves()
+            }
             clearInterval(timer);
         }
 
@@ -109,7 +177,3 @@ export default function Timer({ session }: { session: any }) {
     );
 
 }
-
-// fd77bfd2-15e7-4028-8ca4-e8169c5cb3da
-
-// fd77bfd2-15e7-4028-8ca4-e8169c5cb3da
