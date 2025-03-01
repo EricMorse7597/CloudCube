@@ -3,15 +3,9 @@ image: node:latest
 stages:
   - deploy
 
-cache:
-  key: yarn-cache
-  paths:
-    - .yarn-cache/
-  policy: pull-push
-
 before_script:
   - corepack enable
-  - rm -rf node_modules yarn.lock 
+  - rm -rf node_modules yarn.lock .yarn-cache 
   - yarn config set cache-folder .yarn-cache
   - yarn install --frozen-lockfile --silent
   - npm install -g netlify-cli
