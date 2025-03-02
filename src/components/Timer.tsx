@@ -15,6 +15,7 @@ import {
 import { space } from "@chakra-ui/system";
 import { color, warning } from "framer-motion";
 import { fail } from "assert";
+import UserSolveTable from "./User/UserSolveTable";
 
 function Scramble({ onNewScramble }: { onNewScramble: (scramble: string) => void }) {
     const getNewScramble = useCallback(async (): Promise<void> => {
@@ -173,6 +174,10 @@ export default function Timer({ session }: { session: any }) {
                 <Heading style={{ color: isHolding ? (colorDelay ? 'green' : 'yellow') : 'white' }} size="4xl">{time.toFixed(2)}s</Heading>
             </Card>
             <p>Press spacebar to start/stop the timer</p>
+            <br></br>
+            <Card>
+                <UserSolveTable/>
+            </Card>
         </Stack>
     );
 
