@@ -74,7 +74,7 @@ export default function UserSolveTable() {
     }, [session])
 
     return (
-        <TableContainer>
+        <TableContainer maxHeight="600px" overflowY="auto">
             <Table>
                 <Thead>
                     <Tr>

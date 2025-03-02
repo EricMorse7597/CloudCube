@@ -144,6 +144,7 @@ export default function Timer({ session }: { session: any }) {
         } else if (!isRunning && time !== 0) {
             if (session != null) {
                 updateSolves()
+                clearInterval(timer);
             }
             clearInterval(timer);
         }
