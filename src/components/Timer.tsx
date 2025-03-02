@@ -3,16 +3,19 @@ import { useHotkeys } from "react-hotkeys-hook";
 import { randomScrambleForEvent } from "cubing/scramble";
 import { Alg } from "cubing/alg";
 import { get, set } from "lodash";
+import { supabase } from "src/utils/SupabaseClient";
+import { useAuth } from "src/utils/AuthContext";
 import {
     Card,
     Stack,
     HStack,
-    Heading
+    Heading,
+    useToast
 } from "@chakra-ui/react";
 import { space } from "@chakra-ui/system";
-import { color } from "framer-motion";
-
-
+import { color, warning } from "framer-motion";
+import { fail } from "assert";
+import UserSolveTable from "./User/UserSolveTable";
 
 function Scramble({ onNewScramble }: { onNewScramble: (scramble: string) => void }) {
     const getNewScramble = useCallback(async (): Promise<void> => {
@@ -27,10 +30,10 @@ function Scramble({ onNewScramble }: { onNewScramble: (scramble: string) => void
     return null;
 }
 
-
-
 // This is a simple timer component that starts and stops when the spacebar is pressed
-function Timer() {
+export default function Timer({ session }: { session: any }) {
+    const [loading, setLoading] = useState(true);
+    const [username, setUsername] = useState<string | null>(null);
     const [isRunning, setIsRunning] = useState(false);
     const [time, setTime] = useState(0);
     const [scramble, setScramble] = useState("");
@@ -38,6 +41,69 @@ function Timer() {
     const [spaceDownTime, setSpaceDownTime] = useState(0);
     const [delayTime, setDelayTime] = useState(0);
     const [colorDelay, setColorDelay] = useState(false);
+
+    const { logout } = useAuth();
+    const toast = useToast()
+
+    const showSuccess = () => {
+        toast({
+            title: 'Success!',
+            description: 'Added solve time successfully.',
+            duration: 5000,
+            isClosable: true,
+            status: "success",
+            position: "bottom"
+        })
+    }
+
+    const showFailure = () => {
+        toast({
+            title: 'Error',
+            description: 'Failed to add solve time',
+            duration: 5000,
+            isClosable: true,
+            status: "error",
+            position: "bottom"
+        })
+    }
+
+    async function getProfile() {
+        setLoading(true)
+        const { user } = session
+        const { data, error } = await supabase.from('profiles').select('username, avatar_url').eq('id', user.id).single();
+        // add error checking
+        if (error) {
+            alert('Error fetching user profile data: ' + error.message);
+            return;
+        }
+        if (data) {
+            setUsername(data.username);
+        }
+        setLoading(false)
+    }
+
+    useEffect(() => {
+        if (session != null) getProfile()
+    }, [session != null]);
+
+    async function updateSolves() {
+        try {
+            setLoading(true)
+            const { error } = await supabase.from('solve').insert({
+                user_id: session.user?.id as string,
+                scramble: scramble,
+                solve_time: time,
+            })
+            if (error) throw error
+            //alert('Solve time added!')
+            showSuccess()
+        } catch (error) {
+            // alert('Error adding solve time' + error)
+            showFailure()
+        } finally {
+            setLoading(false)
+        }
+    }
 
     useHotkeys('space', (event) => {
         if (event.type === 'keydown' && !isRunning && !spaceDownTime) {
@@ -76,6 +142,9 @@ function Timer() {
                 setTime(prevTime => prevTime + .01);
             }, 10);
         } else if (!isRunning && time !== 0) {
+            if (session != null) {
+                updateSolves()
+            }
             clearInterval(timer);
         }
 
@@ -105,9 +174,11 @@ function Timer() {
                 <Heading style={{ color: isHolding ? (colorDelay ? 'green' : 'yellow') : 'white' }} size="4xl">{time.toFixed(2)}s</Heading>
             </Card>
             <p>Press spacebar to start/stop the timer</p>
+            <br></br>
+            <Card>
+                <UserSolveTable/>
+            </Card>
         </Stack>
     );
 
 }
-
-export default Timer;

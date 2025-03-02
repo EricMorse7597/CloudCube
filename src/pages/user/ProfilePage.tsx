@@ -5,6 +5,7 @@ import { Button, Grid, GridItem } from "@chakra-ui/react";
 import { useAuth } from "src/utils/AuthContext";
 import "src/styles/index.css";
 import Avatar from "src/components/User/Avatar"
+import UserSolveTable from "src/components/User/UserSolveTable";
 
 export default function ProfilePage({ session }: { session: any }) {
     const [loading, setLoading] = useState(true);
@@ -170,6 +171,11 @@ export default function ProfilePage({ session }: { session: any }) {
                         </div>
                     </div>
                     <hr style={{ margin: "20px" }}></hr>
+                    <h2 style={{ fontWeight: "bold", textAlign: "center" }}>Your Solve History</h2>
+                    <UserSolveTable/>
+                    <br></br>
+                    <br></br>
+                    <br></br>
                     <h2 style={{ fontWeight: "bold", textAlign: "center" }}>User Account Settings</h2>
                     <div className="element-style-update-account">
                         <form onSubmit={handleUpdate}>
