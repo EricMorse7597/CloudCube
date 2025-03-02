@@ -119,6 +119,7 @@ export default function Timer({ session }: { session: any }) {
     useHotkeys('space', (event) => {
         const holdDuration = Date.now() - spaceDownTime;
         setSpaceDownTime(0);
+        event.preventDefault();
         if (event.type === 'keyup') {
             setIsHolding(false);
             if (holdDuration > 300) {
@@ -126,6 +127,8 @@ export default function Timer({ session }: { session: any }) {
                     if (!prevState) {
                         setTime(0); // Reset the timer when starting
                         getNewScramble();
+                        setDelayTime(0);
+                        setColorDelay(false);
                     }
                     return !prevState;
                 });
@@ -150,10 +153,14 @@ export default function Timer({ session }: { session: any }) {
         }
 
         if (isHolding) {
+            const interval = setInterval(() => {
             setDelayTime(Date.now() - spaceDownTime);
-        }
+            console.log(delayTime);
+            setColorDelay(delayTime > 300);
+            }, 50);
 
-        setColorDelay(delayTime > 300);
+            return () => clearInterval(interval);
+        }
 
         return () => clearInterval(timer);
 
