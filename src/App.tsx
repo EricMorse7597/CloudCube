@@ -28,6 +28,7 @@ import ProfilePage from "./pages/user/ProfilePage"
 import RecoverPage from "./pages/user/RecoverPage"
 import { Session } from '@supabase/supabase-js'
 import { supabase } from './utils/SupabaseClient'
+import UserSolveTable from "./components/User/UserSolveTable";
 
 export const plausible = Plausible({
   domain: "crystalcuber.com",
@@ -74,16 +75,15 @@ function createAppRouter(session: Session | null) {
         <Route path="ohscramble" element={<OHScramble />} />
       </Route>
       <Route path="about" element={<AboutPage />} />
-      <Route path="timer" element={<Timer />} />
+      <Route path="timer" element={session != null ? <Timer session={session}/> : <Timer session={null}/>} />
       <Route path="definitions" element={<DefinitionsPage />} />
       <Route path="recover" element={<RecoverPage />} />
+      {/* test route */}
+      <Route path="grid" element={<UserSolveTable/>} />
     </Route>
     )
   );
 }
-
-
-
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null)
