@@ -109,6 +109,8 @@ export default function Timer({ session }: { session: any }) {
         if (event.type === 'keydown' && !isRunning && !spaceDownTime) {
             setIsHolding(true);
             setSpaceDownTime(Date.now());
+        } else if (isRunning && session != null) {
+            updateSolves()
         }
     });
 
@@ -142,10 +144,6 @@ export default function Timer({ session }: { session: any }) {
                 setTime(prevTime => prevTime + .01);
             }, 10);
         } else if (!isRunning && time !== 0) {
-            if (session != null) {
-                updateSolves()
-                clearInterval(timer);
-            }
             clearInterval(timer);
         }
 
