@@ -106,10 +106,12 @@ export default function Timer({ session }: { session: any }) {
     }
 
     useHotkeys('space', (event) => {
+        event.preventDefault
         if (event.type === 'keydown' && !isRunning && !spaceDownTime) {
             setIsHolding(true);
             setSpaceDownTime(Date.now());
-        } else if (isRunning && session != null) {
+        }
+        if (isRunning && session != null) {
             updateSolves()
         }
     });

@@ -55,7 +55,11 @@ export default function UserSolveTable() {
         setFetching(true)
         try {
             console.log('user_id: ' + session.user.id)
-            const { data, error } = await supabase.from('solve').select('scramble, solve_time, created_at').eq('user_id', session.user.id)
+            const { data, error } = await supabase
+            .from('solve')
+            .select('scramble, solve_time, created_at')
+            .eq('user_id', session.user.id)
+            .order('created_at', {ascending: false})
             if (data) setEntries(data)
             //showSuccess()
             if (error) throw error
