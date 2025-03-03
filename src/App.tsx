@@ -47,7 +47,7 @@ function Layout({ children }: { children: ReactNode }) {
   );
 }
 
-function createAppRouter(session: Session | null) {
+function createAppRouter(session: Session | null, solves: any[]) {
   return createBrowserRouter(
     createRoutesFromElements(
       <Route
@@ -74,7 +74,7 @@ function createAppRouter(session: Session | null) {
         <Route path="timer" element={session ? <Timer session={session} /> : <Timer session={null} />} />
         <Route path="definitions" element={<DefinitionsPage />} />
         <Route path="recover" element={<RecoverPage />} />
-        <Route path="grid" element={<UserSolveTable />} />
+        <Route path="grid" element={<UserSolveTable solves={solves} />} />
       </Route>
     )
   );
@@ -83,13 +83,13 @@ function createAppRouter(session: Session | null) {
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true); // To handle loading state
+  const [solves, setSolves] = useState<any[]>([]); // New state to store solves
 
   useEffect(() => {
     const loadSession = async () => {
       try {
         // First, check if there's a session already in localStorage
         const { data: { session } } = await supabase.auth.getSession();
-        console.log('Loaded session from Supabase:', session);
         setSession(session);
       } catch (error) {
         console.error('Error loading session:', error);
@@ -102,20 +102,43 @@ export default function App() {
 
     // Subscribe to auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log('Auth state change detected:', session);
-      setSession(session);
-    });
+      if (!session) {
+        setSession(null);  // Reset session state if the session is missing
+      } else {
+        setSession(session);  // Update session if it's valid
+      }
+    });  
 
     return () => {
       subscription?.unsubscribe();
     };
   }, []);
 
+  useEffect(() => {
+    const fetchSolves = async () => {
+        if (session?.user?.id) {
+            const { data, error } = await supabase
+                .from("solve")
+                .select("scramble, solve_time, created_at")
+                .eq("user_id", session.user.id)
+                .order('created_at', { ascending: false });
+
+            if (data) {
+                setSolves(data);
+            } else {
+                console.error("Error fetching solves:", error);
+            }
+        }
+    };
+
+    fetchSolves();
+}, [session]);
+
   if (loading) {
-    return <div>Loading...</div>; 
+    return <div>Loading...</div>;
   }
 
-  const router = createAppRouter(session); 
+  const router = createAppRouter(session, solves);
 
   return (
     <AuthProvider>

@@ -33,6 +33,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       } else {
         console.log("No active session found");
         setUserName(null);
+        setSession(null);
         setIsAuthenticated(false);
       }
     };
@@ -49,6 +50,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           setIsAuthenticated(true);
         } else {
           setUserName(null);
+          setSession(null);
           setIsAuthenticated(false);
         }
       }
