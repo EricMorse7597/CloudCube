@@ -60,8 +60,13 @@ export default function UserSolveTable() {
             .select('scramble, solve_time, created_at')
             .eq('user_id', session.user.id)
             .order('created_at', {ascending: false})
-            if (data) setEntries(data)
-            //showSuccess()
+            if (data) {
+                const formattedData = data.map(entry => ({
+                    ...entry,
+                    created_at: new Date(entry.created_at).toLocaleString() 
+                }));
+                setEntries(formattedData);
+            }
             if (error) throw error
         } catch (error) {
             showFailure()
@@ -82,9 +87,9 @@ export default function UserSolveTable() {
             <Table>
                 <Thead>
                     <Tr>
-                        {entries.length > 0 && Object.keys(entries[0]).map((key) => (
-                            <Th key={key}>{key.charAt(0).toUpperCase() + key.slice(1)}</Th>
-                        ))}
+                        <Th>Scramble</Th>
+                        <Th>Solve Time</Th>
+                        <Th>Date Added</Th>
                     </Tr>
                 </Thead>
                 <Tbody>
