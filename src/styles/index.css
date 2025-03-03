@@ -8,6 +8,14 @@
   margin: auto;
 }
 
+.element-style-verify{
+    max-width: fit-content;
+    padding-top: 3%;
+    text-align: center;
+    margin: auto;
+  }
+  
+
 .input-style {
     width: 100%;
     padding: 10px;
