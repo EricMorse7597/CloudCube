@@ -11,8 +11,6 @@ export const PUZZLE_CONFIG_NAMES = [
   "EOArrowLeft",
   "EO222",
   "Cross",
-  "FB",
-  "SB",
 ] as const;
 
 export type PuzzleConfigName = (typeof PUZZLE_CONFIG_NAMES)[number];
@@ -91,22 +89,6 @@ export const PUZZLE_CONFIGS = {
       mask: MASKS.Cross,
       pruningDepth: 4,
       depthLimit: 8,
-    },
-  },
-  FB: {
-    solverConfig: {
-      moveSet: MOVESETS.RrUMDFB, // TODO
-      mask: MASKS.FB,
-      pruningDepth: 4,
-      depthLimit: 10,
-    },
-  },
-  SB: {
-    solverConfig: {
-      moveSet: MOVESETS.RrUM,
-      mask: MASKS.F2B,
-      pruningDepth: 5,
-      depthLimit: 18,
     },
   },
 } as const satisfies { [name in PuzzleConfigName]: PuzzleConfig };

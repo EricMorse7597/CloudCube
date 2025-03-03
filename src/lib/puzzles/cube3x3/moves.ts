@@ -66,33 +66,14 @@ export const MOVESETS = (() => {
   const D = ["D", "D'", "D2"] as const;
   const F = ["F", "F'", "F2"] as const;
   const B = ["B", "B'", "B2"] as const;
-  const r = ["r", "r'", "r2"] as const;
-  const l = ["L", "L'", "L2"] as const;
-  const u = ["u", "u'", "u2"] as const;
-  const d = ["d", "d'", "d2"] as const;
-  const f = ["f", "f'", "f2"] as const;
-  const b = ["b", "b'", "b2"] as const;
-  const M = ["M", "M'", "M2"] as const;
-  const E = ["E", "E'", "E2"] as const;
-  const S = ["S", "S'", "S2"] as const;
-  const x = ["x", "x'", "x2"] as const;
-  const y = ["y", "y'", "y2"] as const;
-  const z = ["z", "z'", "z2"] as const;
-
   // prettier-ignore
   const movesets = {
     Full: [
       ...R, ...L, ...U, ...D, ...F, ...B,
-      ...r, ...l, ...u, ...d, ...f, ...b,
-      ...M, ...E, ...S,
-      ...x, ...y, ...z,
     ],
     RUFLDB: [
       ...R, ...U, ...F, ...L, ...D, ...B,
     ],
-    MU: [...M, ...U],
-    RrUM: [...R, ...r, ...U, ...M],
-    RrUMDFB: [...R, ...r, ...U, ...M, ...D, ...F, ...B],
   } as const satisfies { [name: string]: MoveSet<Move3x3> };
   return movesets;
 })();
