@@ -88,7 +88,7 @@ export default function UserSolveTable() {
                 <Thead>
                     <Tr>
                         <Th>Scramble</Th>
-                        <Th>Solve Time</Th>
+                        <Th>Solve Time (seconds)</Th>
                         <Th>Date Added</Th>
                     </Tr>
                 </Thead>
