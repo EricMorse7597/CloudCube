@@ -25,7 +25,6 @@ function Scramble({ onNewScramble }: { onNewScramble: (scramble: string) => void
     return null;
 }
 
-// This is a simple timer component that starts and stops when the spacebar is pressed
 export default function Timer({ session }: { session: any }) {
     const [loading, setLoading] = useState(true);
     const [username, setUsername] = useState<string | null>(null);
@@ -37,8 +36,9 @@ export default function Timer({ session }: { session: any }) {
     const [delayTime, setDelayTime] = useState(0);
     const [colorDelay, setColorDelay] = useState(false);
 
+    const [entries, setEntries] = useState<any[]>([]); 
     const { logout } = useAuth();
-    const toast = useToast()
+    const toast = useToast();
 
     const showSuccess = () => {
         toast({
@@ -48,8 +48,8 @@ export default function Timer({ session }: { session: any }) {
             isClosable: true,
             status: "success",
             position: "bottom"
-        })
-    }
+        });
+    };
 
     const showFailure = () => {
         toast({
@@ -59,8 +59,37 @@ export default function Timer({ session }: { session: any }) {
             isClosable: true,
             status: "error",
             position: "bottom"
-        })
-    }
+        });
+    };
+
+    // Fetch solves from the database
+    const fetchSolves = async () => {
+        try {
+            const { data, error } = await supabase
+                .from("solve")
+                .select("scramble, solve_time, created_at")
+                .eq("user_id", session.user.id)
+                .order("created_at", { ascending: false });
+    
+            if (data) {
+                const formattedData = data.map((entry) => ({
+                    ...entry,
+                    created_at: new Date(entry.created_at).toLocaleString(),
+                }));
+                setEntries(formattedData); // Update entries state
+            }
+            if (error) throw error;
+        } catch (error) {
+            toast({
+                title: "Error",
+                description: "Failed to fetch solve data.",
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+            });
+        }
+    };
+
 
     async function getProfile() {
         setLoading(true)
@@ -81,44 +110,44 @@ export default function Timer({ session }: { session: any }) {
         const newScramble = await randomScrambleForEvent("333");
         setScramble(newScramble.toString());
     }, []);
-
+    
+    // Update solves in the database
     async function updateSolves() {
         try {
-            console.log("Attempting to insert solve with data:", { user_id: session.user?.id, scramble, solve_time: time });
-            setLoading(true)
+            setLoading(true);
             const { error } = await supabase.from('solve').insert({
                 user_id: session.user?.id as string,
                 scramble: scramble,
                 solve_time: time,
-            })
-            if (error) throw error
-            //alert('Solve time added!')
-            showSuccess()
+            });
+            if (error) throw error;
+            showSuccess();
+    
+            // Fetch solves and update the entries state after adding the new solve
+            await fetchSolves();
         } catch (error) {
-            // alert('Error adding solve time' + error)
-            showFailure()
+            showFailure();
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
     }
 
+    // Start/Stop timer on spacebar press
     useHotkeys('space', (event) => { // KEYDOWN
         event.preventDefault();
 
         if (event.repeat) return;
 
         if (isRunning) {
-            console.log("STOP");
             setIsRunning(false);
 
             if (session != null) {
-                updateSolves();
+                updateSolves(); // Insert new solve after stopping timer
             }
         } else {
             setSpaceDownTime(Date.now());
             setIsHolding(true);
         }
-
     });
 
     useHotkeys('space', (event) => { // KEYUP
@@ -129,15 +158,13 @@ export default function Timer({ session }: { session: any }) {
         if (isHolding) {
             setIsHolding(false);
             if (delayTime > 300) {
-                console.log("START");
                 setIsRunning(true);
             }
         }
     }, { keyup: true });
 
+    // Timer logic
     useEffect(() => {
-        console.log(isRunning);
-
         if (isRunning) {
             const startTime = Date.now();
 
@@ -151,7 +178,7 @@ export default function Timer({ session }: { session: any }) {
         }
     }, [isRunning]);
 
-
+    // Update delay and color on hold
     useEffect(() => {
         if (isHolding) {
             setDelayTime(Date.now() - spaceDownTime);
@@ -161,14 +188,17 @@ export default function Timer({ session }: { session: any }) {
         }
     }, [isHolding, delayTime]);
 
+    // Fetch user profile and solves
     useEffect(() => {
-        if (session) getProfile()
+        if (session) {
+            getProfile(); 
+            fetchSolves(); // Fetch solves on session change
+        }
     }, [session]);
-
 
     return (
         <Stack align="center" justify="center" height="100h" spacing={4} mt={4}>
-            <Scramble onNewScramble={setScramble} />
+           <Scramble onNewScramble={setScramble} />
             <HStack spacing={4}>
                 <Heading size="md">Timer</Heading>
             </HStack>
@@ -182,9 +212,10 @@ export default function Timer({ session }: { session: any }) {
                 <Heading style={{ color: isHolding ? (colorDelay ? 'green' : 'yellow') : 'white' }} size="4xl">{time.toFixed(2)}s</Heading>
             </Card>
             <p>Press spacebar to start/stop the timer</p>
-            <br></br>
+            <br />
             <Card>
-                <UserSolveTable />
+                {/* passing entries as solves */}
+                <UserSolveTable solves={entries} /> 
             </Card>
         </Stack>
     );

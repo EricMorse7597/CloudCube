@@ -47,7 +47,7 @@ function Layout({ children }: { children: ReactNode }) {
   );
 }
 
-function createAppRouter(session: Session | null) {
+function createAppRouter(session: Session | null, solves: any[]) {
   return createBrowserRouter(
     createRoutesFromElements(
       <Route
@@ -74,7 +74,7 @@ function createAppRouter(session: Session | null) {
         <Route path="timer" element={session ? <Timer session={session} /> : <Timer session={null} />} />
         <Route path="definitions" element={<DefinitionsPage />} />
         <Route path="recover" element={<RecoverPage />} />
-        <Route path="grid" element={<UserSolveTable />} />
+        <Route path="grid" element={<UserSolveTable solves={solves} />} />
       </Route>
     )
   );
@@ -83,6 +83,7 @@ function createAppRouter(session: Session | null) {
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true); // To handle loading state
+  const [solves, setSolves] = useState<any[]>([]); // New state to store solves
 
   useEffect(() => {
     const loadSession = async () => {
@@ -111,11 +112,32 @@ export default function App() {
     };
   }, []);
 
+  useEffect(() => {
+    const fetchSolves = async () => {
+        if (session?.user?.id) {
+            const { data, error } = await supabase
+                .from("solve")
+                .select("scramble, solve_time, created_at")
+                .eq("user_id", session.user.id)
+                .order('created_at', { ascending: false });
+
+            if (data) {
+                setSolves(data);
+                console.log('Fetched solves from App:', data);
+            } else {
+                console.error("Error fetching solves:", error);
+            }
+        }
+    };
+
+    fetchSolves();
+}, [session]);
+
   if (loading) {
-    return <div>Loading...</div>; 
+    return <div>Loading...</div>;
   }
 
-  const router = createAppRouter(session); 
+  const router = createAppRouter(session, solves);
 
   return (
     <AuthProvider>

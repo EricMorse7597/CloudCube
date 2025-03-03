@@ -20,8 +20,7 @@ import {
     Td
 } from "@chakra-ui/react";
 
-export default function UserSolveTable() {
-    const [fetching, setFetching] = useState(true);
+export default function UserSolveTable({ solves }: { solves: any[] }) {
     const [entries, setEntries] = useState<any[]>([])
 
 
@@ -51,37 +50,10 @@ export default function UserSolveTable() {
         })
     }
 
-    const fetchSolves = async() => {
-        setFetching(true)
-        try {
-            console.log('user_id: ' + session.user.id)
-            const { data, error } = await supabase
-            .from('solve')
-            .select('scramble, solve_time, created_at')
-            .eq('user_id', session.user.id)
-            .order('created_at', {ascending: false})
-            if (data) {
-                const formattedData = data.map(entry => ({
-                    ...entry,
-                    created_at: new Date(entry.created_at).toLocaleString() 
-                }));
-                setEntries(formattedData);
-            }
-            if (error) throw error
-        } catch (error) {
-            showFailure()
-        }
-        
-    }
-
     useEffect(() => {
-        if (!session) {
-            setFetching(false)
-            return;
-        }
-        fetchSolves()
-    }, [session])
-
+        console.log("Updated entries:", entries);
+    }, [entries]);
+    
     return (
         <TableContainer maxHeight="600px" overflowY="auto">
             <Table>
@@ -93,7 +65,7 @@ export default function UserSolveTable() {
                     </Tr>
                 </Thead>
                 <Tbody>
-                    {entries.map((entry, rowIndex) => (
+                    {solves.map((entry, rowIndex) => (
                         <Tr key={rowIndex}>
                             {Object.values(entry).map((value, colIndex) => (
                                 <Td key={colIndex}>{String(value)}</Td>
