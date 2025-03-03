@@ -90,7 +90,6 @@ export default function App() {
       try {
         // First, check if there's a session already in localStorage
         const { data: { session } } = await supabase.auth.getSession();
-        console.log('Loaded session from Supabase:', session);
         setSession(session);
       } catch (error) {
         console.error('Error loading session:', error);
@@ -103,7 +102,6 @@ export default function App() {
 
     // Subscribe to auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log('Auth state change detected:', session);
       setSession(session);
     });
 
@@ -123,7 +121,6 @@ export default function App() {
 
             if (data) {
                 setSolves(data);
-                console.log('Fetched solves from App:', data);
             } else {
                 console.error("Error fetching solves:", error);
             }
