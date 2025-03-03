@@ -144,6 +144,8 @@ export default function Timer({ session }: { session: any }) {
             if (session != null) {
                 updateSolves(); // Insert new solve after stopping timer
             }
+
+            getNewScramble(); // generate a new scramble when user stops
         } else {
             setSpaceDownTime(Date.now());
             setIsHolding(true);
