@@ -23,22 +23,20 @@ import { AuthProvider } from "./utils/AuthContext";
 import Timer from "./components/Timer";
 import Plausible from "plausible-tracker";
 import DefinitionsPage from "./pages/Definitions/definitions";
-import Register from "./pages/user/RegisterPage"
-import ProfilePage from "./pages/user/ProfilePage"
-import RecoverPage from "./pages/user/RecoverPage"
-import { Session } from '@supabase/supabase-js'
-import { supabase } from './utils/SupabaseClient'
+import Register from "./pages/user/RegisterPage";
+import ProfilePage from "./pages/user/ProfilePage";
+import RecoverPage from "./pages/user/RecoverPage";
+import { Session } from "@supabase/supabase-js";
+import { supabase } from './utils/SupabaseClient';
 import UserSolveTable from "./components/User/UserSolveTable";
 
 export const plausible = Plausible({
   domain: "crystalcuber.com",
   apiHost: "/external",
 });
-
 plausible.enableAutoPageviews();
 
 function Layout({ children }: { children: ReactNode }) {
-  const { isAuthenticated } = useAuth();
   return (
     <Flex direction="column" h="50vh">
       <NavBar />
@@ -58,50 +56,70 @@ function createAppRouter(session: Session | null) {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<Register />} />
         <Route path="/about" element={<AboutPage />} />
-        <Route path="/profile" element={session != null ? <ProfilePage session={session}/> : 
-    <LoginPage/>} />
-
-      <Route index element={<Home />} />
-      <Route path="train">
-        <Route index element={<TrainerPage />} />
-        <Route path="cross">
-          <Route index element={<CrossTrainerPage />} />
+        <Route path="/profile" element={session ? <ProfilePage session={session} /> : <LoginPage />}/>
+        <Route index element={<Home />} />
+        <Route path="train">
+          <Route index element={<TrainerPage />} />
+          <Route path="cross">
+            <Route index element={<CrossTrainerPage />} />
+          </Route>
+          <Route path="eo" element={<EOStepTrainerPage />} />
         </Route>
-        <Route path="eo" element={<EOStepTrainerPage />} />
+        {/* Redirect for old /trainer path */}
+        <Route path="trainer" element={<Navigate to="/train" />} />
+        <Route path="tools">
+          <Route path="ohscramble" element={<OHScramble />} />
+        </Route>
+        <Route path="about" element={<AboutPage />} />
+        <Route path="timer" element={session ? <Timer session={session} /> : <Timer session={null} />} />
+        <Route path="definitions" element={<DefinitionsPage />} />
+        <Route path="recover" element={<RecoverPage />} />
+        <Route path="grid" element={<UserSolveTable />} />
       </Route>
-      {/* redirect for old /trainer path */}
-      <Route path="trainer" element={<Navigate to="/train" />} />
-      <Route path="tools">
-        <Route path="ohscramble" element={<OHScramble />} />
-      </Route>
-      <Route path="about" element={<AboutPage />} />
-      <Route path="timer" element={session != null ? <Timer session={session}/> : <Timer session={null}/>} />
-      <Route path="definitions" element={<DefinitionsPage />} />
-      <Route path="recover" element={<RecoverPage />} />
-      {/* test route */}
-      <Route path="grid" element={<UserSolveTable/>} />
-    </Route>
     )
   );
 }
 
 export default function App() {
-  const [session, setSession] = useState<Session | null>(null)
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true); // To handle loading state
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-    })
-    supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
-    })
-  }, [])
+    const loadSession = async () => {
+      try {
+        // First, check if there's a session already in localStorage
+        const { data: { session } } = await supabase.auth.getSession();
+        console.log('Loaded session from Supabase:', session);
+        setSession(session);
+      } catch (error) {
+        console.error('Error loading session:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const router = createAppRouter(session)
+    loadSession();
+
+    // Subscribe to auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      console.log('Auth state change detected:', session);
+      setSession(session);
+    });
+
+    return () => {
+      subscription?.unsubscribe();
+    };
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>; 
+  }
+
+  const router = createAppRouter(session); 
 
   return (
     <AuthProvider>
       <RouterProvider router={router} />
     </AuthProvider>
-  )
+  );
 }

@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { randomScrambleForEvent } from "cubing/scramble";
-import { Alg } from "cubing/alg";
-import { get, set } from "lodash";
 import { supabase } from "src/utils/SupabaseClient";
 import { useAuth } from "src/utils/AuthContext";
 import {
@@ -12,9 +10,6 @@ import {
     Heading,
     useToast
 } from "@chakra-ui/react";
-import { space } from "@chakra-ui/system";
-import { color, warning } from "framer-motion";
-import { fail } from "assert";
 import UserSolveTable from "./User/UserSolveTable";
 
 function Scramble({ onNewScramble }: { onNewScramble: (scramble: string) => void }) {
@@ -89,6 +84,7 @@ export default function Timer({ session }: { session: any }) {
 
     async function updateSolves() {
         try {
+            console.log("Attempting to insert solve with data:", { user_id: session.user?.id, scramble, solve_time: time });
             setLoading(true)
             const { error } = await supabase.from('solve').insert({
                 user_id: session.user?.id as string,
@@ -166,8 +162,8 @@ export default function Timer({ session }: { session: any }) {
     }, [isHolding, delayTime]);
 
     useEffect(() => {
-        if (session != null) getProfile()
-    }, [session != null]);
+        if (session) getProfile()
+    }, [session]);
 
 
     return (
@@ -192,5 +188,4 @@ export default function Timer({ session }: { session: any }) {
             </Card>
         </Stack>
     );
-
 }
