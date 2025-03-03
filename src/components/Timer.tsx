@@ -82,9 +82,10 @@ export default function Timer({ session }: { session: any }) {
         setLoading(false)
     }
 
-    useEffect(() => {
-        if (session != null) getProfile()
-    }, [session != null]);
+    const getNewScramble = useCallback(async (): Promise<void> => {
+        const newScramble = await randomScrambleForEvent("333");
+        setScramble(newScramble.toString());
+    }, []);
 
     async function updateSolves() {
         try {
@@ -105,66 +106,69 @@ export default function Timer({ session }: { session: any }) {
         }
     }
 
-    useHotkeys('space', (event) => {
+    useHotkeys('space', (event) => { // KEYDOWN
         event.preventDefault();
-        if (event.type === 'keydown' && !isRunning && !spaceDownTime) {
-            setIsHolding(true);
+
+        if (event.repeat) return;
+
+        if (isRunning) {
+            console.log("STOP");
+            setIsRunning(false);
+
+            if (session != null) {
+                updateSolves();
+            }
+        } else {
             setSpaceDownTime(Date.now());
+            setIsHolding(true);
         }
-        if (isRunning && session != null) {
-            updateSolves()
-        }
+
     });
 
-    useHotkeys('space', (event) => {
-        const holdDuration = Date.now() - spaceDownTime;
-        setSpaceDownTime(0);
+    useHotkeys('space', (event) => { // KEYUP
         event.preventDefault();
-        if (event.type === 'keyup') {
+
+        if (event.repeat) return;
+
+        if (isHolding) {
             setIsHolding(false);
-            if (holdDuration > 300) {
-                setIsRunning((prevState) => {
-                    if (!prevState) {
-                        setTime(0); // Reset the timer when starting
-                        getNewScramble();
-                        setDelayTime(0);
-                        setColorDelay(false);
-                    }
-                    return !prevState;
-                });
+            if (delayTime > 300) {
+                console.log("START");
+                setIsRunning(true);
             }
         }
     }, { keyup: true });
 
-    const getNewScramble = useCallback(async (): Promise<void> => {
-        const newScramble = await randomScrambleForEvent("333");
-        setScramble(newScramble.toString());
-    }, []);
-
     useEffect(() => {
-        let timer: NodeJS.Timeout | undefined;
+        console.log(isRunning);
 
         if (isRunning) {
-            timer = setInterval(() => {
-                setTime(prevTime => prevTime + .01);
-            }, 10);
-        } else if (!isRunning && time !== 0) {
-            clearInterval(timer);
-        }
+            const startTime = Date.now();
 
-        if (isHolding) {
             const interval = setInterval(() => {
-            setDelayTime(Date.now() - spaceDownTime);
-            console.log(delayTime);
-            setColorDelay(delayTime > 300);
-            }, 50);
+                setTime((Date.now() - startTime) / 1000);
+            }, 10);
 
-            return () => clearInterval(interval);
+            return () => {
+                clearInterval(interval);
+            };
         }
+    }, [isRunning]);
 
-        return () => clearInterval(timer);
 
-    }, [isRunning, isHolding, delayTime]);
+    useEffect(() => {
+        if (isHolding) {
+            setDelayTime(Date.now() - spaceDownTime);
+            setColorDelay(delayTime > 300);
+        } else {
+            setDelayTime(0);
+        }
+    }, [isHolding, delayTime]);
+
+    useEffect(() => {
+        if (session != null) getProfile()
+    }, [session != null]);
+
 
     return (
         <Stack align="center" justify="center" height="100h" spacing={4} mt={4}>
@@ -184,7 +188,7 @@ export default function Timer({ session }: { session: any }) {
             <p>Press spacebar to start/stop the timer</p>
             <br></br>
             <Card>
-                <UserSolveTable/>
+                <UserSolveTable />
             </Card>
         </Stack>
     );
