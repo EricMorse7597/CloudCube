@@ -4,6 +4,7 @@ import { randomScrambleForEvent } from "cubing/scramble";
 import { supabase } from "src/utils/SupabaseClient";
 import { useAuth } from "src/utils/AuthContext";
 import {
+    useColorModeValue,
     Card,
     Stack,
     HStack,
@@ -198,6 +199,8 @@ export default function Timer({ session }: { session: any }) {
         }
     }, [session]);
 
+    const color = useColorModeValue("black", "white"); 
+
     return (
         <Stack align="center" justify="center" height="100h" spacing={4} mt={4}>
            <Scramble onNewScramble={setScramble} />
@@ -211,7 +214,7 @@ export default function Timer({ session }: { session: any }) {
             </Card>
 
             <Card p="6.5rem" w="40%" textAlign="center">
-                <Heading style={{ color: isHolding ? (colorDelay ? 'green' : 'yellow') : 'white' }} size="4xl">{time.toFixed(2)}s</Heading>
+                <Heading style={{ color: isHolding ? (colorDelay ? 'green' : 'yellow') : color }} size="4xl">{time.toFixed(2)}s</Heading>
             </Card>
             <p>Press spacebar to start/stop the timer</p>
             <br />
