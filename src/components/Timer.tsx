@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { randomScrambleForEvent } from "cubing/scramble";
 import { supabase } from "src/utils/SupabaseClient";
@@ -37,7 +37,7 @@ export default function Timer({ session }: { session: any }) {
     const [delayTime, setDelayTime] = useState(0);
     const [colorDelay, setColorDelay] = useState(false);
 
-    const [entries, setEntries] = useState<any[]>([]); 
+    const [entries, setEntries] = useState<any[]>([]);
     const { logout } = useAuth();
     const toast = useToast();
 
@@ -63,7 +63,6 @@ export default function Timer({ session }: { session: any }) {
         });
     };
 
-    // Fetch solves from the database
     const fetchSolves = async () => {
         try {
             const { data, error } = await supabase
@@ -71,7 +70,6 @@ export default function Timer({ session }: { session: any }) {
                 .select("scramble, solve_time, created_at")
                 .eq("user_id", session.user.id)
                 .order("created_at", { ascending: false });
-    
             if (data) {
                 const formattedData = data.map((entry) => ({
                     ...entry,
@@ -91,12 +89,10 @@ export default function Timer({ session }: { session: any }) {
         }
     };
 
-
     async function getProfile() {
-        setLoading(true)
-        const { user } = session
+        setLoading(true);
+        const { user } = session;
         const { data, error } = await supabase.from('profiles').select('username, avatar_url').eq('id', user.id).single();
-        // add error checking
         if (error) {
             alert('Error fetching user profile data: ' + error.message);
             return;
@@ -104,28 +100,32 @@ export default function Timer({ session }: { session: any }) {
         if (data) {
             setUsername(data.username);
         }
-        setLoading(false)
+        setLoading(false);
     }
 
     const getNewScramble = useCallback(async (): Promise<void> => {
         const newScramble = await randomScrambleForEvent("333");
         setScramble(newScramble.toString());
     }, []);
-    
+
     // Update solves in the database
     async function updateSolves() {
         try {
             setLoading(true);
-            const { error } = await supabase.from('solve').insert({
-                user_id: session.user?.id as string,
-                scramble: scramble,
-                solve_time: time,
-            });
-            if (error) throw error;
-            showSuccess();
-    
-            // Fetch solves and update the entries state after adding the new solve
-            await fetchSolves();
+            if (scramble && time > 0) {
+                const { error } = await supabase.from('solve').insert({
+                    user_id: session.user?.id as string,
+                    scramble: scramble,
+                    solve_time: time,
+                });
+                if (error) throw error;
+                showSuccess();
+
+                // Fetch solves and update the entries state after adding the new solve
+                await fetchSolves();
+            } else {
+                showFailure();
+            }
         } catch (error) {
             showFailure();
         } finally {
@@ -139,17 +139,17 @@ export default function Timer({ session }: { session: any }) {
 
         if (event.repeat) return;
 
-        if (isRunning) {
-            setIsRunning(false);
-
-            if (session != null) {
-                updateSolves(); // Insert new solve after stopping timer
-            }
-
-            getNewScramble(); // generate a new scramble when user stops
-        } else {
+        if (!isRunning) {
+            // Only start if the timer is not already running
             setSpaceDownTime(Date.now());
             setIsHolding(true);
+        } else {
+            // If it's running, stop and update solves
+            if (scramble && time > 0) {
+                updateSolves(); // Insert new solve after stopping timer
+            }
+            setIsRunning(false);
+            getNewScramble(); // generate a new scramble when user stops
         }
     });
 
@@ -160,7 +160,8 @@ export default function Timer({ session }: { session: any }) {
 
         if (isHolding) {
             setIsHolding(false);
-            if (delayTime > 300) {
+            const holdDuration = Date.now() - spaceDownTime;
+            if (holdDuration > 300) {
                 setIsRunning(true);
             }
         }
@@ -170,7 +171,6 @@ export default function Timer({ session }: { session: any }) {
     useEffect(() => {
         if (isRunning) {
             const startTime = Date.now();
-
             const interval = setInterval(() => {
                 setTime((Date.now() - startTime) / 1000);
             }, 10);
