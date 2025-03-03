@@ -55,9 +55,18 @@ export default function UserSolveTable() {
         setFetching(true)
         try {
             console.log('user_id: ' + session.user.id)
-            const { data, error } = await supabase.from('solve').select('scramble, solve_time, created_at').eq('user_id', session.user.id)
-            if (data) setEntries(data)
-            //showSuccess()
+            const { data, error } = await supabase
+            .from('solve')
+            .select('scramble, solve_time, created_at')
+            .eq('user_id', session.user.id)
+            .order('created_at', {ascending: false})
+            if (data) {
+                const formattedData = data.map(entry => ({
+                    ...entry,
+                    created_at: new Date(entry.created_at).toLocaleString() 
+                }));
+                setEntries(formattedData);
+            }
             if (error) throw error
         } catch (error) {
             showFailure()
@@ -74,13 +83,13 @@ export default function UserSolveTable() {
     }, [session])
 
     return (
-        <TableContainer>
+        <TableContainer maxHeight="600px" overflowY="auto">
             <Table>
                 <Thead>
                     <Tr>
-                        {entries.length > 0 && Object.keys(entries[0]).map((key) => (
-                            <Th key={key}>{key.charAt(0).toUpperCase() + key.slice(1)}</Th>
-                        ))}
+                        <Th>Scramble</Th>
+                        <Th>Solve Time (seconds)</Th>
+                        <Th>Date Added</Th>
                     </Tr>
                 </Thead>
                 <Tbody>
