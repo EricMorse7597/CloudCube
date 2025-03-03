@@ -5,6 +5,7 @@ export enum Colors {
   blue = "blue",
   red = "red",
   orange = "orange",
+  masked = "masked",
 }
 
 export enum FaceNames {
@@ -30,9 +31,14 @@ export const FaceColors: Record<FaceNames, Colors> = {
   [FaceNames.down]: Colors.yellow,
 };
 
+export interface Tile {
+  color: Colors;
+  isMasked: boolean;
+}
+
 export interface Face {
   color: Colors;
-  tiles: Colors[];
+  tiles: Tile[];
   above: Face;
   below: Face;
   next: Face;
@@ -95,4 +101,18 @@ export const relationships: Record<
     below: { name: FaceNames.back, side: Sides.bottom },
     prev: { name: FaceNames.left, side: Sides.bottom },
   },
+};
+
+export enum PatternName {
+  cross,
+  center,
+  line,
+  all,
+}
+
+export const Pattern: Record<PatternName, Boolean[]> = {
+  [PatternName.cross]: [true, false, true, false, false, false, true, false, true],
+  [PatternName.center]: [true, true, true, true, false, true, true, true, true],
+  [PatternName.line]: [true, false, true, true, true, true, true, true, true],
+  [PatternName.all]: [true, true, true, true, true, true, true, true, true],
 };

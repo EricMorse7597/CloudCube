@@ -19,6 +19,7 @@ import {
   RotationMove,
   simplifyMoves,
   translateMoves,
+  parseNotation,
 } from "src/lib/puzzles/cube3x3";
 import { EOStepOptions, NUM_OF_MOVES_CONFIGS } from "./eoStepOptions";
 import { EOStep } from "./eoStepTypes";
@@ -142,7 +143,7 @@ async function numBadEdgesScramble(
   const newPuzzle = new KState(kpuzzle, newStateData);
   const solution = await experimentalSolve3x3x3IgnoringCenters(newPuzzle);
   const scrambleForFBAxis = invertMoves(
-    Cube3x3.parseNotation(solution.toString())!
+    parseNotation(solution.toString())!
   );
   // Our scramble only has the desired number of bad edges when looking at the F/B axis!
   // However if the solution orientation has a different axis, we need to translate the whole scramble
@@ -199,7 +200,7 @@ async function makeBetterScramble(
   // step 2: apply our original scramble on it
   // step 3: solve the entire cube using cubing.js
   // the inverse is a better scramble than the original
-  const randomScramble = Cube3x3.parseNotation(
+  const randomScramble = parseNotation(
     (await randomScrambleForEvent("333")).toString()
   )!;
   const solutionForRandomScramble = (
