@@ -145,7 +145,7 @@ export default function Timer({ session }: { session: any }) {
             setIsHolding(true);
         } else {
             // If it's running, stop and update solves
-            if (scramble && time > 0) {
+            if (scramble && time > 0 && session != null) {
                 updateSolves(); // Insert new solve after stopping timer
             }
             setIsRunning(false);
@@ -194,16 +194,16 @@ export default function Timer({ session }: { session: any }) {
     // Fetch user profile and solves
     useEffect(() => {
         if (session) {
-            getProfile(); 
+            getProfile();
             fetchSolves(); // Fetch solves on session change
         }
     }, [session]);
 
-    const color = useColorModeValue("black", "white"); 
+    const color = useColorModeValue("black", "white");
 
     return (
         <Stack align="center" justify="center" height="100h" spacing={4} mt={4}>
-           <Scramble onNewScramble={setScramble} />
+            <Scramble onNewScramble={setScramble} />
             <HStack spacing={4}>
                 <Heading size="md">Timer</Heading>
             </HStack>
@@ -220,7 +220,7 @@ export default function Timer({ session }: { session: any }) {
             <br />
             <Card>
                 {/* passing entries as solves */}
-                <UserSolveTable solves={entries} /> 
+                <UserSolveTable solves={entries} />
             </Card>
         </Stack>
     );
