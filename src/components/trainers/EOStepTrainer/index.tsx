@@ -30,6 +30,7 @@ import {
   Move3x3,
   PuzzleConfigName,
   RotationMove,
+  parseNotation,
 } from "src/lib/puzzles/cube3x3";
 
 import useScrambleAndSolutions from "../common/useScrambleAndSolutions";
@@ -204,7 +205,7 @@ function EOStepSelect({ eoStep, setEOStep }: EOStepSelectProps) {
 }
 
 const scrambleParser = (input: string) => {
-  const parsed = Cube3x3.parseNotation(input);
+  const parsed = parseNotation(input);
   return parsed?.every(isFaceMove) ? parsed : null;
 };
 
