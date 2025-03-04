@@ -26,7 +26,7 @@ import {
   ChevronRightIcon,
 } from "@chakra-ui/icons";
 
-import {NavButton} from "src/styles/common";
+import { NavButton } from "src/styles/common";
 
 import { ColorModeSwitcher } from "./ColorModeSwitcher";
 import { Link as RouterLink } from "react-router-dom";
@@ -134,11 +134,9 @@ export default function NavBar() {
                       <DesktopSubNav
                         label="Logout"
                         href=""
-                        onClick={() => {
-                          logout();
-                          setTimeout(() => {
-                            window.location.assign("/login");
-                          }, 2500);
+                        onClick={async () => {
+                          await logout();
+                          window.location.assign("/login");
                         }}
                       />
                     </Stack>
@@ -146,8 +144,8 @@ export default function NavBar() {
                 </Popover>
               ) : (
                 <Flex>
-                  <NavButton href="/login" text="Sign In" color="blue" size="sm"/>
-                  <NavButton href="/register" text="Sign Up" color="teal" size="sm"/>
+                  <NavButton href="/login" text="Sign In" color="blue" size="sm" />
+                  <NavButton href="/register" text="Sign Up" color="teal" size="sm" />
                 </Flex>
               )}
             </Flex>
