@@ -25,12 +25,22 @@
 }
 
 .button-style{
-    width: 25%;
-    padding: 8px;
+    font-size: 1.2rem;
+    padding: 0.5rem 2.5rem;
     margin: 10px;
     border: 1.5px solid #ccc;
     border-radius: 12px;
 }
+
+.link{
+  color:steelblue;
+}
+
+.link:hover{
+  text-decoration: underline;
+}
+
+
 
 .error-message {
     color: red;

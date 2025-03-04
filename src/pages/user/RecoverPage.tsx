@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "src/utils/SupabaseClient";
-import { Button, Grid, GridItem } from "@chakra-ui/react";
+import { Header1, Header2, FormSection } from "src/styles/common";
+import { Button, Flex } from "@chakra-ui/react";
 import "src/styles/index.css";
 
 
@@ -129,13 +130,13 @@ export default function RecoverPage() {
 
     return (
         <div className="element-style">
-            <h1 className="title">{isRecovery ? "Set a New Password" : "Reset your Password"}</h1>
+            <Header1 className="title">{isRecovery ? "Set a New Password" : "Reset your Password"}</Header1>
 
             {!isRecovery ? (
                 <form onSubmit={handleRecoveryEmail}>
-                    <Grid templateColumns="repeat(1, 1fr)" gap={2}>
-                        <p>We will send you an email to reset your password</p>
-                        <GridItem>
+                    <Flex direction="column">
+                        <Header2>We will send you an email to reset your password</Header2>
+                        <FormSection>
                             <input
                                 type="text"
                                 placeholder="Username or Email"
@@ -144,16 +145,16 @@ export default function RecoverPage() {
                                 onChange={(e) => setIdentifier(e.target.value)}
                                 required
                             />
-                        </GridItem>
-                        <GridItem>
+                        </FormSection>
+                        <FormSection>
                             <Button type="submit" colorScheme="blue">Send Email</Button>
-                        </GridItem>
-                    </Grid>
+                        </FormSection>
+                    </Flex>
                 </form>
             ) : (
                 <form onSubmit={handleRecoveryPassword}>
-                    <Grid templateColumns="repeat(1, 1fr)">
-                        <GridItem>
+                    <Flex direction="column">
+                        <FormSection>
                             <input
                                 type="password"
                                 placeholder="New Password"
@@ -168,11 +169,11 @@ export default function RecoverPage() {
                                 className="input-style"
                                 onChange={(e) => setConfirmNewPassword(e.target.value)}
                             />
-                        </GridItem>
-                        <GridItem>
+                        </FormSection>
+                        <FormSection>
                             <Button type="submit" colorScheme="blue">Update Password</Button>
-                        </GridItem>
-                    </Grid>
+                        </FormSection>
+                    </Flex>
                 </form>
             )}
 

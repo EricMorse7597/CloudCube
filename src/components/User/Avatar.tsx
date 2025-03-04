@@ -1,8 +1,47 @@
 // 'use client'
 import React, { useEffect, useState } from 'react'
+import styled from "styled-components"
 import { supabase } from "src/utils/SupabaseClient";
 // import { createClient } from '@/utils/supabase/client'
 // import Image from 'next/image'
+
+
+const AvatarUploadWrapper = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 1rem;
+    user-select: none;
+`
+
+
+const AvatarImage = styled.img<{ size: number }>`
+    height: ${({ size }) => size}px;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    pointer-events: none;
+`
+
+const AvatarUploadButton = styled.label`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 12px;
+    border: 2px solid;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: filter 0.2s;
+
+    &:hover {
+        filter: brightness(0.7);
+    }
+
+    &:active {
+        filter: brightness(0.5);
+    }
+`
+
 
 export default function Avatar({
     uid,
@@ -64,42 +103,30 @@ export default function Avatar({
     }
 
     return (
-        <div>
-            {avatarUrl ? (
-                <img
-                    width={size}
-                    height={size}
-                    src={avatarUrl}
-                    alt="Avatar"
-                    className="avatar image"
-                    style={{ height: size, width: size, borderRadius: "50%" }}
-                />
-            ) : (
-                <div className="avatar no-image" style={{ height: size, width: size }} ><img
-                    width={size}
-                    height={size}
-                    src={"/assets/default.png"}
-                    alt="Avatar"
-                    className="avatar image"
-                    style={{ height: size, width: size }}
-                /></div>
-            )}
-            <div style={{ width: size, textAlign: "center", margin: "20px 0px" }}>
-                <label className="avatarButton" htmlFor="single" style={{ border: "2px solid", borderRadius: "4px", padding: "8px 12px" }}>
-                    {uploading ? 'Uploading ...' : 'Upload'}
-                </label>
-                <input
-                    style={{
-                        visibility: 'hidden',
-                        position: 'absolute',
-                    }}
-                    type="file"
-                    id="single"
-                    accept="image/*"
-                    onChange={uploadAvatar}
-                    disabled={uploading}
-                />
-            </div>
-        </div >
+        <AvatarUploadWrapper>
+            <AvatarImage
+                src={avatarUrl? avatarUrl : "/assets/default.png"}
+                alt="Avatar"
+                className="avatar image"
+                size={size}
+            />
+
+
+            <AvatarUploadButton className="avatarButton" htmlFor="single" style={{ border: "2px solid", borderRadius: "4px", padding: "8px 12px" }}>
+                {uploading ? 'Uploading ...' : 'Upload'}
+            </AvatarUploadButton>
+            <input
+                style={{
+                    visibility: 'hidden',
+                    position: 'absolute',
+                }}
+                type="file"
+                id="single"
+                accept="image/*"
+                onChange={uploadAvatar}
+                disabled={uploading}
+            />
+
+        </AvatarUploadWrapper >
     )
 }

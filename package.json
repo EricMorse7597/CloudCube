@@ -37,10 +37,12 @@
     "react-router-dom": "^6.7.0",
     "react-wrap-balancer": "^0.4.0",
     "speedcube-scrambler": "^0.1.0",
+    "styled-components": "^5.3.10",
     "three": "^0.153.0",
     "zustand": "^4.4.0"
   },
   "devDependencies": {
+    "@types/styled-components": "^5.1.26",
     "@types/node": "^18.11.18",
     "@types/ramda": "^0.29.3",
     "@types/react": "^18.0.26",

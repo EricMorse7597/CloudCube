@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "src/utils/SupabaseClient";
-import { Grid, GridItem, Image } from "@chakra-ui/react";
+import { Image, Flex } from "@chakra-ui/react";
+import { Header1, Header2, FormSection } from "src/styles/common";
 import "src/styles/index.css";
 
 export default function Register() {
@@ -112,9 +113,9 @@ export default function Register() {
             {!isRegistered ? (
                 <div className="element-style">
                 <form onSubmit={handleRegister}>
-                    <h1>Register</h1>
-                    <Grid templateColumns="repeat(1, 1fr)">
-                        <GridItem>
+                    <Header1>Register</Header1>
+                    <Flex flexDirection="column" alignItems="center">
+                        <FormSection>
                             <input
                                 type="text"
                                 placeholder="Username"
@@ -123,8 +124,7 @@ export default function Register() {
                                 required
                                 className="input-style"
                             />
-                        </GridItem>
-                        <GridItem>
+
                             <input
                                 type="email"
                                 placeholder="Email"
@@ -133,8 +133,7 @@ export default function Register() {
                                 required
                                 className="input-style"
                             />
-                        </GridItem>
-                        <GridItem>
+
                             <input
                                 type="password"
                                 placeholder="Password"
@@ -143,14 +142,14 @@ export default function Register() {
                                 required
                                 className="input-style"
                             />
-                        </GridItem>
-                        <GridItem>
-                            <a href="/login" className="registerPrompt">Already have an account? Login here!</a>
-                        </GridItem>
-                        <GridItem>
+                        </FormSection>
+                        <FormSection>
                             <button type="submit" className="button-style">Register</button>
-                        </GridItem>
-                    </Grid>
+                        </FormSection>
+                        <br />
+                        <p>Already have an account? <a className="link" href="/login">Login here!</a></p>
+
+                    </Flex>
                 </form>
                 {successMessage && <p className="success-message">{successMessage}</p>}
                 {errorMessage && <p className="error-message">{errorMessage}</p>}

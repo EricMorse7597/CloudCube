@@ -202,7 +202,7 @@ export default function Timer({ session }: { session: any }) {
     const color = useColorModeValue("black", "white");
 
     return (
-        <Stack align="center" justify="center" height="100h" spacing={4} mt={4}>
+        <Stack align="center" justify="center" height="100h" marginBottom="2rem" spacing={4} mt={4}>
             <Scramble onNewScramble={setScramble} />
             <HStack spacing={4}>
                 <Heading size="md">Timer</Heading>

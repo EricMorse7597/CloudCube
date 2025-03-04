@@ -25,6 +25,9 @@ import {
   ChevronDownIcon,
   ChevronRightIcon,
 } from "@chakra-ui/icons";
+
+import {NavButton} from "src/styles/common";
+
 import { ColorModeSwitcher } from "./ColorModeSwitcher";
 import { Link as RouterLink } from "react-router-dom";
 import NAV_ITEMS, { NavItem } from "./navItems";
@@ -124,50 +127,28 @@ export default function NavBar() {
                     minW="sm"
                   >
                     <Stack>
-                      <Button
-                        variant="link"
-                        onClick={() => {
-                          navigate("/profile")
-                        }}
-                      >
-                        Dashboard
-                      </Button>
-                      <Button
-                        variant="link"
+                      <DesktopSubNav
+                        label="Dashboard"
+                        href="/profile"
+                      />
+                      <DesktopSubNav
+                        label="Logout"
+                        href=""
                         onClick={() => {
                           logout();
                           setTimeout(() => {
                             window.location.assign("/login");
                           }, 2500);
                         }}
-                      >
-                        Logout
-                      </Button>
+                      />
                     </Stack>
                   </PopoverContent>
                 </Popover>
               ) : (
-                <div style={{ display: "flex" }}>
-                  <Button
-                    display={{ base: "none", md: "inline-flex" }}
-                    fontSize="sm"
-                    fontWeight={600}
-                    colorScheme="blue"
-                    marginRight={2}
-                    onClick={() => navigate("/login")}
-                  >
-                    Sign In
-                  </Button>
-                  <Button
-                    display={{ base: "none", md: "inline-flex" }}
-                    fontSize="sm"
-                    fontWeight={600}
-                    colorScheme="green"
-                    onClick={() => navigate("/register")}
-                  >
-                    Sign Up
-                  </Button>
-                </div>
+                <Flex>
+                  <NavButton href="/login" text="Sign In" color="blue" size="sm"/>
+                  <NavButton href="/register" text="Sign Up" color="teal" size="sm"/>
+                </Flex>
               )}
             </Flex>
           </Stack>
@@ -234,10 +215,9 @@ const DesktopNav = () => {
 };
 
 
-const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
+const DesktopSubNav = ({ label, href, subLabel, onClick }: NavItem & { onClick?: () => void }) => {
   return (
     <Link
-      // href={href}
       as={href ? RouterLink : undefined}
       to={href ?? ""}
       role="group"
@@ -245,6 +225,7 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
       p={2}
       rounded="md"
       _hover={{ bg: useColorModeValue("cyan.50", "gray.900") }}
+      onClick={onClick}
     >
       <Stack direction="row" align="center">
         <Box>

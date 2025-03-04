@@ -3,6 +3,7 @@ export interface NavItem {
   subLabel?: string;
   children?: Array<NavItem>;
   href?: string;
+  clickEvent?: () => void;
 }
 
 const NAV_ITEMS: Array<NavItem> = [
