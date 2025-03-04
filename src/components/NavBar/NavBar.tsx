@@ -127,25 +127,20 @@ export default function NavBar() {
                     minW="sm"
                   >
                     <Stack>
-                      <Button
-                        variant="link"
-                        onClick={() => {
-                          navigate("/profile")
-                        }}
-                      >
-                        Dashboard
-                      </Button>
-                      <Button
-                        variant="link"
+                      <DesktopSubNav
+                        label="Dashboard"
+                        href="/profile"
+                      />
+                      <DesktopSubNav
+                        label="Logout"
+                        href=""
                         onClick={() => {
                           logout();
                           setTimeout(() => {
                             window.location.assign("/login");
                           }, 2500);
                         }}
-                      >
-                        Logout
-                      </Button>
+                      />
                     </Stack>
                   </PopoverContent>
                 </Popover>
@@ -220,10 +215,9 @@ const DesktopNav = () => {
 };
 
 
-const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
+const DesktopSubNav = ({ label, href, subLabel, onClick }: NavItem & { onClick?: () => void }) => {
   return (
     <Link
-      // href={href}
       as={href ? RouterLink : undefined}
       to={href ?? ""}
       role="group"
@@ -231,6 +225,7 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
       p={2}
       rounded="md"
       _hover={{ bg: useColorModeValue("cyan.50", "gray.900") }}
+      onClick={onClick}
     >
       <Stack direction="row" align="center">
         <Box>
