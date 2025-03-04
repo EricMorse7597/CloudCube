@@ -147,10 +147,7 @@ export default function Register() {
                             <button type="submit" className="button-style">Register</button>
                         </FormSection>
                         <br />
-                        <Header2>Already have an account?</Header2>
-                        <FormSection>
-                            <a className="button-style" href="/login">Login here!</a>
-                        </FormSection>
+                        <p>Already have an account? <a className="link" href="/login">Login here!</a></p>
 
                     </Flex>
                 </form>

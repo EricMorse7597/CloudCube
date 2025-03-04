@@ -130,13 +130,8 @@ export default function LoginPage() {
                         <button className="button-style" type="submit">Login</button>
                     </GridItem>
                     <br />
-                    <Header2>Don't have an account?</Header2>
-                    <FormSection>
-                    <a className="button-style" href="/register">Sign Up here!</a>
-                    </FormSection>
-                    <FormSection>
-                    <a className="button-style" href="/recover">Forgot Password?</a>
-                    </FormSection>
+                    <p>Don't have an account? <a className="link" href="/register">Sign Up here!</a></p>
+                    <a className="link" href="/recover">Forgot Password?</a>
 
                 </Flex>
                 {error && <p className="error-message">{error}</p>}
