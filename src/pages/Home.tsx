@@ -9,8 +9,8 @@ import {
   VStack,
   useColorModeValue,
 } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
 import Balancer from "react-wrap-balancer";
+import {NavButton} from "src/styles/common";
 
 export default function Home() {
   const mockupImage = useColorModeValue(
@@ -31,12 +31,8 @@ export default function Home() {
           </Balancer>
         </VStack>
         <HStack spacing={4} justify="center">
-          <RouterLink to="train/">
-            <Button colorScheme="blue" size="md">Start Training</Button>
-          </RouterLink>
-          <RouterLink to="timer">
-            <Button colorScheme="teal" size="md">Start Timing</Button>
-          </RouterLink>
+          <NavButton href="/train" text="Start Training" color="blue" />
+          <NavButton href="/timer" text="Start Timing" color="teal" />
         </HStack>
         
         <Image

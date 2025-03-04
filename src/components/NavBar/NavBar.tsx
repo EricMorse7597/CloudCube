@@ -25,6 +25,9 @@ import {
   ChevronDownIcon,
   ChevronRightIcon,
 } from "@chakra-ui/icons";
+
+import {NavButton} from "src/styles/common";
+
 import { ColorModeSwitcher } from "./ColorModeSwitcher";
 import { Link as RouterLink } from "react-router-dom";
 import NAV_ITEMS, { NavItem } from "./navItems";
@@ -148,25 +151,8 @@ export default function NavBar() {
                 </Popover>
               ) : (
                 <div style={{ display: "flex" }}>
-                  <Button
-                    display={{ base: "none", md: "inline-flex" }}
-                    fontSize="sm"
-                    fontWeight={600}
-                    colorScheme="blue"
-                    marginRight={2}
-                    onClick={() => navigate("/login")}
-                  >
-                    Sign In
-                  </Button>
-                  <Button
-                    display={{ base: "none", md: "inline-flex" }}
-                    fontSize="sm"
-                    fontWeight={600}
-                    colorScheme="green"
-                    onClick={() => navigate("/register")}
-                  >
-                    Sign Up
-                  </Button>
+                  <NavButton href="/login" text="Sign In" color="blue"/>
+                  <NavButton href="/register" text="Sign Up" color="teal"/>
                 </div>
               )}
             </Flex>
