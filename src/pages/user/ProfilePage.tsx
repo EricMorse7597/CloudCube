@@ -1,10 +1,61 @@
-import { useEffect, useId, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "src/utils/SupabaseClient";
-import { Button, Grid, GridItem } from "@chakra-ui/react";
+import { Button} from "@chakra-ui/react";
 import { useAuth } from "src/utils/AuthContext";
 import "src/styles/index.css";
 import Avatar from "src/components/User/Avatar"
+import styled from "styled-components"
+
+const Divider = styled.hr`
+    margin: 2rem 0;
+    border: 1px solid #e0e0e0;
+`
+
+const FormLabel = styled.label`
+    font-size: "1rem";
+    font-weight: "bold";
+`
+
+const FormSection = styled.div`
+    margin: 1rem 0;
+`
+
+const ProfileHeader = styled.h1`
+    font-size: 2rem;
+    margin: 0rem 2rem 2rem 2rem;
+    padding: 0;
+`
+const ProfileWrapper = styled.div`
+    width: 100%;
+    padding: 2rem;
+    margin-bottom: 2rem;
+`
+
+const ProfileInfoWrapper = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    flex-direction: row;
+    gap: 1rem;
+    text-align: left;
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: center;
+    }
+`
+
+const UserInfo = styled.p`
+    font-size: 1rem;
+    margin: 0.5rem;
+    padding: 0;
+
+    b {
+        font-weight: bold;
+        margin-right: 0.5rem;
+    }
+`;
 
 export default function ProfilePage({ session }: { session: any }) {
     const [loading, setLoading] = useState(true);
@@ -148,10 +199,9 @@ export default function ProfilePage({ session }: { session: any }) {
     return (
         !loading ?
             (
-                <div style={{ margin: "auto", padding: "3%" }}>
-                    <h2 style={{ fontWeight: "bold", textAlign: "center" }}>Profile</h2>
-                    <div className="element-style">
-                        <div className="profile" style={{ textAlign: "left", }}>
+                <ProfileWrapper>
+                    <ProfileHeader style={{ fontWeight: "bold", textAlign: "center" }}>Profile</ProfileHeader>
+                        <ProfileInfoWrapper>
                             <div className="Avatar" style={{ display: "inline-block", verticalAlign: "top", margin: "0px 20px" }}>
                                 <Avatar
                                     uid={session.user?.id ?? null}
@@ -164,25 +214,29 @@ export default function ProfilePage({ session }: { session: any }) {
                                 />
                             </div>
                             <div className="Information" style={{ display: "inline-block", verticalAlign: "top" }}>
-                                <p>Username: {username}</p>
-                                <p>Email: {session.user.email}</p>
+                                <UserInfo><b>Username:</b> {username}</UserInfo>
+                                <UserInfo><b>Email:</b> {session.user.email}</UserInfo>
                             </div>
-                        </div>
-                    </div>
-                    <hr style={{ margin: "20px" }}></hr>
+                        </ProfileInfoWrapper>
+
+                    <Divider />
                     <h2 style={{ fontWeight: "bold", textAlign: "center" }}>User Account Settings</h2>
                     <div className="element-style-update-account">
                         <form onSubmit={handleUpdate}>
-                            <h3>Update Email Address</h3>
-                            <input
-                                type="email"
-                                placeholder="New Email (Optional)"
-                                value={newEmail}
-                                className="input-style"
-                                onChange={(e) => setNewEmail(e.target.value)}
-                            />
+                            <FormSection>
+                                <FormLabel>Update Email Address</FormLabel>
+                                <input
+                                    type="email"
+                                    placeholder="New Email (Optional)"
+                                    value={newEmail}
+                                    className="input-style"
+                                    onChange={(e) => setNewEmail(e.target.value)}
+                                />
+                            </FormSection>
+                            <FormSection>
+                            <FormLabel>Update Password</FormLabel>
 
-                            <h3>Update Password</h3>
+
                             <input
                                 type="password"
                                 placeholder="New Password (Optional)"
@@ -197,9 +251,12 @@ export default function ProfilePage({ session }: { session: any }) {
                                 className="input-style"
                                 onChange={(e) => setConfirmNewPassword(e.target.value)}
                             />
+                            </FormSection>
 
-                            <h3>Confirm Password</h3>
-                            <div>
+                            <Divider />
+                            <FormSection>
+                            <FormLabel>Confirm Password</FormLabel>
+
                                 <input
                                     type="password"
                                     placeholder="Old Password (Required)"
@@ -207,14 +264,13 @@ export default function ProfilePage({ session }: { session: any }) {
                                     className="input-style"
                                     onChange={(e) => setCurrentPassword(e.target.value)}
                                 />
-                            </div>
-
+                            </FormSection>
                             <Button float={"right"} type="submit" colorScheme="blue">Update Profile</Button>
                             {successMessage && <p className="success-message">{successMessage}</p>}
                             {errorMessage && <p className="error-message">{errorMessage}</p>}
                         </form>
                     </div>
-                </div>)
+                </ProfileWrapper>)
             :
             (<h2 style={{ margin: "auto", textAlign: "center" }}>loading</h2>)
     );
