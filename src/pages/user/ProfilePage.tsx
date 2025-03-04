@@ -9,8 +9,9 @@ import UserSolveTable from "src/components/User/UserSolveTable";
 import styled from "styled-components"
 
 const Divider = styled.hr`
-    margin: 2rem 0;
-    border: 1px solid #e0e0e0;
+    border:none;
+    border-bottom: 1px solid #4A5568;
+    margin-bottom: 2rem;
 `
 
 const FormLabel = styled.label`
@@ -24,9 +25,21 @@ const FormSection = styled.div`
 
 const ProfileHeader = styled.h1`
     font-size: 2rem;
+    font-weight: bold;
     margin: 0rem 2rem 2rem 2rem;
     padding: 0;
+    text-align: center;
+
 `
+
+const ProfileSubHeader = styled.h2`
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin: 0rem 2rem 1rem 2rem;
+    padding: 0;
+    text-align: center;
+`
+
 const ProfileWrapper = styled.div`
     width: 100%;
     padding: 2rem;
@@ -40,6 +53,7 @@ const ProfileInfoWrapper = styled.div`
     flex-direction: row;
     gap: 1rem;
     text-align: left;
+    padding: 2rem;
 
     @media (max-width: 768px) {
         flex-direction: column;
@@ -250,12 +264,12 @@ export default function ProfilePage({ session }: { session: any }) {
 
                     <Divider />
 
-                    <h2 style={{ fontWeight: "bold", textAlign: "center" }}>Your Solve History</h2>
+                    <ProfileSubHeader>Your Solve History</ProfileSubHeader>
                     <UserSolveTable solves={entries}/>
-                    <br></br>
-                    <br></br>
-                    <br></br>
-                    <h2 style={{ fontWeight: "bold", textAlign: "center" }}>User Account Settings</h2>
+
+                    <br/><br/><br/>
+                    
+                    <ProfileSubHeader>User Account Settings</ProfileSubHeader>
                     <div className="element-style-update-account">
                         <form onSubmit={handleUpdate}>
                             <FormSection>
