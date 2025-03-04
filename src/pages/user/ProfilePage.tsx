@@ -5,6 +5,7 @@ import { Button} from "@chakra-ui/react";
 import { useAuth } from "src/utils/AuthContext";
 import "src/styles/index.css";
 import Avatar from "src/components/User/Avatar"
+import UserSolveTable from "src/components/User/UserSolveTable";
 import styled from "styled-components"
 
 const Divider = styled.hr`
@@ -66,6 +67,8 @@ export default function ProfilePage({ session }: { session: any }) {
     const [newPassword, setNewPassword] = useState("");
     const [confirmNewPassword, setConfirmNewPassword] = useState("");
 
+    const [entries, setEntries] = useState<any[]>([]); 
+
     const [successMessage, setSuccessMessage] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const { logout } = useAuth();
@@ -126,6 +129,32 @@ export default function ProfilePage({ session }: { session: any }) {
             setLoading(false)
         }
     }
+    
+    async function fetchSolves() {
+        const { data, error } = await supabase
+            .from("solve")
+            .select("scramble, solve_time, created_at")
+            .eq("user_id", session.user.id)
+            .order("created_at", { ascending: false });
+
+        if (error) {
+            console.error("Error fetching solves:", error.message);
+            return;
+        }
+
+        if (data) {
+            const formattedData = data.map((entry) => ({
+                ...entry,
+                created_at: new Date(entry.created_at).toLocaleString(),
+            }));
+            setEntries(formattedData); // Update state with fetched solves
+        }
+    }
+
+    useEffect(() => {
+        getProfile();
+        fetchSolves(); 
+    }, []);
 
     const handleUpdate = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -220,6 +249,12 @@ export default function ProfilePage({ session }: { session: any }) {
                         </ProfileInfoWrapper>
 
                     <Divider />
+
+                    <h2 style={{ fontWeight: "bold", textAlign: "center" }}>Your Solve History</h2>
+                    <UserSolveTable solves={entries}/>
+                    <br></br>
+                    <br></br>
+                    <br></br>
                     <h2 style={{ fontWeight: "bold", textAlign: "center" }}>User Account Settings</h2>
                     <div className="element-style-update-account">
                         <form onSubmit={handleUpdate}>

@@ -1,18 +1,17 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { randomScrambleForEvent } from "cubing/scramble";
-import { Alg } from "cubing/alg";
-import { get, set } from "lodash";
+import { supabase } from "src/utils/SupabaseClient";
+import { useAuth } from "src/utils/AuthContext";
 import {
+    useColorModeValue,
     Card,
     Stack,
     HStack,
-    Heading
+    Heading,
+    useToast
 } from "@chakra-ui/react";
-import { space } from "@chakra-ui/system";
-import { color } from "framer-motion";
-
-
+import UserSolveTable from "./User/UserSolveTable";
 
 function Scramble({ onNewScramble }: { onNewScramble: (scramble: string) => void }) {
     const getNewScramble = useCallback(async (): Promise<void> => {
@@ -27,10 +26,9 @@ function Scramble({ onNewScramble }: { onNewScramble: (scramble: string) => void
     return null;
 }
 
-
-
-// This is a simple timer component that starts and stops when the spacebar is pressed
-function Timer() {
+export default function Timer({ session }: { session: any }) {
+    const [loading, setLoading] = useState(true);
+    const [username, setUsername] = useState<string | null>(null);
     const [isRunning, setIsRunning] = useState(false);
     const [time, setTime] = useState(0);
     const [scramble, setScramble] = useState("");
@@ -39,55 +37,169 @@ function Timer() {
     const [delayTime, setDelayTime] = useState(0);
     const [colorDelay, setColorDelay] = useState(false);
 
-    useHotkeys('space', (event) => {
-        if (event.type === 'keydown' && !isRunning && !spaceDownTime) {
-            setIsHolding(true);
-            setSpaceDownTime(Date.now());
-        }
-    });
+    const [entries, setEntries] = useState<any[]>([]);
+    const { logout } = useAuth();
+    const toast = useToast();
 
-    useHotkeys('space', (event) => {
-        const holdDuration = Date.now() - spaceDownTime;
-        setSpaceDownTime(0);
-        if (event.type === 'keyup') {
-            setIsHolding(false);
-            if (holdDuration > 300) {
-                setIsRunning((prevState) => {
-                    if (!prevState) {
-                        setTime(0); // Reset the timer when starting
-                        getNewScramble();
-                    }
-                    return !prevState;
-                });
+    const showSuccess = () => {
+        toast({
+            title: 'Success!',
+            description: 'Added solve time successfully.',
+            duration: 5000,
+            isClosable: true,
+            status: "success",
+            position: "bottom"
+        });
+    };
+
+    const showFailure = () => {
+        toast({
+            title: 'Error',
+            description: 'Failed to add solve time',
+            duration: 5000,
+            isClosable: true,
+            status: "error",
+            position: "bottom"
+        });
+    };
+
+    const fetchSolves = async () => {
+        try {
+            const { data, error } = await supabase
+                .from("solve")
+                .select("scramble, solve_time, created_at")
+                .eq("user_id", session.user.id)
+                .order("created_at", { ascending: false });
+            if (data) {
+                const formattedData = data.map((entry) => ({
+                    ...entry,
+                    created_at: new Date(entry.created_at).toLocaleString(),
+                }));
+                setEntries(formattedData); // Update entries state
             }
+            if (error) throw error;
+        } catch (error) {
+            toast({
+                title: "Error",
+                description: "Failed to fetch solve data.",
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+            });
         }
-    }, { keyup: true });
+    };
+
+    async function getProfile() {
+        setLoading(true);
+        const { user } = session;
+        const { data, error } = await supabase.from('profiles').select('username, avatar_url').eq('id', user.id).single();
+        if (error) {
+            alert('Error fetching user profile data: ' + error.message);
+            return;
+        }
+        if (data) {
+            setUsername(data.username);
+        }
+        setLoading(false);
+    }
 
     const getNewScramble = useCallback(async (): Promise<void> => {
         const newScramble = await randomScrambleForEvent("333");
         setScramble(newScramble.toString());
     }, []);
 
-    useEffect(() => {
-        let timer: NodeJS.Timeout | undefined;
+    // Update solves in the database
+    async function updateSolves() {
+        try {
+            setLoading(true);
+            if (scramble && time > 0) {
+                const { error } = await supabase.from('solve').insert({
+                    user_id: session.user?.id as string,
+                    scramble: scramble,
+                    solve_time: time,
+                });
+                if (error) throw error;
+                showSuccess();
 
-        if (isRunning) {
-            timer = setInterval(() => {
-                setTime(prevTime => prevTime + .01);
-            }, 10);
-        } else if (!isRunning && time !== 0) {
-            clearInterval(timer);
+                // Fetch solves and update the entries state after adding the new solve
+                await fetchSolves();
+            } else {
+                showFailure();
+            }
+        } catch (error) {
+            showFailure();
+        } finally {
+            setLoading(false);
         }
+    }
+
+    // Start/Stop timer on spacebar press
+    useHotkeys('space', (event) => { // KEYDOWN
+        event.preventDefault();
+
+        if (event.repeat) return;
+
+        if (!isRunning) {
+            // Only start if the timer is not already running
+            setSpaceDownTime(Date.now());
+            setIsHolding(true);
+        } else {
+            // If it's running, stop and update solves
+            if (scramble && time > 0 && session != null) {
+                updateSolves(); // Insert new solve after stopping timer
+            }
+            setIsRunning(false);
+            getNewScramble(); // generate a new scramble when user stops
+        }
+    });
+
+    useHotkeys('space', (event) => { // KEYUP
+        event.preventDefault();
+
+        if (event.repeat) return;
 
         if (isHolding) {
-            setDelayTime(Date.now() - spaceDownTime);
+            setIsHolding(false);
+            const holdDuration = Date.now() - spaceDownTime;
+            if (holdDuration > 300) {
+                setIsRunning(true);
+            }
         }
+    }, { keyup: true });
 
-        setColorDelay(delayTime > 300);
+    // Timer logic
+    useEffect(() => {
+        if (isRunning) {
+            const startTime = Date.now();
+            const interval = setInterval(() => {
+                setTime((Date.now() - startTime) / 1000);
+            }, 10);
 
-        return () => clearInterval(timer);
+            return () => {
+                clearInterval(interval);
+            };
+        }
+    }, [isRunning]);
 
-    }, [isRunning, isHolding, delayTime]);
+    // Update delay and color on hold
+    useEffect(() => {
+        if (isHolding) {
+            setDelayTime(Date.now() - spaceDownTime);
+            setColorDelay(delayTime > 300);
+        } else {
+            setDelayTime(0);
+        }
+    }, [isHolding, delayTime]);
+
+    // Fetch user profile and solves
+    useEffect(() => {
+        if (session) {
+            getProfile();
+            fetchSolves(); // Fetch solves on session change
+        }
+    }, [session]);
+
+    const color = useColorModeValue("black", "white");
 
     return (
         <Stack align="center" justify="center" height="100h" spacing={4} mt={4}>
@@ -102,12 +214,14 @@ function Timer() {
             </Card>
 
             <Card p="6.5rem" w="40%" textAlign="center">
-                <Heading style={{ color: isHolding ? (colorDelay ? 'green' : 'yellow') : 'white' }} size="4xl">{time.toFixed(2)}s</Heading>
+                <Heading style={{ color: isHolding ? (colorDelay ? 'green' : 'yellow') : color }} size="4xl">{time.toFixed(2)}s</Heading>
             </Card>
             <p>Press spacebar to start/stop the timer</p>
+            <br />
+            <Card>
+                {/* passing entries as solves */}
+                <UserSolveTable solves={entries} />
+            </Card>
         </Stack>
     );
-
 }
-
-export default Timer;

@@ -15,7 +15,7 @@
     "@chakra-ui/system": "^2.6.2",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
-    "@fontsource/inter": "^5.0.2",
+    "@fontsource/inter": "^5.2.0",
     "@react-three/drei": "^9.70.1",
     "@react-three/fiber": "^8.13.0",
     "@supabase/supabase-js": "^2.48.1",

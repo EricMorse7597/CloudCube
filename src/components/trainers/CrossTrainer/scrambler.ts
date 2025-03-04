@@ -13,6 +13,7 @@ import {
   RotationMove,
   simplifyMoves,
   translateMoves,
+  parseNotation,
 } from "src/lib/puzzles/cube3x3";
 import { CrossOptions } from "./crossOptions";
 import { genReversePruningTable } from "src/lib/search";
@@ -176,7 +177,7 @@ async function makeBetterScramble(
   // step 2: apply our original scramble on it
   // step 3: solve the entire cube using cubing.js
   // the inverse is a better scramble than the original
-  const randomScramble = Cube3x3.parseNotation(
+  const randomScramble = parseNotation(
     (await randomScrambleForEvent("333")).toString()
   )!;
   const solutionForRandomScramble = (

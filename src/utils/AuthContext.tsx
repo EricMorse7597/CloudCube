@@ -1,10 +1,12 @@
 import { createContext, useState, useContext, useEffect } from "react";
 import { supabase } from "../utils/SupabaseClient";
 import { useToast } from "@chakra-ui/react";
+import { Session } from '@supabase/supabase-js'
 
 const AuthContext = createContext<any>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const [session, setSession] = useState<Session | null>(null)
   const [userName, setUserName] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const toast = useToast();
@@ -19,6 +21,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         console.error("Error fetching session:", error);
       } else {
         console.log("Fetched session:", session);
+        setSession(session)
       }
 
       if (session?.user) {
@@ -30,6 +33,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       } else {
         console.log("No active session found");
         setUserName(null);
+        setSession(null);
         setIsAuthenticated(false);
       }
     };
@@ -46,6 +50,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           setIsAuthenticated(true);
         } else {
           setUserName(null);
+          setSession(null);
           setIsAuthenticated(false);
         }
       }
@@ -97,7 +102,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ userName, isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ session, userName, isAuthenticated, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
