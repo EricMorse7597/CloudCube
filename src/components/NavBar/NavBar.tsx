@@ -145,10 +145,10 @@ export default function NavBar() {
                   </PopoverContent>
                 </Popover>
               ) : (
-                <div style={{ display: "flex" }}>
+                <Flex>
                   <NavButton href="/login" text="Sign In" color="blue"/>
                   <NavButton href="/register" text="Sign Up" color="teal"/>
-                </div>
+                </Flex>
               )}
             </Flex>
           </Stack>
