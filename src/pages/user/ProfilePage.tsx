@@ -7,38 +7,8 @@ import "src/styles/index.css";
 import Avatar from "src/components/User/Avatar"
 import UserSolveTable from "src/components/User/UserSolveTable";
 import styled from "styled-components"
+import {Header1, Header2, Divider, FormLabel, FormSection} from "src/styles/common"
 
-const Divider = styled.hr`
-    border:none;
-    border-bottom: 1px solid #4A5568;
-    margin-bottom: 2rem;
-`
-
-const FormLabel = styled.label`
-    font-size: "1rem";
-    font-weight: "bold";
-`
-
-const FormSection = styled.div`
-    margin: 1rem 0;
-`
-
-const ProfileHeader = styled.h1`
-    font-size: 2rem;
-    font-weight: bold;
-    margin: 0rem 2rem 2rem 2rem;
-    padding: 0;
-    text-align: center;
-
-`
-
-const ProfileSubHeader = styled.h2`
-    font-size: 1.2rem;
-    font-weight: bold;
-    margin: 0rem 2rem 1rem 2rem;
-    padding: 0;
-    text-align: center;
-`
 
 const ProfileWrapper = styled.div`
     width: 100%;
@@ -243,7 +213,7 @@ export default function ProfilePage({ session }: { session: any }) {
         !loading ?
             (
                 <ProfileWrapper>
-                    <ProfileHeader style={{ fontWeight: "bold", textAlign: "center" }}>Profile</ProfileHeader>
+                    <Header1 style={{ fontWeight: "bold", textAlign: "center" }}>Profile</Header1>
                         <ProfileInfoWrapper>
                             <div className="Avatar" style={{ display: "inline-block", verticalAlign: "top", margin: "0px 20px" }}>
                                 <Avatar
@@ -264,12 +234,12 @@ export default function ProfilePage({ session }: { session: any }) {
 
                     <Divider />
 
-                    <ProfileSubHeader>Your Solve History</ProfileSubHeader>
+                    <Header2>Your Solve History</Header2>
                     <UserSolveTable solves={entries}/>
 
                     <br/><br/><br/>
-                    
-                    <ProfileSubHeader>User Account Settings</ProfileSubHeader>
+
+                    <Header2>User Account Settings</Header2>
                     <div className="element-style-update-account">
                         <form onSubmit={handleUpdate}>
                             <FormSection>
