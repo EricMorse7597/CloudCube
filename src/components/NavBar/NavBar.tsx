@@ -146,8 +146,8 @@ export default function NavBar() {
                 </Popover>
               ) : (
                 <Flex>
-                  <NavButton href="/login" text="Sign In" color="blue"/>
-                  <NavButton href="/register" text="Sign Up" color="teal"/>
+                  <NavButton href="/login" text="Sign In" color="blue" size="sm"/>
+                  <NavButton href="/register" text="Sign Up" color="teal" size="sm"/>
                 </Flex>
               )}
             </Flex>
