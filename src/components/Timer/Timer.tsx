@@ -15,8 +15,6 @@ import UserSolveTable from "src/components/User/UserSolveTable";
 import { Session } from '@supabase/supabase-js';
 
 export default function Timer({ scramble }: { scramble: string }) {
-    const [loading, setLoading] = useState(true);
-    const [username, setUsername] = useState<string | null>(null);
     const [isRunning, setIsRunning] = useState(false);
     const [time, setTime] = useState(0);
     const [isHolding, setIsHolding] = useState(false);
@@ -24,7 +22,6 @@ export default function Timer({ scramble }: { scramble: string }) {
     const [delayTime, setDelayTime] = useState(0);
     const [colorDelay, setColorDelay] = useState(false);
 
-    const [entries, setEntries] = useState<any[]>([]);
     const { session } = useAuth();
     const toast = useToast();
 
@@ -52,7 +49,6 @@ export default function Timer({ scramble }: { scramble: string }) {
 
     async function updateSolves() {
         try {
-            setLoading(true);
             if (scramble && time > 0) {
                 const { error } = await supabase.from('solve').insert({
                     user_id: session.user?.id as string,
@@ -67,8 +63,6 @@ export default function Timer({ scramble }: { scramble: string }) {
             }
         } catch (error) {
             showFailure();
-        } finally {
-            setLoading(false);
         }
     }
 
@@ -121,12 +115,19 @@ export default function Timer({ scramble }: { scramble: string }) {
     // Update delay and color on hold
     useEffect(() => {
         if (isHolding) {
-            setDelayTime(Date.now() - spaceDownTime);
-            setColorDelay(delayTime > 300);
+            const delayInterval = setInterval(() => {
+                if (Date.now() - spaceDownTime > 300) {
+                    setColorDelay(true);
+                }
+            }, 10);
+
+            return () => {
+                clearInterval(delayInterval);
+            };
         } else {
-            setDelayTime(0);
+            setColorDelay(false);
         }
-    }, [isHolding, delayTime]);
+    }, [isHolding]);
 
     const color = useColorModeValue("black", "white");
 
