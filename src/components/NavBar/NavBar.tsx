@@ -30,15 +30,49 @@ import { Link as RouterLink } from "react-router-dom";
 import NAV_ITEMS, { NavItem } from "./navItems";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../utils/AuthContext";
+import { supabase } from "src/utils/SupabaseClient";
+import { useState, useEffect } from "react";
 
 export default function NavBar() {
   const { isOpen, onToggle, onClose } = useDisclosure();
   const navigate = useNavigate();
-  const { userName, isAuthenticated, logout } = useAuth();
+  const { userName, isAuthenticated, logout, session } = useAuth();
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const linkColor = useColorModeValue("gray.600", "gray.200");
   const linkHoverColor = useColorModeValue("gray.800", "white");
   const buttonColor = useColorModeValue("#EDF2F7", "#2C313D");
   const popoverContentBgColor = useColorModeValue("white", "gray.800");
+
+  useEffect(() => {
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log("Auth State Changed:", event, session);
+        if (session) {
+          console.log("User is logged in, updating session...");
+          setAvatarUrl(null); // Reset before fetching new avatar
+          const { data, error } = await supabase
+            .from("profiles")
+            .select("avatar_url")
+            .eq("id", session.user.id)
+            .single();
+            
+          if (error) {
+            console.error("Error fetching avatar:", error.message);
+          } else {
+            console.log("Updated avatar after login:", data?.avatar_url);
+            setAvatarUrl(data?.avatar_url || null);
+          }
+        }
+      }
+    );
+  
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
+  
+  const bucketUrl = "https://mxvnbjoezxeubbcwdnqh.supabase.co/storage/v1/object/public/avatars";
+  const fullAvatarUrl = avatarUrl ? `${bucketUrl}/${avatarUrl}` : undefined;
 
   return (
     <Box
@@ -99,7 +133,7 @@ export default function NavBar() {
             {/* User Section or Login/Sign-Up Buttons */}
             <Flex align="center">
               {isAuthenticated && userName ? (
-                <Popover trigger="hover" placement="bottom-start">
+                <><Popover trigger="hover" placement="bottom-start">
                   <PopoverTrigger>
                     <Button
                       fontWeight={500}
@@ -127,8 +161,8 @@ export default function NavBar() {
                       <Button
                         variant="link"
                         onClick={() => {
-                          navigate("/profile")
-                        }}
+                          navigate("/profile");
+                        } }
                       >
                         Dashboard
                       </Button>
@@ -145,7 +179,28 @@ export default function NavBar() {
                       </Button>
                     </Stack>
                   </PopoverContent>
-                </Popover>
+                </Popover><Flex align="center">
+                    {fullAvatarUrl ? (
+                      <Image
+                        boxSize="35px"
+                        borderRadius="full"
+                        src={fullAvatarUrl}
+                        alt="User Avatar"
+                        fallbackSrc="/assets/default.png" // Placeholder if the image fails to load
+                        _hover={{
+                          textDecoration: "none",
+                        }}
+                        ml={5} // Adjust this margin to move the avatar to the right
+                      />
+                    ) : (
+                      <Image
+                        boxSize="35px"
+                        borderRadius="full"
+                        src="/assets/default.png" // Default avatar
+                        alt="Default Avatar"
+                        ml={5} />
+                    )}
+                  </Flex></>
               ) : (
                 <div style={{ display: "flex" }}>
                   <Button
