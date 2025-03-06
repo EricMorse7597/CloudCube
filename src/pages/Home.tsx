@@ -10,7 +10,7 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import Balancer from "react-wrap-balancer";
-import {NavButton} from "src/styles/common";
+import { NavButton } from "src/styles/common";
 
 export default function Home() {
   const mockupImage = useColorModeValue(
@@ -34,7 +34,7 @@ export default function Home() {
           <NavButton href="/train" text="Start Training" color="blue" />
           <NavButton href="/timer" text="Start Timing" color="teal" />
         </HStack>
-        
+
         <Image
           src={mockupImage}
           fit="cover"

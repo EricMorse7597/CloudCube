@@ -1,6 +1,6 @@
 import {
     Card,
-    useColorModeValue,
+    Flex,
 } from "@chakra-ui/react";
 
 import styled from "styled-components";
@@ -43,28 +43,23 @@ const Image = styled.img<{ shadowColor: string }>`
     filter: drop-shadow(5px 5px 1px ${props => props.shadowColor});
 `;
 
-export default function DefinitionCard({ label, text, imgHref }: { label: string, text: string, imgHref: string | undefined }) {
+export default function DefinitionCard({ rank, playerName, time }: { rank: string, playerName: string, time: string }) {
 
     const minWidth = window.innerWidth / 3 > 400 ? "400px" : "50vw";
 
-
     return (
-        <Card p="1rem" w="30%" justify={"center"} style={{ minWidth: minWidth }}>
-            <InfoWrapper >
-                <TextWrapper>
-                    <Heading>{label}</Heading>
-                    <Description>{text}</Description>
-                </TextWrapper>
-
-                {imgHref && (
-                    <Image
-                        src={imgHref}
-                        alt={label}
-                        shadowColor={useColorModeValue("#A0AEC0", "#1A202C")}
-                    />
-                )}
-
-            </InfoWrapper>
-        </Card>
+        <Card w={"50%"} style={{ minWidth: minWidth }}>
+            <Flex
+                gap={6}
+                p={4}
+                wrap={"wrap"}
+                justify={"space-evenly"}
+                align={"stretch"}
+            >
+                <p>{rank}</p>
+                <p>{playerName}</p>
+                <p>{time}</p>
+            </Flex>
+        </Card >
     );
 }
