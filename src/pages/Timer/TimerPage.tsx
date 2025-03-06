@@ -83,13 +83,6 @@ export default function TimerPage({ session }: { session: any }) {
         }
     }, { keyup: true });
 
-    // Fetch user profile and solves
-    useEffect(() => {
-        if (session) {
-            fetchSolves(); // Fetch solves on session change
-        }
-    }, [session]);
-
     useEffect(() => {
         getNewScramble();
     }, []);
@@ -98,7 +91,7 @@ export default function TimerPage({ session }: { session: any }) {
         if (session) {
             fetchSolves();
         }
-    }, [scramble]);
+    }, [scramble, session]);
 
     return (
         <Stack justify="center" marginBottom="2rem" spacing={4} mt={4}>
