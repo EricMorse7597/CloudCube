@@ -95,7 +95,9 @@ export default function TimerPage({ session }: { session: any }) {
     }, []);
 
     useEffect(() => {
-        fetchSolves();
+        if (session) {
+            fetchSolves();
+        }
     }, [scramble]);
 
     return (
@@ -106,7 +108,9 @@ export default function TimerPage({ session }: { session: any }) {
 
             <Card ml={"15%"} mr={"15%"} >
                 {/* passing entries as solves */}
-                <UserSolveTable solves={entries} />
+                {session && (
+                    <UserSolveTable solves={entries} />
+                )}
             </Card>
         </Stack>
     );
