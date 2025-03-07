@@ -21,6 +21,7 @@ import { Divider } from "src/styles/common";
 import { useAuth } from "src/utils/AuthContext";
 import { solve } from "src/lib/search";
 import Timer from "src/components/Timer/Timer";
+import { format } from "path";
 
 const Heading = styled.h1`
     font-size: 1.4rem;
@@ -55,6 +56,14 @@ export default function LeaderboardPage() {
         setIsLoading(false);
     }
 
+    const fetchUsername = async (userID: string) => {
+        const { data } = await supabase
+            .from("profiles")
+            .select("username")
+            .eq("id", userID).single();
+        return data?.username || "Unknown";
+    }
+
     const fetchSolves = async () => {
         setIsLoading(true);
         console.log("scramble!" + scramble);
@@ -69,7 +78,13 @@ export default function LeaderboardPage() {
 
 
         if (data) {
-            const formattedData = data.map((solve, index) => ({ rank: index + 1, name: solve.user_id, time: solve.solve_time }));
+
+            const formattedData = await Promise.all(data.map(async (solve, index) => ({
+                rank: index + 1,
+                name: await fetchUsername(solve.user_id),
+                time: solve.solve_time
+            })));
+
             setSolveTimes(formattedData);
         }
 
