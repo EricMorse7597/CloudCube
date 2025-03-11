@@ -69,13 +69,11 @@ export default function LeaderboardPage() {
         } else {
             console.error(error);
         }
-        setIsLoading(false);
     }
 
 
     // Fetch the solves for the scramble
     const fetchSolves = async () => {
-        setIsLoading(true);
 
         if (!scramble.toString()) return;
 
@@ -83,7 +81,7 @@ export default function LeaderboardPage() {
             .from("solve")
             .select("user_id, solve_time")
             .eq("scramble", scramble.toString())
-            .order("solve_time", { ascending: false })
+            .order("solve_time", { ascending: true })
 
 
         if (data) {
@@ -144,7 +142,7 @@ export default function LeaderboardPage() {
 
                 <Stack align={"center"} m={4}>
                     {session && (
-                        <div>
+                        <Stack align={"center"}>
                             <Card
                                 gap={6}
                                 p={4}
@@ -169,7 +167,7 @@ export default function LeaderboardPage() {
                                     Solve!
                                 </Button>
                             }
-                        </div>)}
+                        </Stack>)}
 
 
 
@@ -179,7 +177,7 @@ export default function LeaderboardPage() {
                     <LeaderboardCard rank={"Rank"} playerName="Player's Name" time={"Solve Time"} />
                     {solveTimes.length > 0 ?
                         solveTimes.map(solve => (
-                            <LeaderboardCard key={solve.rank} rank={solve.rank} playerName={solve.name} time={solve.time} />
+                            <LeaderboardCard key={solve.rank} rank={solve.rank} playerName={solve.name} time={solve.time} isUser={session && solve.name === session.user.user_metadata.username} />
                         ))
                         :
                         <p>No one has solved this weeks scramble!</p>}

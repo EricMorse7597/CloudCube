@@ -43,22 +43,22 @@ const Image = styled.img<{ shadowColor: string }>`
     filter: drop-shadow(5px 5px 1px ${props => props.shadowColor});
 `;
 
-export default function DefinitionCard({ rank, playerName, time }: { rank: string, playerName: string, time: string }) {
+export default function DefinitionCard({ rank, playerName, time, isUser }: { rank: string, playerName: string, time: string, isUser?: boolean }) {
 
     const minWidth = window.innerWidth / 3 > 400 ? "400px" : "50vw";
 
     return (
-        <Card w={"50%"} style={{ minWidth: minWidth }}>
+        <Card borderWidth={isUser ? "3px" : "0"} borderColor={"red.400"} w={"50%"} style={{ minWidth: minWidth }}>
             <Flex
                 gap={6}
                 p={4}
                 wrap={"wrap"}
-                justify={"space-evenly"}
+                justify={"space-between"}
                 align={"stretch"}
             >
                 <p>{rank}</p>
                 <p>{playerName}</p>
-                <p>{parseFloat(time).toFixed(3)}</p>
+                <p>{isNaN(parseFloat(time)) ? "Time" : parseFloat(time).toFixed(3)}</p>
             </Flex>
         </Card >
     );
