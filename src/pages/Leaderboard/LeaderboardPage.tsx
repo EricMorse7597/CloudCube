@@ -15,12 +15,12 @@ import {
 } from "@chakra-ui/react";
 import styled from "styled-components";
 import LeaderboardCard from "src/components/Leaderboard/LeaderboardCard";
+import Timer from "src/components/Timer/Timer";
 import { useEffect, useState } from "react";
 import { supabase } from "src/utils/SupabaseClient";
 import { Divider } from "src/styles/common";
 import { useAuth } from "src/utils/AuthContext";
 import { solve } from "src/lib/search";
-import Timer from "src/components/Timer/Timer";
 import { format } from "path";
 
 const Heading = styled.h1`
@@ -31,12 +31,28 @@ const Heading = styled.h1`
 
 const awardImage = "assets/award.svg";
 
+export function blurScramble() {
+    document.getElementById("scramble")?.blur();
+}
+
+// used to fetch the username of a given UID
+const fetchUsername = async (userID: string) => {
+    const { data } = await supabase
+        .from("profiles")
+        .select("username")
+        .eq("id", userID).single();
+    return data?.username || "Unknown";
+}
+
 export default function LeaderboardPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [scramble, setScramble] = useState("");
     const [solveTimes, setSolveTimes] = useState<any[]>([])
-    const { session } = useAuth();
+    const [userSolved, setUserSolved] = useState(false);
+
+
     const { isOpen, onOpen, onClose } = useDisclosure()
+    const { session } = useAuth();
 
 
     const fetchScramble = async () => {
@@ -56,17 +72,10 @@ export default function LeaderboardPage() {
         setIsLoading(false);
     }
 
-    const fetchUsername = async (userID: string) => {
-        const { data } = await supabase
-            .from("profiles")
-            .select("username")
-            .eq("id", userID).single();
-        return data?.username || "Unknown";
-    }
 
+    // Fetch the solves for the scramble
     const fetchSolves = async () => {
         setIsLoading(true);
-        console.log("scramble!" + scramble);
 
         if (!scramble.toString()) return;
 
@@ -74,10 +83,19 @@ export default function LeaderboardPage() {
             .from("solve")
             .select("user_id, solve_time")
             .eq("scramble", scramble.toString())
-            .order("solve_time", { ascending: true })
+            .order("solve_time", { ascending: false })
 
 
         if (data) {
+
+            if (session) { // check if user has already solved this weeks scramble
+                data.find((solve) => {
+                    if (solve.user_id === session.user.id) {
+                        setUserSolved(true);
+                        blurScramble();
+                    }
+                })
+            }
 
             const formattedData = await Promise.all(data.map(async (solve, index) => ({
                 rank: index + 1,
@@ -85,20 +103,23 @@ export default function LeaderboardPage() {
                 time: solve.solve_time
             })));
 
+
             setSolveTimes(formattedData);
         }
 
         setIsLoading(false);
     }
 
+
+
     useEffect(() => {
         fetchScramble();
-        document.title = "Leaderboard";
+        document.title = "Cloud Cube | Leaderboard";
     }, []);
 
     useEffect(() => {
         fetchSolves();
-    }, [scramble]);
+    }, [scramble, userSolved]);
 
     return (
         isLoading ?
@@ -122,24 +143,35 @@ export default function LeaderboardPage() {
                 </HStack>
 
                 <Stack align={"center"} m={4}>
-                    <Card
-                        gap={6}
-                        p={4}
-                    >Scramble: {scramble}</Card>
+                    {session && (
+                        <div>
+                            <Card
+                                gap={6}
+                                p={4}
+                                filter={!userSolved ? "blur(5px)" : "none"}
+                            >
+                                <p key="scramble"
+                                >Scramble: {scramble}</p>
 
-                    <Button
-                        display={{ base: "none", md: "inline-flex" }}
-                        fontSize={"md"}
-                        fontWeight={600}
-                        margin="0 0.5em"
-                        size={"md"}
-                        colorScheme={"teal"}
-                    >
-                        Solve!
-                    </Button>
+                            </Card>
+
+                            {userSolved ? <p>You have already solved this weeks scramble!</p>
+                                :
+                                <Button
+                                    display={{ base: "none", md: "inline-flex" }}
+                                    fontSize={"md"}
+                                    fontWeight={600}
+                                    margin="0 0.5em"
+                                    size={"md"}
+                                    colorScheme={"teal"}
+                                    onClick={onOpen}
+                                >
+                                    Solve!
+                                </Button>
+                            }
+                        </div>)}
 
 
-                    <Button onClick={onOpen}>Open Modal</Button>
 
 
                     <Divider />
@@ -154,14 +186,14 @@ export default function LeaderboardPage() {
                 </Stack>
 
 
-                <Modal isOpen={isOpen} onClose={onClose} size={"6xl"}>
+                <Modal isOpen={isOpen} onClose={onClose} size={"6xl"} >
                     <ModalOverlay />
                     <ModalContent p={4}>
 
                         <Timer scramble={scramble} />
 
                         <ModalFooter>
-                            <Button colorScheme='blue' mr={3} onClick={onClose}>
+                            <Button mr={3} onClick={onClose}>
                                 Close
                             </Button>
                         </ModalFooter>

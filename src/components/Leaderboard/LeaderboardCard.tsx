@@ -58,7 +58,7 @@ export default function DefinitionCard({ rank, playerName, time }: { rank: strin
             >
                 <p>{rank}</p>
                 <p>{playerName}</p>
-                <p>{time}</p>
+                <p>{parseFloat(time).toFixed(3)}</p>
             </Flex>
         </Card >
     );
