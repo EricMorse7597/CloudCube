@@ -59,3 +59,10 @@
     font-size: large;
     padding-bottom: 2%;
 }
+
+.css-1xcaba3{
+  width: 100%;
+  padding: 2.4em;
+  border-radius: var(--chakra-radii-md);
+  margin-top: 30%;
+}

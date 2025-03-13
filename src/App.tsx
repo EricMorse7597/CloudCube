@@ -100,18 +100,7 @@ export default function App() {
 
     loadSession();
 
-    // Subscribe to auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session) {
-        setSession(null);  // Reset session state if the session is missing
-      } else {
-        setSession(session);  // Update session if it's valid
-      }
-    });  
 
-    return () => {
-      subscription?.unsubscribe();
-    };
   }, []);
 
   useEffect(() => {
