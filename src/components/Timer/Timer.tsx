@@ -1,6 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
-import { randomScrambleForEvent } from "cubing/scramble";
 import { supabase } from "src/utils/SupabaseClient";
 import { useAuth } from "src/utils/AuthContext";
 import {
@@ -10,13 +9,17 @@ import {
     HStack,
     Heading,
     useToast,
-    Spacer
 } from "@chakra-ui/react";
-import UserSolveTable from "src/components/User/UserSolveTable";
-import { Session } from '@supabase/supabase-js';
 import DropDown from "../DropDown";
+import styled from "styled-components";
 
-export default function Timer({ scramble, showDropDown=false, onValueChange }: { scramble: string , showDropDown?: boolean, onValueChange: (value: string) => void }) {
+type TimerProps = {
+    scramble: string;
+    showDropDown?: boolean;
+    onValueChange: (value: string) => void;
+}
+
+export default function Timer({ scramble, showDropDown=false, onValueChange }: TimerProps) {
     const [isRunning, setIsRunning] = useState(false);
     const [time, setTime] = useState(0);
     const [isHolding, setIsHolding] = useState(false);
@@ -134,19 +137,29 @@ export default function Timer({ scramble, showDropDown=false, onValueChange }: {
 
     const color = useColorModeValue("black", "white");
 
+
+    const ScrambleWrapper = styled.div`
+        display:grid;
+        place-items:center;
+        gap:1rem;
+        grid-template-columns:1fr auto 1fr;
+    `
+
+    const Scramble = styled.h1`
+        grid-column-start: 2;
+    `
+
     return (
         <Stack align="center" >
             <HStack spacing={4}>
                 <Heading size="md">Timer</Heading>
             </HStack>
             <Card p="1.5rem" w="75%">
-                <HStack spacing={3} align="center">
+                <ScrambleWrapper>
                     {showDropDown && <DropDown onValueChange={onValueChange} />}
-                    <Spacer />
-                    <h1>Scramble: {scramble}</h1>
-                    <Spacer />
-                    <Spacer />
-                </HStack>
+                    <Scramble>Scramble: {scramble}</Scramble>
+
+                </ScrambleWrapper>
             </Card>
 
             <Card p="6.5rem" w="40%" textAlign="center">
