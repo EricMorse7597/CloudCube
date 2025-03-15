@@ -21,6 +21,7 @@ export default function Timer({ scramble }: { scramble: string }) {
     const [spaceDownTime, setSpaceDownTime] = useState(0);
     const [delayTime, setDelayTime] = useState(0);
     const [colorDelay, setColorDelay] = useState(false);
+    const [pushedTime, setPushedTime] = useState(0);
 
     const { session } = useAuth();
     const toast = useToast();
@@ -57,6 +58,7 @@ export default function Timer({ scramble }: { scramble: string }) {
                 });
                 if (error) throw error;
                 showSuccess();
+                setPushedTime(time);
 
             } else {
                 showFailure();
@@ -142,8 +144,8 @@ export default function Timer({ scramble }: { scramble: string }) {
                 </Stack>
             </Card>
 
-            <Card p="6.5rem" w="40%" textAlign="center">
-                <Heading style={{ color: isHolding ? (colorDelay ? 'green' : 'yellow') : color }} size="4xl">{time.toFixed(2)}s</Heading>
+            <Card id="timer" p="6.5rem" w="40%" textAlign="center" data-time={pushedTime}>
+                <Heading style={{ fontVariantNumeric: "tabular-nums", color: isHolding ? (colorDelay ? 'green' : 'yellow') : color }} size="4xl">{time.toFixed(2)}s</Heading>
             </Card>
             <p>Press spacebar to start/stop the timer</p>
             <br />

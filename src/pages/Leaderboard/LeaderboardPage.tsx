@@ -22,6 +22,7 @@ import { Divider } from "src/styles/common";
 import { useAuth } from "src/utils/AuthContext";
 import { solve } from "src/lib/search";
 import { format } from "path";
+import { useHotkeys } from "react-hotkeys-hook";
 
 const Heading = styled.h1`
     font-size: 1.4rem;
@@ -49,11 +50,11 @@ export default function LeaderboardPage() {
     const [scramble, setScramble] = useState("");
     const [solveTimes, setSolveTimes] = useState<any[]>([])
     const [userSolved, setUserSolved] = useState(false);
-
+    const [solved, setSolved] = useState(false);
+    const [userSolveTime, setUserSolvetime] = useState<number>(0);
 
     const { isOpen, onOpen, onClose } = useDisclosure()
     const { session } = useAuth();
-
 
     const fetchScramble = async () => {
         setIsLoading(true);
@@ -107,8 +108,35 @@ export default function LeaderboardPage() {
 
         setIsLoading(false);
     }
+    // Fetch the solves for the scramble
+    const fetchUserSolve = async () => {
+
+        if (!scramble.toString()) return;
+
+        const { data, error } = await supabase
+            .from("solve")
+            .select("solve_time")
+            .eq("scramble", scramble.toString())
+            .eq("user_id", session.user.id)
+            .order("solve_time")
 
 
+        if (data) {
+            setUserSolvetime(parseFloat(data[0].solve_time));
+        }
+    }
+
+
+    useHotkeys('space', (event) => {
+        event.preventDefault();
+        if (event.repeat) return;
+        const time = parseFloat(document.getElementById("timer")?.getAttribute("data-time") || "0");
+
+        if (time > 0) {
+            setSolved(true);
+            onClose();
+        }
+    }, { keyup: true });
 
     useEffect(() => {
         fetchScramble();
@@ -116,14 +144,16 @@ export default function LeaderboardPage() {
     }, []);
 
     useEffect(() => {
+        if (session) fetchUserSolve();
         fetchSolves();
-    }, [scramble, userSolved]);
+    }, [scramble, userSolved, solved]);
 
     return (
         isLoading ?
             (<p>Loading...</p>)
             :
             (<div>
+
                 <HStack align={"center"} justify={"center"} spacing={4} m={4}>
                     <Image
                         src={awardImage}
@@ -169,8 +199,11 @@ export default function LeaderboardPage() {
                             }
                         </Stack>)}
 
+                    <Divider />
 
-
+                    {session && userSolveTime > 0 && (
+                        <LeaderboardCard rank={(solveTimes.findIndex((solve) => { return solve.name === session.user.user_metadata.username }) + 1).toString()} playerName={session.user.user_metadata.username} time={userSolveTime.toString()} isUser={true} />
+                    )}
 
                     <Divider />
 
@@ -184,17 +217,12 @@ export default function LeaderboardPage() {
                 </Stack>
 
 
-                <Modal isOpen={isOpen} onClose={onClose} size={"6xl"} >
+                <Modal isOpen={isOpen} onClose={() => { }} size={"6xl"} >
                     <ModalOverlay />
                     <ModalContent p={4}>
 
                         <Timer scramble={scramble} />
 
-                        <ModalFooter>
-                            <Button mr={3} onClick={onClose}>
-                                Close
-                            </Button>
-                        </ModalFooter>
                     </ModalContent>
                 </Modal>
             </div >)
