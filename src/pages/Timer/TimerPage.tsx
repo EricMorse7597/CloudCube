@@ -13,6 +13,7 @@ import {
     useToast
 } from "@chakra-ui/react";
 import UserSolveTable from "src/components/User/UserSolveTable";
+import DropDown from "src/components/DropDown";
 
 export default function TimerPage({ session }: { session: any }) {
     const [isRunning, setIsRunning] = useState(false);
@@ -96,6 +97,7 @@ export default function TimerPage({ session }: { session: any }) {
     return (
         <Stack justify="center" marginBottom="2rem" spacing={4} mt={4}>
             <Timer
+                showDropDown={true}
                 scramble={scramble}
             />
 
@@ -105,6 +107,7 @@ export default function TimerPage({ session }: { session: any }) {
                     <UserSolveTable solves={entries} />
                 )}
             </Card>
+            <DropDown />
         </Stack>
     );
 }

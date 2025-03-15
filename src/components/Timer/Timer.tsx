@@ -9,12 +9,14 @@ import {
     Stack,
     HStack,
     Heading,
-    useToast
+    useToast,
+    Spacer
 } from "@chakra-ui/react";
 import UserSolveTable from "src/components/User/UserSolveTable";
 import { Session } from '@supabase/supabase-js';
+import DropDown from "../DropDown";
 
-export default function Timer({ scramble }: { scramble: string }) {
+export default function Timer({ scramble, showDropDown=false}: { scramble: string , showDropDown?: boolean}) {
     const [isRunning, setIsRunning] = useState(false);
     const [time, setTime] = useState(0);
     const [isHolding, setIsHolding] = useState(false);
@@ -137,9 +139,13 @@ export default function Timer({ scramble }: { scramble: string }) {
                 <Heading size="md">Timer</Heading>
             </HStack>
             <Card p="1.5rem" w="75%">
-                <Stack spacing={4} align="center">
+                <HStack spacing={3} align="center">
+                    {showDropDown && <DropDown />}
+                    <Spacer />
                     <h1>Scramble: {scramble}</h1>
-                </Stack>
+                    <Spacer />
+                    
+                </HStack>
             </Card>
 
             <Card p="6.5rem" w="40%" textAlign="center">
