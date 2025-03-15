@@ -20,6 +20,7 @@ export default function TimerPage({ session }: { session: any }) {
     const [scramble, setScramble] = useState("");
     const [isHolding, setIsHolding] = useState(false);
     const [spaceDownTime, setSpaceDownTime] = useState(0);
+    const [selectedValue, setSelectedValue] = useState("333");
 
     const [entries, setEntries] = useState<any[]>([]);
     const toast = useToast();
@@ -51,9 +52,9 @@ export default function TimerPage({ session }: { session: any }) {
     };
 
     const getNewScramble = useCallback(async (): Promise<void> => {
-        const newScramble = await randomScrambleForEvent("333");
+        const newScramble = await randomScrambleForEvent(selectedValue);
         setScramble(newScramble.toString());
-    }, []);
+    }, [selectedValue]);
 
     useHotkeys('space', (event) => { // KEYDOWN
         event.preventDefault();
@@ -86,7 +87,7 @@ export default function TimerPage({ session }: { session: any }) {
 
     useEffect(() => {
         getNewScramble();
-    }, []);
+    }, [getNewScramble]);
 
     useEffect(() => {
         if (session) {
@@ -99,6 +100,7 @@ export default function TimerPage({ session }: { session: any }) {
             <Timer
                 showDropDown={true}
                 scramble={scramble}
+                onValueChange={setSelectedValue}
             />
 
             <Card ml={"15%"} mr={"15%"} >
@@ -107,6 +109,7 @@ export default function TimerPage({ session }: { session: any }) {
                     <UserSolveTable solves={entries} />
                 )}
             </Card>
+            <h1>{selectedValue}</h1>
         </Stack>
     );
 }

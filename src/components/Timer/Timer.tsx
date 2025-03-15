@@ -16,13 +16,14 @@ import UserSolveTable from "src/components/User/UserSolveTable";
 import { Session } from '@supabase/supabase-js';
 import DropDown from "../DropDown";
 
-export default function Timer({ scramble, showDropDown=false}: { scramble: string , showDropDown?: boolean}) {
+export default function Timer({ scramble, showDropDown=false, onValueChange }: { scramble: string , showDropDown?: boolean, onValueChange: (value: string) => void }) {
     const [isRunning, setIsRunning] = useState(false);
     const [time, setTime] = useState(0);
     const [isHolding, setIsHolding] = useState(false);
     const [spaceDownTime, setSpaceDownTime] = useState(0);
     const [delayTime, setDelayTime] = useState(0);
     const [colorDelay, setColorDelay] = useState(false);
+    const [selectedValue, setSelectedValue] = useState("333");
 
     const { session } = useAuth();
     const toast = useToast();
@@ -140,11 +141,11 @@ export default function Timer({ scramble, showDropDown=false}: { scramble: strin
             </HStack>
             <Card p="1.5rem" w="75%">
                 <HStack spacing={3} align="center">
-                    {showDropDown && <DropDown />}
+                    {showDropDown && <DropDown onValueChange={onValueChange} />}
                     <Spacer />
                     <h1>Scramble: {scramble}</h1>
                     <Spacer />
-                    
+                    <Spacer />
                 </HStack>
             </Card>
 
