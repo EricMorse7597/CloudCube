@@ -32,6 +32,7 @@ import {
   Move3x3,
   RotationMove,
   translateMoves,
+  parseNotation,
 } from "src/lib/puzzles/cube3x3";
 
 import useScrambleAndSolutions from "../common/useScrambleAndSolutions";
@@ -179,7 +180,7 @@ export default function CrossTrainer() {
 }
 
 const scrambleParser = (input: string) => {
-  const parsed = Cube3x3.parseNotation(input);
+  const parsed = parseNotation(input);
   return parsed?.every(isFaceMove) ? parsed : null;
 };
 

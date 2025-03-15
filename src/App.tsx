@@ -9,26 +9,28 @@ import {
 import { Container, Flex } from "@chakra-ui/react";
 import { useAuth } from "./utils/AuthContext";
 import NavBar from "./components/NavBar/NavBar";
+import { ReactNode, useEffect, useState } from "react";
+import { AuthProvider } from "./utils/AuthContext";
+import Plausible from "plausible-tracker";
+import { Session } from "@supabase/supabase-js";
+import { supabase } from './utils/SupabaseClient';
+import UserSolveTable from "./components/User/UserSolveTable";
+
+// pages
 import Home from "./pages/Home";
 import ErrorPage from "./pages/ErrorPage";
 import CrossTrainerPage from "./pages/train/CrossTrainerPage";
 import EOStepTrainerPage from "./pages/train/EOStepTrainerPage";
 import TrainerPage from "./pages/train";
-import TestPage from "./pages/TestPage";
 import OHScramble from "./pages/OHScramble";
-import { ReactNode, useEffect, useState } from "react";
 import AboutPage from "./pages/About";
 import LoginPage from "./pages/user/LoginPage";
-import { AuthProvider } from "./utils/AuthContext";
-import Timer from "./components/Timer";
-import Plausible from "plausible-tracker";
 import DefinitionsPage from "./pages/Definitions/definitions";
 import Register from "./pages/user/RegisterPage";
 import ProfilePage from "./pages/user/ProfilePage";
 import RecoverPage from "./pages/user/RecoverPage";
-import { Session } from "@supabase/supabase-js";
-import { supabase } from './utils/SupabaseClient';
-import UserSolveTable from "./components/User/UserSolveTable";
+import TimerPage from "./pages/Timer/TimerPage";
+import LeaderboardPage from "./pages/Leaderboard/LeaderboardPage";
 
 export const plausible = Plausible({
   domain: "crystalcuber.com",
@@ -56,7 +58,7 @@ function createAppRouter(session: Session | null, solves: any[]) {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<Register />} />
         <Route path="/about" element={<AboutPage />} />
-        <Route path="/profile" element={session ? <ProfilePage session={session} /> : <LoginPage />}/>
+        <Route path="/profile" element={session ? <ProfilePage session={session} /> : <LoginPage />} />
         <Route index element={<Home />} />
         <Route path="train">
           <Route index element={<TrainerPage />} />
@@ -71,10 +73,11 @@ function createAppRouter(session: Session | null, solves: any[]) {
           <Route path="ohscramble" element={<OHScramble />} />
         </Route>
         <Route path="about" element={<AboutPage />} />
-        <Route path="timer" element={session ? <Timer session={session} /> : <Timer session={null} />} />
+        <Route path="timer" element={session ? <TimerPage session={session} /> : <TimerPage session={null} />} />
         <Route path="definitions" element={<DefinitionsPage />} />
         <Route path="recover" element={<RecoverPage />} />
         <Route path="grid" element={<UserSolveTable solves={solves} />} />
+        <Route path="leaderboard" element={<LeaderboardPage />} />
       </Route>
     )
   );
@@ -100,28 +103,39 @@ export default function App() {
 
     loadSession();
 
+    // Subscribe to auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) {
+        setSession(null);  // Reset session state if the session is missing
+      } else {
+        setSession(session);  // Update session if it's valid
+      }
+    });
 
+    return () => {
+      subscription?.unsubscribe();
+    };
   }, []);
 
   useEffect(() => {
     const fetchSolves = async () => {
-        if (session?.user?.id) {
-            const { data, error } = await supabase
-                .from("solve")
-                .select("scramble, solve_time, created_at")
-                .eq("user_id", session.user.id)
-                .order('created_at', { ascending: false });
+      if (session?.user?.id) {
+        const { data, error } = await supabase
+          .from("solve")
+          .select("scramble, solve_time, created_at")
+          .eq("user_id", session.user.id)
+          .order('created_at', { ascending: false });
 
-            if (data) {
-                setSolves(data);
-            } else {
-                console.error("Error fetching solves:", error);
-            }
+        if (data) {
+          setSolves(data);
+        } else {
+          console.error("Error fetching solves:", error);
         }
+      }
     };
 
     fetchSolves();
-}, [session]);
+  }, [session]);
 
   if (loading) {
     return <div>Loading...</div>;

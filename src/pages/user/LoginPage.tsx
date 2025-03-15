@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useNavigate, Navigate } from "react-router-dom";
 import { useAuth } from "src/utils/AuthContext";
 import { supabase } from "src/utils/SupabaseClient";
-import { Grid, GridItem, useToast } from "@chakra-ui/react";
+import { Flex, GridItem, useToast } from "@chakra-ui/react";
+import { Header1, Header2, FormSection } from "src/styles/common";
 import "src/styles/index.css";
 
 export default function LoginPage() {
@@ -96,14 +97,17 @@ export default function LoginPage() {
 
     return (
 
-        <div className="element-style">
+        <div>
             <form onSubmit={handleSubmit}>
-                <Grid
-                    templateColumns="repeat(1, 1fr)"
+                <Flex
+                    marginTop={"2rem"}
+                    width="100%"
+                    direction="column"
+                    align="center"
                     gap={1.5}
                 >
-                  <h1>Login</h1>
-                    <GridItem>
+                  <Header1>Login</Header1>
+                    <FormSection>
                         
                         <input
                             type="text"
@@ -113,8 +117,6 @@ export default function LoginPage() {
                             onChange={(e) => setIdentifier(e.target.value)}
                             required
                         />
-                    </GridItem>
-                    <GridItem>
                         <input
                             type="password"
                             placeholder="Password"
@@ -123,17 +125,15 @@ export default function LoginPage() {
                             onChange={(e) => setPassword(e.target.value)}
                             required
                         />
-                    </GridItem>
-                    <GridItem>
-                        <a href="/register" className="registerPrompt">Don't yet have an account, Sign Up here!</a>
-                    </GridItem>
-                    <GridItem >
-                        <a href="/recover" className="registerPrompt">Forgot Password?</a>
-                    </GridItem>
+                    </FormSection>
                     <GridItem>
                         <button className="button-style" type="submit">Login</button>
                     </GridItem>
-                </Grid>
+                    <br />
+                    <p>Don't have an account? <a className="link" href="/register">Sign Up here!</a></p>
+                    <a className="link" href="/recover">Forgot Password?</a>
+
+                </Flex>
                 {error && <p className="error-message">{error}</p>}
             </form>
         </div>

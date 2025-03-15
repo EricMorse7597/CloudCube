@@ -3,6 +3,8 @@ export * from "./masks";
 export * from "./moves";
 export * from "./orientations";
 export * from "./puzzleConfigs";
+export * from "./move";
+export * from "./helper";
 // TODO: for some reason, the app won't build if ./solvers is exported
 // something to do with web workers...
 // export * from "./solvers";

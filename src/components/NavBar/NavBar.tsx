@@ -25,54 +25,23 @@ import {
   ChevronDownIcon,
   ChevronRightIcon,
 } from "@chakra-ui/icons";
+
+import { NavButton } from "src/styles/common";
+
 import { ColorModeSwitcher } from "./ColorModeSwitcher";
 import { Link as RouterLink } from "react-router-dom";
 import NAV_ITEMS, { NavItem } from "./navItems";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../utils/AuthContext";
-import { supabase } from "src/utils/SupabaseClient";
-import { useState, useEffect } from "react";
 
 export default function NavBar() {
   const { isOpen, onToggle, onClose } = useDisclosure();
   const navigate = useNavigate();
-  const { userName, isAuthenticated, logout, session } = useAuth();
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const { userName, isAuthenticated, logout } = useAuth();
   const linkColor = useColorModeValue("gray.600", "gray.200");
   const linkHoverColor = useColorModeValue("gray.800", "white");
   const buttonColor = useColorModeValue("#EDF2F7", "#2C313D");
   const popoverContentBgColor = useColorModeValue("white", "gray.800");
-
-  useEffect(() => {
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        console.log("Auth State Changed:", event, session);
-        if (session) {
-          console.log("User is logged in, updating session...");
-          setAvatarUrl(null); // Reset before fetching new avatar
-          const { data, error } = await supabase
-            .from("profiles")
-            .select("avatar_url")
-            .eq("id", session.user.id)
-            .single();
-            
-          if (error) {
-            console.error("Error fetching avatar:", error.message);
-          } else {
-            console.log("Updated avatar after login:", data?.avatar_url);
-            setAvatarUrl(data?.avatar_url || null);
-          }
-        }
-      }
-    );
-  
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
-  }, []);
-  
-  const bucketUrl = "https://mxvnbjoezxeubbcwdnqh.supabase.co/storage/v1/object/public/avatars";
-  const fullAvatarUrl = avatarUrl ? `${bucketUrl}/${avatarUrl}` : undefined;
 
   return (
     <Box
@@ -133,7 +102,7 @@ export default function NavBar() {
             {/* User Section or Login/Sign-Up Buttons */}
             <Flex align="center">
               {isAuthenticated && userName ? (
-                <><Popover trigger="hover" placement="bottom-start">
+                <Popover trigger="hover" placement="bottom-start">
                   <PopoverTrigger>
                     <Button
                       fontWeight={500}
@@ -158,71 +127,26 @@ export default function NavBar() {
                     minW="sm"
                   >
                     <Stack>
-                      <Button
-                        variant="link"
-                        onClick={() => {
-                          navigate("/profile");
-                        } }
-                      >
-                        Dashboard
-                      </Button>
-                      <Button
-                        variant="link"
-                        onClick={() => {
-                          logout();
-                          setTimeout(() => {
-                            window.location.assign("/login");
-                          }, 2500);
+                      <DesktopSubNav
+                        label="Dashboard"
+                        href="/profile"
+                      />
+                      <DesktopSubNav
+                        label="Logout"
+                        href=""
+                        onClick={async () => {
+                          await logout();
+                          window.location.assign("/login");
                         }}
-                      >
-                        Logout
-                      </Button>
+                      />
                     </Stack>
                   </PopoverContent>
-                </Popover><Flex align="center">
-                    {fullAvatarUrl ? (
-                      <Image
-                        boxSize="35px"
-                        borderRadius="full"
-                        src={fullAvatarUrl}
-                        alt="User Avatar"
-                        fallbackSrc="/assets/default.png" // Placeholder if the image fails to load
-                        _hover={{
-                          textDecoration: "none",
-                        }}
-                        ml={5} // Adjust this margin to move the avatar to the right
-                      />
-                    ) : (
-                      <Image
-                        boxSize="35px"
-                        borderRadius="full"
-                        src="/assets/default.png" // Default avatar
-                        alt="Default Avatar"
-                        ml={5} />
-                    )}
-                  </Flex></>
+                </Popover>
               ) : (
-                <div style={{ display: "flex" }}>
-                  <Button
-                    display={{ base: "none", md: "inline-flex" }}
-                    fontSize="sm"
-                    fontWeight={600}
-                    colorScheme="blue"
-                    marginRight={2}
-                    onClick={() => navigate("/login")}
-                  >
-                    Sign In
-                  </Button>
-                  <Button
-                    display={{ base: "none", md: "inline-flex" }}
-                    fontSize="sm"
-                    fontWeight={600}
-                    colorScheme="green"
-                    onClick={() => navigate("/register")}
-                  >
-                    Sign Up
-                  </Button>
-                </div>
+                <Flex>
+                  <NavButton href="/login" text="Sign In" color="blue" size="sm" />
+                  <NavButton href="/register" text="Sign Up" color="teal" size="sm" />
+                </Flex>
               )}
             </Flex>
           </Stack>
@@ -289,10 +213,9 @@ const DesktopNav = () => {
 };
 
 
-const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
+const DesktopSubNav = ({ label, href, subLabel, onClick }: NavItem & { onClick?: () => void }) => {
   return (
     <Link
-      // href={href}
       as={href ? RouterLink : undefined}
       to={href ?? ""}
       role="group"
@@ -300,6 +223,7 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
       p={2}
       rounded="md"
       _hover={{ bg: useColorModeValue("cyan.50", "gray.900") }}
+      onClick={onClick}
     >
       <Stack direction="row" align="center">
         <Box>

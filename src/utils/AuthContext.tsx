@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         // Set the username from user metadata if available
         const user = session.user;
         console.log("Logging as the session user:", session.user);
-        setUserName(user.user_metadata?.username);  
+        setUserName(user.user_metadata?.username);
         setIsAuthenticated(true);
       } else {
         console.log("No active session found");
@@ -46,7 +46,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         console.log(`Auth state changed:`, session);
         if (session?.user) {
           console.log("Logging as the session user:", session.user);
-          setUserName(session.user.user_metadata?.username);  
+          setUserName(session.user.user_metadata?.username);
           setIsAuthenticated(true);
         } else {
           setUserName(null);
@@ -63,34 +63,35 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const login = async () => {
     const { data: userData, error: userError } = await supabase.auth.getUser();
-  
+
     if (userError || !userData?.user?.id) {
       console.error("Error fetching authenticated user:", userError);
       return;
     }
-  
+
     const { data, error } = await supabase
       .from("profiles")
       .select("username")
       .eq("id", userData.user.id)
       .single();
-  
+
     if (error) {
       console.error("Error fetching username:", error);
       return;
     }
-  
+
     setUserName(data.username);
     localStorage.setItem("username", data.username);
     setIsAuthenticated(true);
-  };  
-  
-  
+  };
+
+
   const logout = async () => {
-    await supabase.auth.signOut();  
+    await supabase.auth.signOut();
     setUserName(null);
     setIsAuthenticated(false);
-    
+    localStorage.clear();
+
     toast({
       title: "Signed out successfully.",
       description: "You have been logged out.",

@@ -3,6 +3,7 @@ export interface NavItem {
   subLabel?: string;
   children?: Array<NavItem>;
   href?: string;
+  clickEvent?: () => void;
 }
 
 const NAV_ITEMS: Array<NavItem> = [
@@ -40,6 +41,10 @@ const NAV_ITEMS: Array<NavItem> = [
   {
     label: "About",
     href: "about",
+  },
+  {
+    label: "Leaderboard",
+    href: "leaderboard",
   },
   // {
   //   label: "",
