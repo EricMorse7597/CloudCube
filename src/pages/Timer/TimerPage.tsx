@@ -107,7 +107,6 @@ export default function TimerPage({ session }: { session: any }) {
                     <UserSolveTable solves={entries} />
                 )}
             </Card>
-            <DropDown />
         </Stack>
     );
 }
