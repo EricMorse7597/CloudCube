@@ -42,6 +42,10 @@ const NAV_ITEMS: Array<NavItem> = [
     label: "About",
     href: "about",
   },
+  {
+    label: "Leaderboard",
+    href: "leaderboard",
+  },
   // {
   //   label: "",
   //   href: "dashboard",
