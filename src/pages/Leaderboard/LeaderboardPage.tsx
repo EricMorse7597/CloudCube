@@ -52,6 +52,7 @@ export default function LeaderboardPage() {
     const [userSolved, setUserSolved] = useState(false);
     const [solved, setSolved] = useState(false);
     const [userSolveTime, setUserSolvetime] = useState<number>(0);
+    const [timerElement, setTimerElement] = useState<HTMLElement | null>(null);
 
     const { isOpen, onOpen, onClose } = useDisclosure()
     const { session } = useAuth();
@@ -72,7 +73,6 @@ export default function LeaderboardPage() {
         }
     }
 
-
     // Fetch the solves for the scramble
     const fetchSolves = async () => {
 
@@ -83,7 +83,6 @@ export default function LeaderboardPage() {
             .select("user_id, solve_time")
             .eq("scramble", scramble.toString())
             .order("solve_time", { ascending: true })
-
 
         if (data) {
 
@@ -130,12 +129,15 @@ export default function LeaderboardPage() {
     useHotkeys('space', (event) => {
         event.preventDefault();
         if (event.repeat) return;
-        const time = parseFloat(document.getElementById("timer")?.getAttribute("data-time") || "0");
 
-        if (time > 0) {
-            setSolved(true);
-            onClose();
-        }
+        setInterval(() => {
+            var element = document.getElementById("timer");
+            if (element && parseFloat(element.getAttribute("data-time") || "0") > 0) {
+                setSolved(true);
+                onClose();
+            }
+        }, 10);
+
     }, { keyup: true });
 
     useEffect(() => {
@@ -147,6 +149,7 @@ export default function LeaderboardPage() {
         if (session) fetchUserSolve();
         fetchSolves();
     }, [scramble, userSolved, solved]);
+
 
     return (
         isLoading ?
@@ -183,6 +186,17 @@ export default function LeaderboardPage() {
 
                             </Card>
 
+                            <Button
+                                display={{ base: "none", md: "inline-flex" }}
+                                fontSize={"md"}
+                                fontWeight={600}
+                                margin="0 0.5em"
+                                size={"md"}
+                                colorScheme={"teal"}
+                                onClick={onOpen}
+                            >
+                                Solve!
+                            </Button>
                             {userSolved ? <p>You have already solved this weeks scramble!</p>
                                 :
                                 <Button
