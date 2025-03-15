@@ -186,17 +186,6 @@ export default function LeaderboardPage() {
 
                             </Card>
 
-                            <Button
-                                display={{ base: "none", md: "inline-flex" }}
-                                fontSize={"md"}
-                                fontWeight={600}
-                                margin="0 0.5em"
-                                size={"md"}
-                                colorScheme={"teal"}
-                                onClick={onOpen}
-                            >
-                                Solve!
-                            </Button>
                             {userSolved ? <p>You have already solved this weeks scramble!</p>
                                 :
                                 <Button
