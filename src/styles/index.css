@@ -46,6 +46,7 @@
     color: red;
     font-size: 14px;
     margin-top: 10px;
+    padding: 1px 1px 1px 10px;
 }
 
 .success-message {
@@ -75,4 +76,12 @@
   padding: 2.4em;
   border-radius: var(--chakra-radii-md);
   margin-top: 30%;
+}
+
+form.FormInfo {
+  display: flex !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  margin: auto !important;
+  margin-bottom: 2rem !important;
 }

@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "src/utils/SupabaseClient";
-import { Button} from "@chakra-ui/react";
+import { Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, useDisclosure, Grid, GridItem } from "@chakra-ui/react";
 import { useAuth } from "src/utils/AuthContext";
 import "src/styles/index.css";
 import Avatar from "src/components/User/Avatar"
 import UserSolveTable from "src/components/User/UserSolveTable";
-import styled from "styled-components"
-import {Header1, Header2, Divider, FormLabel, FormSection} from "src/styles/common"
+import styled from "styled-components";
+import {Header1, Header2, Divider, FormLabel, FormSection} from "src/styles/common"; 
 
 
 const ProfileWrapper = styled.div`
@@ -56,6 +56,14 @@ export default function ProfilePage({ session }: { session: any }) {
     const [successMessage, setSuccessMessage] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const { logout } = useAuth();
+
+    const [successMessageDeletion, setSuccessMessageDeletion] = useState("");
+    const [errorMessageDeletion, setErrorMessageDeletion] = useState("");
+    const [currentPasswordDeletion, setCurrentPasswordDeletion] = useState("");
+
+    const [activeSection, setActiveSection] = useState<"dashboard" | "settings">("dashboard");
+    const { isOpen, onOpen, onClose } = useDisclosure();
+
     const navigate = useNavigate();
 
     async function getProfile() {
@@ -140,6 +148,99 @@ export default function ProfilePage({ session }: { session: any }) {
         fetchSolves(); 
     }, []);
 
+    const clearSolveHistory = async () => {
+        console.log("Deleting solve history for user:", session.user.id);
+        const { error } = await supabase.from("solve").delete().eq("user_id", session.user.id);
+    
+        if (error) {
+            console.error("Error deleting solve history:", error.message);
+            return;
+        }
+    
+        console.log("Solve history deleted successfully!");
+        setEntries([]); // Clear UI table
+        onClose(); // Close modal
+    };
+
+    function exportToCSV() {
+        if (entries.length === 0) {
+            alert("No data to export.");
+            return;
+        }
+    
+        // Ensure username is available
+        const fileName = `solve_history_${username ?? "user"}.csv`;
+    
+        // defining CSV headers
+        const headers = ["Scramble", "Solve Time", "Created At"];
+    
+        // converting array of objects to CSV string
+        const csvRows = [
+            headers.join(","), // Add headers
+            ...entries.map(entry =>
+                [entry.scramble, entry.solve_time, entry.created_at].join(",")
+            )
+        ].join("\n");
+    
+        const blob = new Blob([csvRows], { type: "text/csv" });
+    
+        // Create a link below
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+
+    const handleDeleteAccount = async (e: React.FormEvent) => {
+        e.preventDefault();
+    
+        setSuccessMessageDeletion("");
+        setErrorMessageDeletion("");
+    
+        if (!currentPasswordDeletion) {
+            setErrorMessageDeletion("Please enter your password to confirm account deletion.");
+            return;
+        }
+    
+        const user = session.user;
+
+        const { error: authError } = await supabase.auth.signInWithPassword({
+            email: user.email,
+            password: currentPasswordDeletion,
+        });
+    
+        if (authError) {
+            setErrorMessageDeletion("Incorrect password. Please try again.");
+            return;
+        }
+    
+        try {
+            const { error } = await supabase.rpc("delete_user");
+    
+            if (error) {
+                throw error;
+            }
+    
+            setSuccessMessageDeletion("Your account has been deleted. Thank you for using Cloud Cube ❤️");
+            await supabase.auth.signOut();
+            setTimeout(() => window.location.assign("/"), 2000);
+        } catch (error: any) {
+            setErrorMessageDeletion(`Error deleting account: ${error.message}`);
+        }
+        
+    };
+    
+
+    const handleSettingsClick = () => {
+        setActiveSection("settings");
+    };
+    
+    const handleDashboardClick = () => {
+        setActiveSection("dashboard");
+    };
+
     const handleUpdate = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -210,10 +311,64 @@ export default function ProfilePage({ session }: { session: any }) {
     };
 
     return (
-        !loading ?
-            (
-                <ProfileWrapper>
-                    <Header1 style={{ fontWeight: "bold", textAlign: "center" }}>Profile</Header1>
+
+        <Grid templateColumns="250px 1fr" gap={4} p={4}>
+
+            {/* Sidebar Navigation */}
+            <GridItem w="100%" p={4} borderRadius="md">
+                <button onClick={handleDashboardClick} style={{ fontWeight: activeSection === "dashboard" ? "bold" : "normal" }}> Dashboard </button>
+                <br></br>
+                <br></br>
+                <button onClick={handleSettingsClick} style={{ fontWeight: activeSection === "settings" ? "bold" : "normal" }}> Settings </button>
+            </GridItem>
+
+            {/* Dashboard Content */}
+            {activeSection === "dashboard" && (
+                <GridItem w="100%">
+                    <Header1 style={{ fontWeight: "bold", textAlign: "center" }}>Your Solve History</Header1>
+
+                    <form className="FormInfo" onSubmit={(e) => { e.preventDefault(); exportToCSV(); }}>
+                        <Button type="submit" colorScheme="green">Export to CSV</Button>
+                        <Button colorScheme="red" onClick={onOpen}>Clear Solves</Button>
+                            <Modal isOpen={isOpen} onClose={onClose}>
+                                <ModalOverlay />
+                                <ModalContent>
+                                    <ModalHeader>Confirm Deletion</ModalHeader>
+                                    <ModalBody>
+                                        {entries.length === 0 ? (
+                                            <p>No solve history to delete.</p>
+                                        ) : (
+                                            <p>Are you sure you want to delete all solve history? This action cannot be undone.</p>
+                                        )}
+                                    </ModalBody>
+                                    <ModalFooter>
+                                    {entries.length > 0 && (
+                                        <>
+                                            <Button colorScheme="red" onClick={clearSolveHistory} isLoading={loading}>
+                                                Yes, Delete
+                                            </Button>
+                                            <Button onClick={onClose} ml={3} isDisabled={loading}>Cancel</Button>
+                                        </>
+                                    )}
+                                    {entries.length === 0 && (
+                                        <Button onClick={onClose} ml={3}>
+                                            Close
+                                        </Button>
+                                    )}
+                                </ModalFooter>
+                                </ModalContent>
+                            </Modal>
+                    </form>
+
+                    <UserSolveTable solves={entries} />
+                </GridItem>
+            )}
+
+            {/* Settings Content */}
+            {activeSection === "settings" && (
+                <GridItem w="100%" colSpan={1}>
+                    <ProfileWrapper>
+                        <Header1 style={{ fontWeight: "bold", textAlign: "center" }}>Profile</Header1>
                         <ProfileInfoWrapper>
                             <div className="Avatar" style={{ display: "inline-block", verticalAlign: "top", margin: "0px 20px" }}>
                                 <Avatar
@@ -221,8 +376,8 @@ export default function ProfilePage({ session }: { session: any }) {
                                     url={avatar_url}
                                     size={100}
                                     onUpload={(url) => {
-                                        setAvatarUrl(url)
-                                        updateProfile({ avatar_url: url })
+                                        setAvatarUrl(url);
+                                        updateProfile({ avatar_url: url });
                                     }}
                                 />
                             </div>
@@ -231,66 +386,85 @@ export default function ProfilePage({ session }: { session: any }) {
                                 <UserInfo><b>Email:</b> {session.user.email}</UserInfo>
                             </div>
                         </ProfileInfoWrapper>
+                        <Divider />
 
-                    <Divider />
+                        <Header2>User Account Settings</Header2>
+                        <div className="element-style-update-account">
+                            <form onSubmit={handleUpdate}>
+                                <FormSection>
+                                    <FormLabel>Update Email Address</FormLabel>
+                                    <input
+                                        type="email"
+                                        placeholder="New Email (Optional)"
+                                        value={newEmail}
+                                        className="input-style"
+                                        onChange={(e) => setNewEmail(e.target.value)}
+                                    />
+                                </FormSection>
+                                <FormSection>
+                                <FormLabel>Update Password</FormLabel>
 
-                    <Header2>Your Solve History</Header2>
-                    <UserSolveTable solves={entries}/>
-
-                    <br/><br/><br/>
-
-                    <Header2>User Account Settings</Header2>
-                    <div className="element-style-update-account">
-                        <form onSubmit={handleUpdate}>
-                            <FormSection>
-                                <FormLabel>Update Email Address</FormLabel>
-                                <input
-                                    type="email"
-                                    placeholder="New Email (Optional)"
-                                    value={newEmail}
-                                    className="input-style"
-                                    onChange={(e) => setNewEmail(e.target.value)}
-                                />
-                            </FormSection>
-                            <FormSection>
-                            <FormLabel>Update Password</FormLabel>
-
-
-                            <input
-                                type="password"
-                                placeholder="New Password (Optional)"
-                                value={newPassword}
-                                className="input-style"
-                                onChange={(e) => setNewPassword(e.target.value)}
-                            />
-                            <input
-                                type="password"
-                                placeholder="Confirm New Password"
-                                value={confirmNewPassword}
-                                className="input-style"
-                                onChange={(e) => setConfirmNewPassword(e.target.value)}
-                            />
-                            </FormSection>
-
-                            <Divider />
-                            <FormSection>
-                            <FormLabel>Confirm Password</FormLabel>
 
                                 <input
                                     type="password"
-                                    placeholder="Old Password (Required)"
-                                    value={currentPassword}
+                                    placeholder="New Password (Optional)"
+                                    value={newPassword}
                                     className="input-style"
-                                    onChange={(e) => setCurrentPassword(e.target.value)}
+                                    onChange={(e) => setNewPassword(e.target.value)}
                                 />
-                            </FormSection>
-                            <Button float={"right"} type="submit" colorScheme="blue">Update Profile</Button>
-                            {successMessage && <p className="success-message">{successMessage}</p>}
-                            {errorMessage && <p className="error-message">{errorMessage}</p>}
-                        </form>
-                    </div>
-                </ProfileWrapper>)
-            :
-            (<h2 style={{ margin: "auto", textAlign: "center" }}>loading</h2>)
+                                <input
+                                    type="password"
+                                    placeholder="Confirm New Password"
+                                    value={confirmNewPassword}
+                                    className="input-style"
+                                    onChange={(e) => setConfirmNewPassword(e.target.value)}
+                                />
+                                </FormSection>
+
+                                
+                                <FormSection>
+                                <FormLabel>Confirm Password</FormLabel>
+
+                                    <input
+                                        type="password"
+                                        placeholder="Old Password (Required)"
+                                        value={currentPassword}
+                                        className="input-style"
+                                        onChange={(e) => setCurrentPassword(e.target.value)}
+                                    />
+                                </FormSection>
+                                <Button float={"right"} type="submit" colorScheme="blue">Update Profile</Button>
+                                {successMessage && <p className="success-message">{successMessage}</p>}
+                                {errorMessage && <p className="error-message">{errorMessage}</p>}
+                            </form>
+                            
+                            <div style={{paddingTop: "5%"}}>
+                            <form style={{ marginTop: "20%" }} onSubmit={handleDeleteAccount}>
+                                <Header2>Profile Deletion</Header2>
+                                <p>Deleting your profile will remove all of your information from our database (i.e. solve histories, leaderboard). <b>This cannot be undone.</b></p>
+                                <FormSection>
+                                        <FormLabel>To confirm this, enter your password</FormLabel>
+
+                                            <input
+                                                type="password"
+                                                placeholder="Old Password (Required)"
+                                                value={currentPasswordDeletion}
+                                                className="input-style"
+                                                onChange={(e) => setCurrentPasswordDeletion(e.target.value)}
+                                            />
+                                </FormSection>
+                                <Button float={"right"} type="submit" colorScheme="red">Delete Profile</Button>
+                                {successMessageDeletion && <p className="success-message">{successMessageDeletion}</p>}
+                                {errorMessageDeletion && <p className="error-message">{errorMessageDeletion}</p>}
+                            </form>
+                            </div>
+
+                        </div>
+                    </ProfileWrapper>
+                </GridItem>
+            )}
+
+        </Grid>
+
     );
 }
