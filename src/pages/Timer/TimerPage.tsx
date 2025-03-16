@@ -99,11 +99,11 @@ export default function TimerPage({ session }: { session: any }) {
                 scramble={scramble}
                 onValueChange={setSelectedValue}
             />
-            
+            {session && (
             <Heading as="h2" size="lg" textAlign="center">
                 {selectedValue === "333" ? "3x3x3 Solves" : selectedValue === "222" ? "2x2x2 Solves" : ""}
             </Heading>
-
+            )}
             <Card ml={"15%"} mr={"15%"} >
                 {/* passing entries as solves */}
                 {session && (
