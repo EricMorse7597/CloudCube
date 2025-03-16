@@ -12,32 +12,31 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const toast = useToast();
 
+  const fetchSession = async () => {
+    const { data: { session }, error } = await supabase.auth.getSession();
+
+    if (error) {
+      console.error("Error fetching session:", error);
+    } else {
+      console.log("Fetched session");
+      setSession(session)
+    }
+
+    if (session?.user) {
+      // Set the username from user metadata if available
+      const user = session.user;
+      setUserName(user.user_metadata?.username);
+      setIsAuthenticated(true);
+    } else {
+      console.log("No active session found");
+      setUserName(null);
+      setSession(null);
+      setIsAuthenticated(false);
+    }
+  };
+
   // Monitor the user's session
   useEffect(() => {
-
-    const fetchSession = async () => {
-      const { data: { session }, error } = await supabase.auth.getSession();
-
-      if (error) {
-        console.error("Error fetching session:", error);
-      } else {
-        console.log("Fetched session");
-        setSession(session)
-      }
-
-      if (session?.user) {
-        // Set the username from user metadata if available
-        const user = session.user;
-        setUserName(user.user_metadata?.username);
-        setIsAuthenticated(true);
-      } else {
-        console.log("No active session found");
-        setUserName(null);
-        setSession(null);
-        setIsAuthenticated(false);
-      }
-    };
-
     fetchSession();
 
     // Listen for authentication state changes
@@ -82,6 +81,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setUserName(data.username);
     localStorage.setItem("username", data.username);
     setIsAuthenticated(true);
+    fetchSession();
   };
 
 
