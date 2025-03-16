@@ -11,8 +11,6 @@ import {
     Heading,
     useToast
 } from "@chakra-ui/react";
-import UserSolveTable from "src/components/User/UserSolveTable";
-import { Session } from '@supabase/supabase-js';
 
 export default function Timer({ scramble }: { scramble: string }) {
     const [isRunning, setIsRunning] = useState(false);
