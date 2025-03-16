@@ -2,13 +2,12 @@ import { Select } from '@chakra-ui/react';
 import { useState } from 'react';
 
 const DropDown = ({ onValueChange }: { onValueChange: (value: string) => void }) => {
-    const [selectedValue, setSelectedValue] = useState("333");
+    const [selectedValue, setSelectedValue] = useState("");
 
     const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const value = event.target.value;
         setSelectedValue(value);
         onValueChange(value);
-        console.log("Selected value:", value);
     };
 
     return (

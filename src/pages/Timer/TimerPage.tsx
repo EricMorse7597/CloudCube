@@ -2,18 +2,14 @@ import { useEffect, useState, useCallback } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { randomScrambleForEvent } from "cubing/scramble";
 import { supabase } from "src/utils/SupabaseClient";
-import { useAuth } from "src/utils/AuthContext";
 import Timer from "src/components/Timer/Timer";
 import {
-    useColorModeValue,
     Card,
     Stack,
-    HStack,
-    Heading,
-    useToast
+    useToast,
+    Heading
 } from "@chakra-ui/react";
 import UserSolveTable from "src/components/User/UserSolveTable";
-import DropDown from "src/components/DropDown";
 
 export default function TimerPage({ session }: { session: any }) {
     const [isRunning, setIsRunning] = useState(false);
@@ -31,6 +27,7 @@ export default function TimerPage({ session }: { session: any }) {
                 .from("solve")
                 .select("scramble, solve_time, created_at")
                 .eq("user_id", session.user.id)
+                .eq("event", selectedValue)
                 .order("created_at", { ascending: false });
             if (data) {
                 const formattedData = data.map((entry) => ({
@@ -91,7 +88,7 @@ export default function TimerPage({ session }: { session: any }) {
 
     useEffect(() => {
         if (session) {
-            fetchSolves();
+            setTimeout(fetchSolves, 50);// Database was not updating in time
         }
     }, [scramble, session]);
 
@@ -102,6 +99,10 @@ export default function TimerPage({ session }: { session: any }) {
                 scramble={scramble}
                 onValueChange={setSelectedValue}
             />
+            
+            <Heading as="h2" size="lg" textAlign="center">
+                {selectedValue === "333" ? "3x3x3 Solves" : selectedValue === "222" ? "2x2x2 Solves" : ""}
+            </Heading>
 
             <Card ml={"15%"} mr={"15%"} >
                 {/* passing entries as solves */}
@@ -109,7 +110,6 @@ export default function TimerPage({ session }: { session: any }) {
                     <UserSolveTable solves={entries} />
                 )}
             </Card>
-            <h1>{selectedValue}</h1>
         </Stack>
     );
 }

@@ -13,6 +13,17 @@ import {
 import DropDown from "../DropDown";
 import styled from "styled-components";
 
+const ScrambleWrapper = styled.div`
+        display:grid;
+        place-items:center;
+        gap:1rem;
+        grid-template-columns:1fr auto 1fr;
+    `
+
+    const Scramble = styled.h1`
+        grid-column-start: 2;
+    `
+
 type TimerProps = {
     scramble: string;
     showDropDown?: boolean;
@@ -61,6 +72,7 @@ export default function Timer({ scramble, showDropDown=false, onValueChange }: T
                     user_id: session.user?.id as string,
                     scramble: scramble,
                     solve_time: time,
+                    event: selectedValue
                 });
                 if (error) throw error;
                 showSuccess();
@@ -140,16 +152,6 @@ export default function Timer({ scramble, showDropDown=false, onValueChange }: T
     const color = useColorModeValue("black", "white");
 
 
-    const ScrambleWrapper = styled.div`
-        display:grid;
-        place-items:center;
-        gap:1rem;
-        grid-template-columns:1fr auto 1fr;
-    `
-
-    const Scramble = styled.h1`
-        grid-column-start: 2;
-    `
 
     return (
         <Stack align="center" >
@@ -158,9 +160,11 @@ export default function Timer({ scramble, showDropDown=false, onValueChange }: T
             </HStack>
             <Card p="1.5rem" w="75%">
                 <ScrambleWrapper>
-                    {showDropDown && <DropDown onValueChange={onValueChange} />}
+                    {showDropDown && <DropDown onValueChange={(value) => {
+                        setSelectedValue(value);
+                        onValueChange(value);
+                    }} />}
                     <Scramble>Scramble: {scramble}</Scramble>
-
                 </ScrambleWrapper>
             </Card>
 
