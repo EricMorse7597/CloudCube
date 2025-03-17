@@ -2,6 +2,7 @@ import { createContext, useState, useContext, useEffect } from "react";
 import { supabase } from "../utils/SupabaseClient";
 import { useToast } from "@chakra-ui/react";
 import { Session } from '@supabase/supabase-js'
+import { getCookies } from 'typescript-cookie'
 
 const AuthContext = createContext<any>(null);
 
@@ -11,41 +12,38 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const toast = useToast();
 
+  const fetchSession = async () => {
+    const { data: { session }, error } = await supabase.auth.getSession();
+
+    if (error) {
+      console.error("Error fetching session:", error);
+    } else {
+      console.log("Fetched session");
+      setSession(session)
+    }
+
+    if (session?.user) {
+      // Set the username from user metadata if available
+      const user = session.user;
+      setUserName(user.user_metadata?.username);
+      setIsAuthenticated(true);
+    } else {
+      console.log("No active session found");
+      setUserName(null);
+      setSession(null);
+      setIsAuthenticated(false);
+    }
+  };
+
   // Monitor the user's session
   useEffect(() => {
-
-    const fetchSession = async () => {
-      const { data: { session }, error } = await supabase.auth.getSession();
-
-      if (error) {
-        console.error("Error fetching session:", error);
-      } else {
-        console.log("Fetched session:", session);
-        setSession(session)
-      }
-
-      if (session?.user) {
-        // Set the username from user metadata if available
-        const user = session.user;
-        console.log("Logging as the session user:", session.user);
-        setUserName(user.user_metadata?.username);
-        setIsAuthenticated(true);
-      } else {
-        console.log("No active session found");
-        setUserName(null);
-        setSession(null);
-        setIsAuthenticated(false);
-      }
-    };
-
     fetchSession();
 
     // Listen for authentication state changes
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (_, session) => {
-        console.log(`Auth state changed:`, session);
+        console.log(`Auth state changed`);
         if (session?.user) {
-          console.log("Logging as the session user:", session.user);
           setUserName(session.user.user_metadata?.username);
           setIsAuthenticated(true);
         } else {
@@ -83,6 +81,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setUserName(data.username);
     localStorage.setItem("username", data.username);
     setIsAuthenticated(true);
+    fetchSession();
   };
 
 

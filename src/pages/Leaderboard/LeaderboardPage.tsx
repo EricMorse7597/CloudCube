@@ -57,6 +57,8 @@ export default function LeaderboardPage() {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const { session } = useAuth();
 
+    console.log("session: " + session)
+
     const fetchScramble = async () => {
         setIsLoading(true);
 
@@ -149,7 +151,6 @@ export default function LeaderboardPage() {
         if (session) fetchUserSolve();
         fetchSolves();
     }, [scramble, userSolved, solved]);
-
 
     return (
         isLoading ?

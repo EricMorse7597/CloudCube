@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import UserSolveTable from "src/components/User/UserSolveTable";
 
-export default function TimerPage({ session }: { session: any }) {
+export default function TimerPage() {
     const [isRunning, setIsRunning] = useState(false);
     const [scramble, setScramble] = useState("");
     const [isHolding, setIsHolding] = useState(false);
@@ -20,6 +20,8 @@ export default function TimerPage({ session }: { session: any }) {
 
     const [entries, setEntries] = useState<any[]>([]);
     const toast = useToast();
+
+    const { session } = useAuth();
 
     const fetchSolves = async () => {
         try {
