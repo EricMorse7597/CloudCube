@@ -2,23 +2,22 @@ import { useEffect, useState, useCallback } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { randomScrambleForEvent } from "cubing/scramble";
 import { supabase } from "src/utils/SupabaseClient";
-import { useAuth } from "src/utils/AuthContext";
 import Timer from "src/components/Timer/Timer";
 import {
-    useColorModeValue,
     Card,
     Stack,
-    HStack,
-    Heading,
-    useToast
+    useToast,
+    Heading
 } from "@chakra-ui/react";
 import UserSolveTable from "src/components/User/UserSolveTable";
+import { useAuth } from "src/utils/AuthContext";
 
 export default function TimerPage() {
     const [isRunning, setIsRunning] = useState(false);
     const [scramble, setScramble] = useState("");
     const [isHolding, setIsHolding] = useState(false);
     const [spaceDownTime, setSpaceDownTime] = useState(0);
+    const [selectedValue, setSelectedValue] = useState("333");
 
     const [entries, setEntries] = useState<any[]>([]);
     const toast = useToast();
@@ -31,6 +30,7 @@ export default function TimerPage() {
                 .from("solve")
                 .select("scramble, solve_time, created_at")
                 .eq("user_id", session.user.id)
+                .eq("event", selectedValue)
                 .order("created_at", { ascending: false });
             if (data) {
                 const formattedData = data.map((entry) => ({
@@ -52,9 +52,9 @@ export default function TimerPage() {
     };
 
     const getNewScramble = useCallback(async (): Promise<void> => {
-        const newScramble = await randomScrambleForEvent("333");
+        const newScramble = await randomScrambleForEvent(selectedValue);
         setScramble(newScramble.toString());
-    }, []);
+    }, [selectedValue]);
 
     useHotkeys('space', (event) => { // KEYDOWN
         event.preventDefault();
@@ -87,20 +87,26 @@ export default function TimerPage() {
 
     useEffect(() => {
         getNewScramble();
-    }, []);
+    }, [getNewScramble]);
 
     useEffect(() => {
         if (session) {
-            fetchSolves();
+            setTimeout(fetchSolves, 50);// Database was not updating in time
         }
     }, [scramble, session]);
 
     return (
         <Stack justify="center" marginBottom="2rem" spacing={4} mt={4}>
             <Timer
+                showDropDown={true}
                 scramble={scramble}
+                onValueChange={setSelectedValue}
             />
-
+            {session && (
+            <Heading as="h2" size="lg" textAlign="center">
+                {selectedValue === "333" ? "3x3x3 Solves" : selectedValue === "222" ? "2x2x2 Solves" : ""}
+            </Heading>
+            )}
             <Card ml={"15%"} mr={"15%"} >
                 {/* passing entries as solves */}
                 {session && (
