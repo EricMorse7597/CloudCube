@@ -60,8 +60,8 @@ export default function Timer({ scramble }: { scramble: string }) {
             .limit(12);
 
         if (!error && data) {
-            const lastThreeSolves = data.map(solve => solve.solve_time);
-            setRecentSolves(lastThreeSolves);
+            const previousSolves = data.map(solve => solve.solve_time);
+            setRecentSolves(previousSolves);
         }
     }
 
