@@ -10,6 +10,7 @@ import {
     Heading
 } from "@chakra-ui/react";
 import UserSolveTable from "src/components/User/UserSolveTable";
+import { useAuth } from "src/utils/AuthContext";
 
 export default function TimerPage() {
     const [isRunning, setIsRunning] = useState(false);
