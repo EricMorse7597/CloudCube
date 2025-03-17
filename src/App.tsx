@@ -73,7 +73,7 @@ function createAppRouter(session: Session | null, solves: any[]) {
           <Route path="ohscramble" element={<OHScramble />} />
         </Route>
         <Route path="about" element={<AboutPage />} />
-        <Route path="timer" element={session ? <TimerPage session={session} /> : <TimerPage session={null} />} />
+        <Route path="timer" element={<TimerPage />} />
         <Route path="definitions" element={<DefinitionsPage />} />
         <Route path="recover" element={<RecoverPage />} />
         <Route path="grid" element={<UserSolveTable solves={solves} />} />
