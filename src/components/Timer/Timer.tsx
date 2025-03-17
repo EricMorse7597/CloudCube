@@ -10,8 +10,6 @@ import {
     HStack,
     Heading,
     useToast,
-    VStack,
-    Flex
 } from "@chakra-ui/react";
 
 export default function Timer({ scramble }: { scramble: string }) {
@@ -22,7 +20,6 @@ export default function Timer({ scramble }: { scramble: string }) {
     const [delayTime, setDelayTime] = useState(0);
     const [colorDelay, setColorDelay] = useState(false);
     const [pushedTime, setPushedTime] = useState(0);
-    const [recentSolves, setRecentSolves] = useState<number[]>([]); 
 
     const { session } = useAuth();
     const toast = useToast();
@@ -49,34 +46,6 @@ export default function Timer({ scramble }: { scramble: string }) {
         });
     };
 
-    async function fetchRecentSolves() {
-        if (!session?.user?.id) return;
-
-        let { data, error } = await supabase
-            .from('solve')
-            .select('solve_time')
-            .eq('user_id', session.user.id)
-            .order('id', { ascending: false }) // Get most recent solves first
-            .limit(12);
-
-        if (!error && data) {
-            const previousSolves = data.map(solve => solve.solve_time);
-            setRecentSolves(previousSolves);
-        }
-    }
-
-    const calculateAverage = (solves: number[], count: number) => {
-        if (solves.length >= count) {
-            const latestSolves = solves.slice(0, count);
-            return (latestSolves.reduce((a, b) => a + b, 0) / latestSolves.length).toFixed(2);
-        }
-        return null; 
-    };
-
-    const averageOf3 = calculateAverage(recentSolves, 3);
-    const averageOf5 = calculateAverage(recentSolves, 5);
-    const averageOf12 = calculateAverage(recentSolves, 12);
-
     async function updateSolves() {
         try {
             if (scramble && time > 0) {
@@ -89,7 +58,7 @@ export default function Timer({ scramble }: { scramble: string }) {
                 showSuccess();
                 setPushedTime(time);
 
-                fetchRecentSolves(); 
+                
             } else {
                 showFailure();
             }
