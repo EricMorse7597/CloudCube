@@ -181,16 +181,16 @@ export default function Timer({ scramble }: { scramble: string }) {
                 </Stack>
             </Card>
 
-            <Flex align="flex-start" gap={10}>
+            <Flex align="flex-start" gap={6}>
                 
-                <Card id="timer" p="6.5rem" w="100%" textAlign="center" data-time={pushedTime} flexShrink={0}>
+                <Card id="timer" p="6.5rem" w="98%" textAlign="center" data-time={pushedTime} flexShrink={0}>
                     <Heading style={{ fontVariantNumeric: "tabular-nums", color: isHolding ? (colorDelay ? 'green' : 'yellow') : color }} size="4xl">
                         {time.toFixed(2)}s
                     </Heading>
                 </Card>
 
         
-                <VStack align="right" justify="center" spacing={5} minWidth="200px">
+                <VStack align="right" justify="center" spacing={5} minWidth="12rem" maxWidth="13rem">
                     {averageOf3 && (
                         <Card p="1rem" w="auto" textAlign="center">
                             <Heading size="md">Average of 3: {averageOf3}s</Heading>
