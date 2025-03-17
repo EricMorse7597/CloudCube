@@ -183,7 +183,7 @@ export default function Timer({ scramble }: { scramble: string }) {
 
             <Flex align="flex-start" gap={6}>
                 
-                <Card id="timer" p="6.5rem" w="98%" textAlign="center" data-time={pushedTime} flexShrink={0}>
+                <Card id="timer" p="6.5rem" w="99%" textAlign="center" data-time={pushedTime} flexShrink={0}>
                     <Heading style={{ fontVariantNumeric: "tabular-nums", color: isHolding ? (colorDelay ? 'green' : 'yellow') : color }} size="4xl">
                         {time.toFixed(2)}s
                     </Heading>
