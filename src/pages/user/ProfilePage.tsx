@@ -312,10 +312,10 @@ export default function ProfilePage({ session }: { session: any }) {
 
     return (
 
-        <Grid templateColumns="250px 1fr" gap={4} p={4}>
+        <Grid templateColumns="250px 1fr" gap={4} p={4} minH="100vh">
 
             {/* Sidebar Navigation */}
-            <GridItem w="100%" p={4} borderRadius="md">
+            <GridItem w="100%" p={4} borderRadius="md" className="sidebarProfile" h="full">
                 <button onClick={handleDashboardClick} style={{ fontWeight: activeSection === "dashboard" ? "bold" : "normal" }}> Dashboard </button>
                 <br></br>
                 <br></br>
@@ -370,7 +370,7 @@ export default function ProfilePage({ session }: { session: any }) {
                     <ProfileWrapper>
                         <Header1 style={{ fontWeight: "bold", textAlign: "center" }}>Profile</Header1>
                         <ProfileInfoWrapper>
-                            <div className="Avatar" style={{ display: "inline-block", verticalAlign: "top", margin: "0px 20px" }}>
+                            <div className="Avatar" style={{ display: "inline-block", verticalAlign: "top", margin: "0px 20px", overflow: "hidden"}}>
                                 <Avatar
                                     uid={session.user?.id ?? null}
                                     url={avatar_url}
