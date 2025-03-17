@@ -98,10 +98,6 @@ export default function Timer({ scramble }: { scramble: string }) {
         }
     }
 
-    useEffect(() => {
-        fetchRecentSolves();
-    }, [session]);
-
     useHotkeys('space', (event) => { // KEYDOWN
         event.preventDefault();
 
@@ -178,33 +174,9 @@ export default function Timer({ scramble }: { scramble: string }) {
                 </Stack>
             </Card>
 
-            <Flex align="flex-start" gap={6}>
-                
-                <Card id="timer" p="6.5rem" w="99%" textAlign="center" data-time={pushedTime} flexShrink={0}>
-                    <Heading style={{ fontVariantNumeric: "tabular-nums", color: isHolding ? (colorDelay ? 'green' : 'yellow') : color }} size="4xl">
-                        {time.toFixed(2)}s
-                    </Heading>
-                </Card>
-
-        
-                <VStack align="right" justify="center" spacing={5} minWidth="12rem" maxWidth="13rem">
-                    {averageOf3 && (
-                        <Card p="1rem" w="auto" textAlign="center">
-                            <Heading size="md">Average of 3: {averageOf3}s</Heading>
-                        </Card>
-                    )}
-                    {averageOf5 && (
-                        <Card p="1rem" w="auto" textAlign="center">
-                            <Heading size="md">Average of 5: {averageOf5}s</Heading>
-                        </Card>
-                    )}
-                    {averageOf12 && (
-                        <Card p="1rem" w="auto" textAlign="center">
-                            <Heading size="md">Average of 12: {averageOf12}s</Heading>
-                        </Card>
-                    )}
-                </VStack>
-            </Flex>
+            <Card id="timer" p="6.5rem" w="40%" textAlign="center" data-time={pushedTime}>
+                <Heading style={{ fontVariantNumeric: "tabular-nums", color: isHolding ? (colorDelay ? 'green' : 'yellow') : color }} size="4xl">{time.toFixed(2)}s</Heading>
+            </Card>
             <p>Press spacebar to start/stop the timer</p>
             <br />
         </Stack>
