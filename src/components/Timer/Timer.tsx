@@ -20,6 +20,7 @@ export default function Timer({ scramble }: { scramble: string }) {
     const [delayTime, setDelayTime] = useState(0);
     const [colorDelay, setColorDelay] = useState(false);
     const [pushedTime, setPushedTime] = useState(0);
+    const [recentSolves, setRecentSolves] = useState<number[]>([]); 
 
     const { session } = useAuth();
     const toast = useToast();
@@ -46,6 +47,34 @@ export default function Timer({ scramble }: { scramble: string }) {
         });
     };
 
+    async function fetchRecentSolves() {
+        if (!session?.user?.id) return;
+
+        let { data, error } = await supabase
+            .from('solve')
+            .select('solve_time')
+            .eq('user_id', session.user.id)
+            .order('id', { ascending: false }) // Get most recent solves first
+            .limit(12);
+
+        if (!error && data) {
+            const lastThreeSolves = data.map(solve => solve.solve_time);
+            setRecentSolves(lastThreeSolves);
+        }
+    }
+
+    const calculateAverage = (solves: number[], count: number) => {
+        if (solves.length >= count) {
+            const latestSolves = solves.slice(0, count);
+            return (latestSolves.reduce((a, b) => a + b, 0) / latestSolves.length).toFixed(2);
+        }
+        return "Loading..."; // If not enough solves, show Loading
+    };
+
+    const averageOf3 = calculateAverage(recentSolves, 3);
+    const averageOf5 = calculateAverage(recentSolves, 5);
+    const averageOf12 = calculateAverage(recentSolves, 12);
+
     async function updateSolves() {
         try {
             if (scramble && time > 0) {
@@ -58,6 +87,8 @@ export default function Timer({ scramble }: { scramble: string }) {
                 showSuccess();
                 setPushedTime(time);
 
+                // 🔹 Fetch the last 3 solves after inserting a new solve
+                fetchRecentSolves(); 
             } else {
                 showFailure();
             }
@@ -65,6 +96,10 @@ export default function Timer({ scramble }: { scramble: string }) {
             showFailure();
         }
     }
+
+    useEffect(() => {
+        fetchRecentSolves();
+    }, [session]);
 
     useHotkeys('space', (event) => { // KEYDOWN
         event.preventDefault();
@@ -100,6 +135,9 @@ export default function Timer({ scramble }: { scramble: string }) {
 
     // Timer logic
     useEffect(() => {
+        // Fetch recent solves on component mount
+        fetchRecentSolves(); // This ensures the solves are fetched when the component is first loaded
+
         if (isRunning) {
             const startTime = Date.now();
             const interval = setInterval(() => {
@@ -145,6 +183,18 @@ export default function Timer({ scramble }: { scramble: string }) {
             <Card id="timer" p="6.5rem" w="40%" textAlign="center" data-time={pushedTime}>
                 <Heading style={{ fontVariantNumeric: "tabular-nums", color: isHolding ? (colorDelay ? 'green' : 'yellow') : color }} size="4xl">{time.toFixed(2)}s</Heading>
             </Card>
+
+            {/* Display Averages of 3, 5, and 12 */}
+            <Card p="1rem" w="25%" textAlign="center">
+                <Heading size="md">Average of 3: {averageOf3}s</Heading>
+            </Card>
+            <Card p="1rem" w="25%" textAlign="center">
+                <Heading size="md">Average of 5: {averageOf5}s</Heading>
+            </Card>
+            <Card p="1rem" w="25%" textAlign="center">
+                <Heading size="md">Average of 12: {averageOf12}s</Heading>
+            </Card>
+
             <p>Press spacebar to start/stop the timer</p>
             <br />
         </Stack>
