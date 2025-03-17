@@ -18,6 +18,10 @@ const ScrambleWrapper = styled.div`
         place-items:center;
         gap:1rem;
         grid-template-columns:1fr auto 1fr;
+        & > :first-child {
+        margin-right: auto;
+        }
+
     `
 
     const Scramble = styled.h1`
