@@ -8,6 +8,7 @@ const DropDown = ({ onValueChange }: { onValueChange: (value: string) => void })
         const value = event.target.value;
         setSelectedValue(value);
         onValueChange(value);
+        event.target.blur();
     };
 
     return (
