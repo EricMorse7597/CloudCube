@@ -136,9 +136,6 @@ export default function Timer({ scramble }: { scramble: string }) {
 
     // Timer logic
     useEffect(() => {
-        // Fetch recent solves on component mount
-        fetchRecentSolves(); 
-
         if (isRunning) {
             const startTime = Date.now();
             const interval = setInterval(() => {
