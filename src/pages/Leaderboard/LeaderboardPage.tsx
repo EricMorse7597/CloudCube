@@ -225,7 +225,7 @@ export default function LeaderboardPage() {
                     <ModalOverlay />
                     <ModalContent p={4}>
 
-                        <Timer scramble={scramble} />
+                        <Timer scramble={scramble} onValueChange={(value: string) => console.log(value)} />
 
                     </ModalContent>
                 </Modal>
