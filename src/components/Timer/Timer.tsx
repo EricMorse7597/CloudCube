@@ -9,7 +9,9 @@ import {
     Stack,
     HStack,
     Heading,
-    useToast
+    useToast,
+    VStack,
+    Flex
 } from "@chakra-ui/react";
 
 export default function Timer({ scramble }: { scramble: string }) {
@@ -68,7 +70,7 @@ export default function Timer({ scramble }: { scramble: string }) {
             const latestSolves = solves.slice(0, count);
             return (latestSolves.reduce((a, b) => a + b, 0) / latestSolves.length).toFixed(2);
         }
-        return "Loading..."; // If not enough solves, show Loading
+        return null; 
     };
 
     const averageOf3 = calculateAverage(recentSolves, 3);
@@ -87,7 +89,6 @@ export default function Timer({ scramble }: { scramble: string }) {
                 showSuccess();
                 setPushedTime(time);
 
-                // 🔹 Fetch the last 3 solves after inserting a new solve
                 fetchRecentSolves(); 
             } else {
                 showFailure();
@@ -136,7 +137,7 @@ export default function Timer({ scramble }: { scramble: string }) {
     // Timer logic
     useEffect(() => {
         // Fetch recent solves on component mount
-        fetchRecentSolves(); // This ensures the solves are fetched when the component is first loaded
+        fetchRecentSolves(); 
 
         if (isRunning) {
             const startTime = Date.now();
@@ -180,21 +181,33 @@ export default function Timer({ scramble }: { scramble: string }) {
                 </Stack>
             </Card>
 
-            <Card id="timer" p="6.5rem" w="40%" textAlign="center" data-time={pushedTime}>
-                <Heading style={{ fontVariantNumeric: "tabular-nums", color: isHolding ? (colorDelay ? 'green' : 'yellow') : color }} size="4xl">{time.toFixed(2)}s</Heading>
-            </Card>
+            <Flex align="flex-start" gap={10}>
+                
+                <Card id="timer" p="6.5rem" w="100%" textAlign="center" data-time={pushedTime} flexShrink={0}>
+                    <Heading style={{ fontVariantNumeric: "tabular-nums", color: isHolding ? (colorDelay ? 'green' : 'yellow') : color }} size="4xl">
+                        {time.toFixed(2)}s
+                    </Heading>
+                </Card>
 
-            {/* Display Averages of 3, 5, and 12 */}
-            <Card p="1rem" w="25%" textAlign="center">
-                <Heading size="md">Average of 3: {averageOf3}s</Heading>
-            </Card>
-            <Card p="1rem" w="25%" textAlign="center">
-                <Heading size="md">Average of 5: {averageOf5}s</Heading>
-            </Card>
-            <Card p="1rem" w="25%" textAlign="center">
-                <Heading size="md">Average of 12: {averageOf12}s</Heading>
-            </Card>
-
+        
+                <VStack align="right" justify="center" spacing={5} minWidth="200px">
+                    {averageOf3 && (
+                        <Card p="1rem" w="auto" textAlign="center">
+                            <Heading size="md">Average of 3: {averageOf3}s</Heading>
+                        </Card>
+                    )}
+                    {averageOf5 && (
+                        <Card p="1rem" w="auto" textAlign="center">
+                            <Heading size="md">Average of 5: {averageOf5}s</Heading>
+                        </Card>
+                    )}
+                    {averageOf12 && (
+                        <Card p="1rem" w="auto" textAlign="center">
+                            <Heading size="md">Average of 12: {averageOf12}s</Heading>
+                        </Card>
+                    )}
+                </VStack>
+            </Flex>
             <p>Press spacebar to start/stop the timer</p>
             <br />
         </Stack>
