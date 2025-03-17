@@ -135,10 +135,35 @@ export default function NavBar() {
                         textDecoration: "none",
                         color: linkHoverColor,
                         bg: buttonColor,
+                        boxShadow: "10px 0 0 0 " + buttonColor,
                       }}
                     >
                       {userName}
+                      <Flex justify="center">
+                        {fullAvatarUrl ? (
+                          <Image
+                            boxSize="31px" // Ensure it's a square
+                            borderRadius="full" // Makes it circular
+                            src={fullAvatarUrl}
+                            alt="User Avatar"
+                            fallbackSrc="/assets/default.png"
+                            _hover={{
+                              textDecoration: "none",
+                            }}
+                            ml={10}
+                          />
+                        ) : (
+                          <Image
+                            boxSize="32px" // Ensure it's a square
+                            borderRadius="full" // Makes it circular
+                            src="/assets/default.png"
+                            alt="Default Avatar"
+                            ml={10}
+                          />
+                        )}
+                      </Flex>
                     </Button>
+                    
                   </PopoverTrigger>
                   <PopoverContent
                     border={0}
@@ -161,28 +186,7 @@ export default function NavBar() {
                         } } />
                     </Stack>
                   </PopoverContent>
-                </Popover><Flex align="center">
-                    {fullAvatarUrl ? (
-                      <Image
-                        boxSize="35px"
-                        borderRadius="full"
-                        src={fullAvatarUrl}
-                        alt="User Avatar"
-                        fallbackSrc="/assets/default.png" // Placeholder in case the image fails to load
-                        _hover={{
-                          textDecoration: "none",
-                        }}
-                        ml={5}
-                      />
-                    ) : (
-                      <Image
-                        boxSize="35px"
-                        borderRadius="full"
-                        src="/assets/default.png" // Default avatar
-                        alt="Default Avatar"
-                        ml={5} />
-                    )}
-                  </Flex></>
+                </Popover></>
               ) : (
                 <Flex>
                   <NavButton href="/login" text="Sign In" color="blue" size="sm" />
