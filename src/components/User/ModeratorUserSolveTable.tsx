@@ -61,15 +61,16 @@ export default function UserSolveTable({ user_id }: { user_id: string }) {
 
     const deleteSelected = async () => {
         try {
-            const error = await supabase
+            const { error } = await supabase
                 .from('solve')
                 .delete()
                 .eq('user_id', user_id)
                 .eq('scramble', rowEntry.scramble)
-
+            
             if (error) {
                 throw error
             }
+            console.log("rowEntry", rowEntry)
 
             console.log("Solve deleted:", rowEntry)
             setRowEntry(null)
@@ -92,13 +93,13 @@ export default function UserSolveTable({ user_id }: { user_id: string }) {
                 isClosable: true,
             });
         }
+
+        await fetchSolves()
     }
 
     useEffect(() => {
         fetchSolves()
     }, [solves])
-
-
 
     return (
         isLoading ?
@@ -127,7 +128,6 @@ export default function UserSolveTable({ user_id }: { user_id: string }) {
                                 onClick={() => {
                                     setSelectedRow(rowIndex)
                                     setRowEntry(entry)
-                                    console.log("entry", entry)
                                 }} key={rowIndex}>
                                     {Object.values(entry).map((value, colIndex) => (
                                         <Td key={colIndex}>{String(value)}</Td>
@@ -156,6 +156,7 @@ export default function UserSolveTable({ user_id }: { user_id: string }) {
                                 </Heading>
                                 <Button colorScheme="red" onClick={() => {
                                     deleteSelected();
+                                    setSelectedRow(null)
                                     onClose()
                                 }}
                                 isDisabled={selectedRow === null}>
