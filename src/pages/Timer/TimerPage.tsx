@@ -1,25 +1,16 @@
 import { useEffect, useState, useCallback } from "react";
-import { useHotkeys } from "react-hotkeys-hook";
 import { randomScrambleForEvent } from "cubing/scramble";
 import { supabase } from "src/utils/SupabaseClient";
-import { useAuth } from "src/utils/AuthContext";
 import Timer from "src/components/Timer/Timer";
 import {
-    useColorModeValue,
     Card,
     Stack,
-    HStack,
-    Heading,
     useToast
 } from "@chakra-ui/react";
 import UserSolveTable from "src/components/User/UserSolveTable";
 
 export default function TimerPage({ session }: { session: any }) {
-    const [isRunning, setIsRunning] = useState(false);
     const [scramble, setScramble] = useState("");
-    const [isHolding, setIsHolding] = useState(false);
-    const [spaceDownTime, setSpaceDownTime] = useState(0);
-
     const [entries, setEntries] = useState<any[]>([]);
     const toast = useToast();
 
@@ -54,38 +45,9 @@ export default function TimerPage({ session }: { session: any }) {
         setScramble(newScramble.toString());
     }, []);
 
-    useHotkeys('space', (event) => { // KEYDOWN
-        event.preventDefault();
-
-        if (event.repeat) return;
-
-        if (!isRunning) {
-            // Only start if the timer is not already running
-            setSpaceDownTime(Date.now());
-            setIsHolding(true);
-        } else {
-            setIsRunning(false);
-            getNewScramble(); // generate a new scramble when user stops
-        }
-    });
-
-    useHotkeys('space', (event) => { // KEYUP
-        event.preventDefault();
-
-        if (event.repeat) return;
-
-        if (isHolding) {
-            setIsHolding(false);
-            const holdDuration = Date.now() - spaceDownTime;
-            if (holdDuration > 300) {
-                setIsRunning(true);
-            }
-        }
-    }, { keyup: true });
-
     useEffect(() => {
         getNewScramble();
-    }, []);
+    }, [getNewScramble]);
 
     useEffect(() => {
         if (session) {
@@ -93,12 +55,16 @@ export default function TimerPage({ session }: { session: any }) {
         }
     }, [scramble, session]);
 
+    const generateNewScramble = () => {
+        getNewScramble();
+    };
+
     return (
         <Stack justify="center" marginBottom="2rem" spacing={4} mt={4}>
             <Timer
                 scramble={scramble}
+                onTimerStop={generateNewScramble} 
             />
-
             <Card ml={"15%"} mr={"15%"} >
                 {/* passing entries as solves */}
                 {session && (
