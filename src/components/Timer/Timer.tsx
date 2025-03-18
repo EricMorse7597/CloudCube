@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { supabase } from "src/utils/SupabaseClient";
 import { useAuth } from "src/utils/AuthContext";
@@ -10,6 +10,7 @@ import {
     Heading,
     useToast,
 } from "@chakra-ui/react";
+import { Stackmat, Packet } from 'stackmat';
 import DropDown from "../DropDown";
 import styled from "styled-components";
 
@@ -32,20 +33,99 @@ type TimerProps = {
     scramble: string;
     showDropDown?: boolean;
     onValueChange: (value: string) => void;
+    onTimerStop: () => void;
 }
 
-export default function Timer({ scramble, showDropDown=false, onValueChange }: TimerProps) {
+export default function Timer({ scramble, showDropDown=false, onValueChange, onTimerStop }: TimerProps) {
     const [isRunning, setIsRunning] = useState(false);
     const [time, setTime] = useState(0);
     const [isHolding, setIsHolding] = useState(false);
     const [spaceDownTime, setSpaceDownTime] = useState(0);
-    const [delayTime, setDelayTime] = useState(0);
     const [colorDelay, setColorDelay] = useState(false);
     const [selectedValue, setSelectedValue] = useState("333");
     const [pushedTime, setPushedTime] = useState(0);
-
+    const [isConnected, setIsConnected] = useState(false);
+    const [stackMatUsed, setStackMatUsed] = useState(false);
     const { session } = useAuth();
     const toast = useToast();
+
+    useEffect(() => {
+        const stackMat = new Stackmat();
+
+        const handleTimerConnected = () => {
+            setIsConnected(true);
+        };
+
+        const handleTimerDisconnected = () => {
+            setIsConnected(false);
+        };
+
+        const handleStarted = () => {
+            setIsRunning(true);
+            setIsHolding(false);
+        };
+
+        const handleStopped = (packet: Packet) => {
+            const newTime = packet.timeInMilliseconds / 1000;
+            setTime(newTime);
+
+            if (scramble && newTime > 0 && session !== null) {
+                updateSolves(newTime);
+            }
+            onTimerStop();
+            setIsRunning(false);
+            setStackMatUsed(false);
+        };
+
+        const handleReady = () => {
+            setColorDelay(false);
+            setIsHolding(true);
+        };
+
+        const handleReset = () => {
+            setTime(0);
+        };
+
+        const handleUnready = () => {
+            setIsHolding(false);
+        };
+
+        const handleStarting = () => {
+            setColorDelay(true);
+            setStackMatUsed(true);
+        };
+
+        const handlePacketReceived = (packet: Packet) => {
+            if (packet.status === ' ') {
+                const newTime = packet.timeInMilliseconds / 1000;
+                setTime(newTime);
+            }
+        };
+
+        stackMat.on('timerConnected', handleTimerConnected);
+        stackMat.on('timerDisconnected', handleTimerDisconnected);
+        stackMat.on('started', handleStarted);
+        stackMat.on('stopped', handleStopped);
+        stackMat.on('ready', handleReady);
+        stackMat.on('reset', handleReset);
+        stackMat.on('unready', handleUnready);
+        stackMat.on('starting', handleStarting);
+        stackMat.on('packetReceived', handlePacketReceived);
+
+        stackMat.start();
+
+        return () => {
+            stackMat.off('timerConnected');
+            stackMat.off('timerDisconnected');
+            stackMat.off('started');
+            stackMat.off('stopped');
+            stackMat.off('ready');
+            stackMat.off('reset');
+            stackMat.off('unready');
+            stackMat.off('starting');
+            stackMat.off('packetReceived');
+        };
+    }, [session, scramble, onTimerStop]);
 
     const showSuccess = () => {
         toast({
@@ -69,18 +149,24 @@ export default function Timer({ scramble, showDropDown=false, onValueChange }: T
         });
     };
 
-    async function updateSolves() {
+    async function updateSolves(newTime: number|null = null) {
+        if (newTime === null) {
+            newTime = time;
+        }
+
         try {
-            if (scramble && time > 0) {
+            if (scramble && newTime > 0) {
                 const { error } = await supabase.from('solve').insert({
-                    user_id: session.user?.id as string,
+                    user_id: session?.user?.id as string,
                     scramble: scramble,
-                    solve_time: time,
+                    solve_time: newTime,
                     event: selectedValue
                 });
-                if (error) throw error;
+                if (error) {
+                    throw error;
+                }
                 showSuccess();
-                setPushedTime(time);
+                setPushedTime(newTime);
 
                 
             } else {
@@ -125,7 +211,7 @@ export default function Timer({ scramble, showDropDown=false, onValueChange }: T
 
     // Timer logic
     useEffect(() => {
-        if (isRunning) {
+        if (isRunning && !stackMatUsed) {
             const startTime = Date.now();
             const interval = setInterval(() => {
                 setTime((Date.now() - startTime) / 1000);
@@ -176,7 +262,7 @@ export default function Timer({ scramble, showDropDown=false, onValueChange }: T
             <Card id="timer" p="6.5rem" w="40%" textAlign="center" data-time={pushedTime}>
                 <Heading style={{ fontVariantNumeric: "tabular-nums", color: isHolding ? (colorDelay ? 'green' : 'yellow') : color }} size="4xl">{time.toFixed(2)}s</Heading>
             </Card>
-            <p>Press spacebar to start/stop the timer</p>
+            <p>Press spacebar {isConnected? "or Stackmat": ""} to start/stop the timer</p>
             <br />
         </Stack>
     );

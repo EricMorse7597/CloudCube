@@ -1,5 +1,4 @@
 import { useEffect, useState, useCallback } from "react";
-import { useHotkeys } from "react-hotkeys-hook";
 import { randomScrambleForEvent } from "cubing/scramble";
 import { supabase } from "src/utils/SupabaseClient";
 import Timer from "src/components/Timer/Timer";
@@ -106,35 +105,6 @@ export default function TimerPage() {
         setScramble(newScramble.toString());
     }, [selectedValue]);
 
-    useHotkeys('space', (event) => { // KEYDOWN
-        event.preventDefault();
-
-        if (event.repeat) return;
-
-        if (!isRunning) {
-            // Only start if the timer is not already running
-            setSpaceDownTime(Date.now());
-            setIsHolding(true);
-        } else {
-            setIsRunning(false);
-            getNewScramble(); // generate a new scramble when user stops
-        }
-    });
-
-    useHotkeys('space', (event) => { // KEYUP
-        event.preventDefault();
-
-        if (event.repeat) return;
-
-        if (isHolding) {
-            setIsHolding(false);
-            const holdDuration = Date.now() - spaceDownTime;
-            if (holdDuration > 300) {
-                setIsRunning(true);
-            }
-        }
-    }, { keyup: true });
-
     useEffect(() => {
         getNewScramble();
     }, [getNewScramble]);
@@ -145,6 +115,10 @@ export default function TimerPage() {
         }
     }, [scramble, session]);
 
+    const generateNewScramble = () => {
+        getNewScramble();
+    };
+
     useEffect(() => {
         fetchRecentSolves();
     }, [session]);
@@ -154,6 +128,7 @@ export default function TimerPage() {
             <Timer
                 showDropDown={true}
                 scramble={scramble}
+                onTimerStop={generateNewScramble} 
                 onValueChange={setSelectedValue}
             />
             {session && (
