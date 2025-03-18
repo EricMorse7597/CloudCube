@@ -57,6 +57,8 @@ export default function LeaderboardPage() {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const { session } = useAuth();
 
+    console.log("session: " + session)
+
     const fetchScramble = async () => {
         setIsLoading(true);
 
@@ -150,7 +152,6 @@ export default function LeaderboardPage() {
         fetchSolves();
     }, [scramble, userSolved, solved]);
 
-
     return (
         isLoading ?
             (<p>Loading...</p>)
@@ -224,7 +225,7 @@ export default function LeaderboardPage() {
                     <ModalOverlay />
                     <ModalContent p={4}>
 
-                        <Timer scramble={scramble} />
+                        <Timer scramble={scramble} onValueChange={(value: string) => console.log(value)} />
 
                     </ModalContent>
                 </Modal>
