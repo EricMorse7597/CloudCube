@@ -49,6 +49,24 @@ export default function NavBar() {
   const bucketUrl = "https://mxvnbjoezxeubbcwdnqh.supabase.co/storage/v1/object/public/avatars";
   const fullAvatarUrl = avatarUrl ? `${bucketUrl}/${avatarUrl}` : undefined;
 
+  const [isMod, setIsMod] = useState(false);
+
+  const modCheck = async () => {
+    try {
+        const { data, error } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq('id', session.user.id)
+        .single()
+        if (error) throw error
+        else if (data?.role === "Mod") {
+            setIsMod(true)
+        }
+    } catch (error) {
+        console.log("Error fetching users: " + error)
+    }
+}
+  
   useEffect(() => {
     if (!session?.user) return;
   
@@ -63,6 +81,8 @@ export default function NavBar() {
     };
   
     fetchAvatar();
+
+    if (session) modCheck
   }, [session?.user?.id]); 
 
   return (
