@@ -33,10 +33,10 @@ type TimerProps = {
     scramble: string;
     showDropDown?: boolean;
     onValueChange: (value: string) => void;
-    onTimerStop: () => void;
+    onTimerStop?: () => void;
 }
 
-export default function Timer({ scramble, showDropDown=false, onValueChange, onTimerStop }: TimerProps) {
+export default function Timer({ scramble, showDropDown=false, onValueChange, onTimerStop = () => {}}: TimerProps) {
     const [isRunning, setIsRunning] = useState(false);
     const [time, setTime] = useState(0);
     const [isHolding, setIsHolding] = useState(false);
