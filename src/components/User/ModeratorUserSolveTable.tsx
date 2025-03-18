@@ -75,7 +75,7 @@ export default function UserSolveTable({ user_id }: { user_id: string }) {
             console.log("Solve deleted:", rowEntry)
             toast({
                 title: "Data Deleted",
-                description: `User has had their solves deleted`,
+                description: `User has had their solve deleted`,
                 status: "success",
                 duration: 5000,
                 isClosable: true,
