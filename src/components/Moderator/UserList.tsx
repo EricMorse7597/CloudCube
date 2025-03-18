@@ -27,7 +27,6 @@ import UserSolveTable from "../User/UserSolveTable";
 import UserSolveTable2 from "../User/ModeratorUserSolveTable";
 
 export default function UserList() {
-    const [isMod, setIsMod] = useState(true);
     const [users, setUsers] = useState<any[]>([]);
     const [selectedUser, setSelectedUser] = useState<any>();
     const [selectedRow, setSelectedRow] = useState<number | null>(null);
@@ -65,36 +64,31 @@ export default function UserList() {
 
     const banSelected = async () => {
         try {
-            const { error } = await supabase.auth.admin.updateUserById(
-                rowEntry.id,
-                { ban_duration: "50h" }
-              )
-            //const { error } = await supabase
-            //    .from("profiles")
-            //    .delete()
-            //    .eq("id", rowEntry.id)
-    //
+            const { error } = await supabase
+                .from("solve")
+                .delete()
+                .eq("user_id", rowEntry.id)
+    
             if (error) {
                 throw error
             }
     
             console.log("User deleted:", rowEntry)
-            setUsers(users.filter(user => user.id !== rowEntry.id))
             setRowEntry(null)
             setSelectedRow(null)
             toast({
-                title: "User Deleted",
-                description: `User ${rowEntry.username} has been removed.`,
+                title: "Data Deleted",
+                description: `User ${rowEntry.username} has had their solves deleted`,
                 status: "success",
                 duration: 5000,
                 isClosable: true,
             });
     
         } catch (error) {
-            console.error("Error deleting user:", error)
+            console.error("Error deleting user data:", error)
             toast({
                 title: "Error",
-                description: "Failed to delete user.",
+                description: "Failed to delete user data.",
                 status: "error",
                 duration: 5000,
                 isClosable: true,
@@ -158,7 +152,7 @@ export default function UserList() {
                     onConfirmOpen()
                 }}
                 isDisabled={selectedRow === null}>
-                    Delete User
+                    Delete All Solves
                 </Button>
             </Flex>
             <Modal isOpen={isOpen} onClose={onClose} size={"6xl"} >
@@ -190,6 +184,7 @@ export default function UserList() {
                                 Are you sure?
                             </Heading>
                             <Button colorScheme="red" onClick={() => {
+                                console.log("selected", rowEntry)
                                 banSelected();
                                 setSelectedRow(null)
                                 onConfirmClose()
