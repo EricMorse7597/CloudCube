@@ -138,21 +138,21 @@ export default function TimerPage() {
             <Timer scramble={scramble} />
 
             <HStack align="center" justify="center" spacing={5}>
-                {averageOf3 && (
-                    <Card p="1rem" w="auto" textAlign="center">
-                        <Heading size="md">Average of 3: {averageOf3}s</Heading>
-                    </Card>
-                )}
-                {averageOf5 && (
-                    <Card p="1rem" w="auto" textAlign="center">
-                        <Heading size="md">Average of 5: {averageOf5}s</Heading>
-                    </Card>
-                )}
-                {averageOf12 && (
-                    <Card p="1rem" w="auto" textAlign="center">
-                        <Heading size="md">Average of 12: {averageOf12}s</Heading>
-                    </Card>
-                )}
+                
+                <Card p="1rem" w="auto" textAlign="center">
+                    <Heading size="md">Average of 3: {averageOf3 ? `${averageOf3}s` : '—'}</Heading>
+                </Card>
+            
+            
+                <Card p="1rem" w="auto" textAlign="center">
+                    <Heading size="md">Average of 5: {averageOf5 ? `${averageOf5}s` : '—'}</Heading>
+                </Card>
+            
+            
+                <Card p="1rem" w="auto" textAlign="center">
+                    <Heading size="md">Average of 12: {averageOf12 ? `${averageOf12}s` : '—'}</Heading>
+                </Card>
+             
             </HStack>
             
             <Card ml={"15%"} mr={"15%"} >
