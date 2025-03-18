@@ -61,12 +61,36 @@ export default function UserSolveTable({ user_id }: { user_id: string }) {
 
     const deleteSelected = async () => {
         try {
-            const response = await supabase.from('solve').delete().eq('user_id', user_id).eq('scramble', rowEntry.scramble)
-            console.log("object deleted", rowEntry)
+            const error = await supabase
+                .from('solve')
+                .delete()
+                .eq('user_id', user_id)
+                .eq('scramble', rowEntry.scramble)
+
+            if (error) {
+                throw error
+            }
+
+            console.log("Solve deleted:", rowEntry)
             setRowEntry(null)
-            if (response) throw response
-        } catch (response) {
-            console.error("Record Deleted", response)
+            setSelectedRow(null)
+            toast({
+                title: "Data Deleted",
+                description: `User ${rowEntry.username} has had their solves deleted`,
+                status: "success",
+                duration: 5000,
+                isClosable: true,
+            });
+    
+        } catch (error) {
+            console.error("Error deleting solve data:", error)
+            toast({
+                title: "Error",
+                description: "Failed to delete solve data.",
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+            });
         }
     }
 
@@ -132,7 +156,6 @@ export default function UserSolveTable({ user_id }: { user_id: string }) {
                                 </Heading>
                                 <Button colorScheme="red" onClick={() => {
                                     deleteSelected();
-                                    setSelectedRow(null)
                                     onClose()
                                 }}
                                 isDisabled={selectedRow === null}>

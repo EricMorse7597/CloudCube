@@ -19,7 +19,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       console.error("Error fetching session:", error);
     } else {
       setSession(session)
-      console.log(session)
     }
 
     if (session?.user) {
