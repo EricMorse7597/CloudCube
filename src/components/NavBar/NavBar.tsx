@@ -34,7 +34,7 @@ import { Link as RouterLink } from "react-router-dom";
 import NAV_ITEMS, { NavItem } from "./navItems";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../utils/AuthContext";
-import { useState, useEffect} from "react";
+import { useState, useEffect } from "react";
 
 export default function NavBar() {
   const { isOpen, onToggle, onClose } = useDisclosure();
@@ -49,21 +49,45 @@ export default function NavBar() {
   const bucketUrl = "https://mxvnbjoezxeubbcwdnqh.supabase.co/storage/v1/object/public/avatars";
   const fullAvatarUrl = avatarUrl ? `${bucketUrl}/${avatarUrl}` : undefined;
 
+  const [isMod, setIsMod] = useState(false);
+
+  const modCheck = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq('id', session.user.id)
+        .single()
+
+      if (error) {
+        throw error
+      }
+      else if (data?.role === "Mod") {
+        setIsMod(true)
+      }
+    } catch (error) {
+      console.log("Error fetching users: " + error)
+    }
+  }
+
   useEffect(() => {
     if (!session?.user) return;
-  
+
     const fetchAvatar = async () => {
       const { data, error } = await supabase
         .from("profiles")
         .select("avatar_url")
         .eq("id", session.user.id)
         .single();
-  
+
       if (!error) setAvatarUrl(data?.avatar_url || null);
     };
-  
+
     fetchAvatar();
-  }, [session?.user?.id]); 
+    modCheck();
+
+
+  }, [session?.user?.id]);
 
   return (
     <Box
@@ -114,7 +138,7 @@ export default function NavBar() {
               </Flex>
             </HStack>
             <Flex display={{ base: "none", md: "flex" }} ml={10}>
-              <DesktopNav />
+              <DesktopNav isMod={isMod} />
             </Flex>
           </Flex>
 
@@ -163,7 +187,7 @@ export default function NavBar() {
                         )}
                       </Flex>
                     </Button>
-                    
+
                   </PopoverTrigger>
                   <PopoverContent
                     border={0}
@@ -183,7 +207,7 @@ export default function NavBar() {
                         onClick={async () => {
                           await logout();
                           window.location.assign("/login");
-                        } } />
+                        }} />
                     </Stack>
                   </PopoverContent>
                 </Popover></>
@@ -198,14 +222,14 @@ export default function NavBar() {
         </Flex>
 
         <Collapse in={isOpen} animateOpacity>
-          <MobileNav onClose={onClose} />
+          <MobileNav isMod={isMod} onClose={onClose} />
         </Collapse>
       </Container>
     </Box>
   );
 }
 
-const DesktopNav = () => {
+const DesktopNav = ({ isMod }: { isMod: boolean }) => {
   const linkColor = useColorModeValue("gray.600", "gray.200");
   const linkHoverColor = useColorModeValue("gray.800", "white");
   const popoverContentBgColor = useColorModeValue("white", "gray.800");
@@ -214,44 +238,45 @@ const DesktopNav = () => {
   return (
     <Stack direction="row" spacing={4}>
       {NAV_ITEMS.map((navItem) => (
-        <Box key={navItem.label}>
-          <Popover trigger="hover" placement="bottom-start">
-            <PopoverTrigger>
-              <Button
-                as={navItem.href ? RouterLink : undefined}
-                // href={navItem.href ?? "#"
-                to={navItem.href ?? ""}
-                fontWeight={500}
-                color={linkColor}
-                bg="none"
-                _hover={{
-                  textDecoration: "none",
-                  color: linkHoverColor,
-                  bg: buttonColor,
-                }}
-              >
-                {navItem.label}
-              </Button>
-            </PopoverTrigger>
+        (navItem.label === "Mod Page" && isMod) || navItem.label != "Mod Page" ? (
+          <Box key={navItem.label}>
+            <Popover trigger="hover" placement="bottom-start">
+              <PopoverTrigger>
+                <Button
+                  as={navItem.href ? RouterLink : undefined}
+                  to={navItem.href ?? ""}
+                  fontWeight={500}
+                  color={linkColor}
+                  bg="none"
+                  _hover={{
+                    textDecoration: "none",
+                    color: linkHoverColor,
+                    bg: buttonColor,
+                  }}
+                >
+                  {navItem.label}
+                </Button>
+              </PopoverTrigger>
 
-            {navItem.children && (
-              <PopoverContent
-                border={0}
-                boxShadow="xl"
-                bg={popoverContentBgColor}
-                p={4}
-                rounded="xl"
-                minW="sm"
-              >
-                <Stack>
-                  {navItem.children.map((child) => (
-                    <DesktopSubNav key={child.label} {...child} />
-                  ))}
-                </Stack>
-              </PopoverContent>
-            )}
-          </Popover>
-        </Box>
+              {navItem.children && (
+                <PopoverContent
+                  border={0}
+                  boxShadow="xl"
+                  bg={popoverContentBgColor}
+                  p={4}
+                  rounded="xl"
+                  minW="sm"
+                >
+                  <Stack>
+                    {navItem.children.map((child) => (
+                      <DesktopSubNav key={child.label} {...child} />
+                    ))}
+                  </Stack>
+                </PopoverContent>
+              )}
+            </Popover>
+          </Box>
+        ) : null
       ))}
     </Stack>
   );
@@ -300,7 +325,7 @@ const DesktopSubNav = ({ label, href, subLabel, onClick }: NavItem & { onClick?:
 interface MobileNavProps {
   onClose: () => void;
 }
-const MobileNav = ({ onClose }: MobileNavProps) => {
+const MobileNav = ({ isMod, onClose }: { isMod: boolean } & MobileNavProps) => {
   return (
     <Stack
       bg={useColorModeValue("white", "gray.800")}
@@ -308,7 +333,9 @@ const MobileNav = ({ onClose }: MobileNavProps) => {
       display={{ md: "none" }}
     >
       {NAV_ITEMS.map((navItem) => (
-        <MobileNavItem key={navItem.label} {...navItem} onClose={onClose} />
+        (navItem.label === "Mod Page" && isMod) || navItem.label != "Mod Page" ? (
+          <MobileNavItem key={navItem.label} {...navItem} onClose={onClose} />
+        ) : null
       ))}
     </Stack>
   );

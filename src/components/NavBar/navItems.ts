@@ -46,6 +46,10 @@ const NAV_ITEMS: Array<NavItem> = [
     label: "Leaderboard",
     href: "leaderboard",
   },
+  {
+    label: "Mod Page",
+    href: "userlist"
+  }
   // {
   //   label: "",
   //   href: "dashboard",
