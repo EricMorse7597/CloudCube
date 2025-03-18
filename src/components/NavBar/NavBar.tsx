@@ -82,7 +82,6 @@ export default function NavBar() {
   
     fetchAvatar();
 
-    if (session) modCheck
   }, [session?.user?.id]); 
 
   return (
