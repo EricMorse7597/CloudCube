@@ -74,8 +74,6 @@ export default function UserList() {
             }
     
             console.log("User deleted:", rowEntry)
-            setRowEntry(null)
-            setSelectedRow(null)
             toast({
                 title: "Data Deleted",
                 description: `User ${rowEntry.username} has had their solves deleted`,
@@ -186,6 +184,7 @@ export default function UserList() {
                             <Button colorScheme="red" onClick={() => {
                                 console.log("selected", rowEntry)
                                 banSelected();
+                                setRowEntry(null)
                                 setSelectedRow(null)
                                 onConfirmClose()
                             }}

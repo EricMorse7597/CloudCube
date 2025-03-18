@@ -73,11 +73,9 @@ export default function UserSolveTable({ user_id }: { user_id: string }) {
             console.log("rowEntry", rowEntry)
 
             console.log("Solve deleted:", rowEntry)
-            setRowEntry(null)
-            setSelectedRow(null)
             toast({
                 title: "Data Deleted",
-                description: `User ${rowEntry.username} has had their solves deleted`,
+                description: `User has had their solves deleted`,
                 status: "success",
                 duration: 5000,
                 isClosable: true,
@@ -156,6 +154,7 @@ export default function UserSolveTable({ user_id }: { user_id: string }) {
                                 </Heading>
                                 <Button colorScheme="red" onClick={() => {
                                     deleteSelected();
+                                    setRowEntry(null)
                                     setSelectedRow(null)
                                     onClose()
                                 }}
