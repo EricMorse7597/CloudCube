@@ -25,6 +25,7 @@ import {
   ChevronDownIcon,
   ChevronRightIcon,
 } from "@chakra-ui/icons";
+import { supabase } from "src/utils/SupabaseClient";
 
 import { NavButton } from "src/styles/common";
 
@@ -33,15 +34,36 @@ import { Link as RouterLink } from "react-router-dom";
 import NAV_ITEMS, { NavItem } from "./navItems";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../utils/AuthContext";
+import { useState, useEffect} from "react";
 
 export default function NavBar() {
   const { isOpen, onToggle, onClose } = useDisclosure();
   const navigate = useNavigate();
-  const { userName, isAuthenticated, logout } = useAuth();
+  const { userName, isAuthenticated, logout, session } = useAuth();
   const linkColor = useColorModeValue("gray.600", "gray.200");
   const linkHoverColor = useColorModeValue("gray.800", "white");
   const buttonColor = useColorModeValue("#EDF2F7", "#2C313D");
   const popoverContentBgColor = useColorModeValue("white", "gray.800");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+
+  const bucketUrl = "https://mxvnbjoezxeubbcwdnqh.supabase.co/storage/v1/object/public/avatars";
+  const fullAvatarUrl = avatarUrl ? `${bucketUrl}/${avatarUrl}` : undefined;
+
+  useEffect(() => {
+    if (!session?.user) return;
+  
+    const fetchAvatar = async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("avatar_url")
+        .eq("id", session.user.id)
+        .single();
+  
+      if (!error) setAvatarUrl(data?.avatar_url || null);
+    };
+  
+    fetchAvatar();
+  }, [session?.user?.id]); 
 
   return (
     <Box
@@ -99,10 +121,10 @@ export default function NavBar() {
           <Stack flex={{ base: 1, md: 0 }} justify="flex-end" direction="row" spacing={6} mr={-2}>
             <ColorModeSwitcher />
 
-            {/* User Section or Login/Sign-Up Buttons */}
+            {/* User Section things or Login/Sign-Up (not signed in) */}
             <Flex align="center">
               {isAuthenticated && userName ? (
-                <Popover trigger="hover" placement="bottom-start">
+                <><Popover trigger="hover" placement="bottom-start">
                   <PopoverTrigger>
                     <Button
                       fontWeight={500}
@@ -113,10 +135,35 @@ export default function NavBar() {
                         textDecoration: "none",
                         color: linkHoverColor,
                         bg: buttonColor,
+                        boxShadow: "10px 0 0 0 " + buttonColor,
                       }}
                     >
                       {userName}
+                      <Flex justify="center">
+                        {fullAvatarUrl ? (
+                          <Image
+                            boxSize="31px" // Ensure it's a square
+                            borderRadius="full" // Makes it circular
+                            src={fullAvatarUrl}
+                            alt="User Avatar"
+                            fallbackSrc="/assets/default.png"
+                            _hover={{
+                              textDecoration: "none",
+                            }}
+                            ml={10}
+                          />
+                        ) : (
+                          <Image
+                            boxSize="32px" // Ensure it's a square
+                            borderRadius="full" // Makes it circular
+                            src="/assets/default.png"
+                            alt="Default Avatar"
+                            ml={10}
+                          />
+                        )}
+                      </Flex>
                     </Button>
+                    
                   </PopoverTrigger>
                   <PopoverContent
                     border={0}
@@ -129,19 +176,17 @@ export default function NavBar() {
                     <Stack>
                       <DesktopSubNav
                         label="Dashboard"
-                        href="/profile"
-                      />
+                        href="/profile" />
                       <DesktopSubNav
                         label="Logout"
                         href=""
                         onClick={async () => {
                           await logout();
                           window.location.assign("/login");
-                        }}
-                      />
+                        } } />
                     </Stack>
                   </PopoverContent>
-                </Popover>
+                </Popover></>
               ) : (
                 <Flex>
                   <NavButton href="/login" text="Sign In" color="blue" size="sm" />
