@@ -82,6 +82,7 @@ export default function Timer({ scramble, showDropDown=false, onValueChange }: T
                 showSuccess();
                 setPushedTime(time);
 
+                
             } else {
                 showFailure();
             }

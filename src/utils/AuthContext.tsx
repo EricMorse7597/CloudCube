@@ -18,7 +18,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (error) {
       console.error("Error fetching session:", error);
     } else {
-      console.log("Fetched session");
       setSession(session)
     }
 
@@ -28,7 +27,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUserName(user.user_metadata?.username);
       setIsAuthenticated(true);
     } else {
-      console.log("No active session found");
+      
       setUserName(null);
       setSession(null);
       setIsAuthenticated(false);
@@ -42,7 +41,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // Listen for authentication state changes
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (_, session) => {
-        console.log(`Auth state changed`);
+        
         if (session?.user) {
           setUserName(session.user.user_metadata?.username);
           setIsAuthenticated(true);

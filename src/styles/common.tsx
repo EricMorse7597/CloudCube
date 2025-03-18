@@ -45,9 +45,6 @@ type ButtonProps = {
 
 import { Link as RouterLink } from "react-router-dom";
 export function NavButton({ href, text, color=undefined, size="md" }: ButtonProps): JSX.Element {
-  if (href) {
-    console.log("TESTING", text);
-  }
   return (
     <Button
       as={href ? RouterLink : undefined}
