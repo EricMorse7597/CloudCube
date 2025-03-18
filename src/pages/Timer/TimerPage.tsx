@@ -162,6 +162,7 @@ export default function TimerPage() {
             </Heading>
             )}
 
+            {session && (
             <HStack align="center" justify="center" spacing={5}>
                 <Card p="1rem" w="auto" textAlign="center">
                     <Heading size="md">Average of 3: {averageOf3 ? `${averageOf3}s` : '—'}</Heading>
@@ -175,6 +176,7 @@ export default function TimerPage() {
                     <Heading size="md">Average of 12: {averageOf12 ? `${averageOf12}s` : '—'}</Heading>
                 </Card>
             </HStack>
+            )}
 
             <Card ml={"15%"} mr={"15%"} >
                 {/* passing entries as solves */}
