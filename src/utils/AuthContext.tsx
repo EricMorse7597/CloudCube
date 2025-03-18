@@ -20,6 +20,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     } else {
       console.log("Fetched session");
       setSession(session)
+      console.log(session)
     }
 
     if (session?.user) {
