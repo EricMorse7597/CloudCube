@@ -2,24 +2,23 @@ import { useEffect, useState, useCallback } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { randomScrambleForEvent } from "cubing/scramble";
 import { supabase } from "src/utils/SupabaseClient";
-import { useAuth } from "src/utils/AuthContext";
 import Timer from "src/components/Timer/Timer";
 import {
-    useColorModeValue,
     Card,
     Stack,
-    HStack,
-    Heading,
     useToast,
-    VStack
+    Heading,
+    HStack
 } from "@chakra-ui/react";
 import UserSolveTable from "src/components/User/UserSolveTable";
+import { useAuth } from "src/utils/AuthContext";
 
 export default function TimerPage() {
     const [isRunning, setIsRunning] = useState(false);
     const [scramble, setScramble] = useState("");
     const [isHolding, setIsHolding] = useState(false);
     const [spaceDownTime, setSpaceDownTime] = useState(0);
+    const [selectedValue, setSelectedValue] = useState("333");
 
     const [entries, setEntries] = useState<any[]>([]);
     const toast = useToast();
@@ -34,6 +33,7 @@ export default function TimerPage() {
                 .from("solve")
                 .select("scramble, solve_time, created_at")
                 .eq("user_id", session.user.id)
+                .eq("event", selectedValue)
                 .order("created_at", { ascending: false });
             if (data) {
                 const formattedData = data.map((entry) => ({
@@ -63,6 +63,7 @@ export default function TimerPage() {
             .from('solve')
             .select('solve_time')
             .eq('user_id', session.user.id)
+            .eq("event", selectedValue)
             .order('id', { ascending: false }) 
             .limit(12);
 
@@ -80,14 +81,30 @@ export default function TimerPage() {
         return null; 
     };
 
-    const averageOf3 = calculateAverage(recentSolves, 3);
-    const averageOf5 = calculateAverage(recentSolves, 5);
-    const averageOf12 = calculateAverage(recentSolves, 12);
+    const calculateEventAverages = (event: string) => {
+        if (event === "333") {
+            return {
+                averageOf3: calculateAverage(recentSolves, 3),
+                averageOf5: calculateAverage(recentSolves, 5),
+                averageOf12: calculateAverage(recentSolves, 12),
+            };
+        } else if (event === "222") {
+            // Separate logic for "222" if needed, e.g., different calculation rules
+            return {
+                averageOf3: calculateAverage(recentSolves, 3),
+                averageOf5: calculateAverage(recentSolves, 5),
+                averageOf12: calculateAverage(recentSolves, 12),
+            };
+        }
+        return { averageOf3: null, averageOf5: null, averageOf12: null };
+    };
+
+    const { averageOf3, averageOf5, averageOf12 } = calculateEventAverages(selectedValue);
 
     const getNewScramble = useCallback(async (): Promise<void> => {
-        const newScramble = await randomScrambleForEvent("333");
+        const newScramble = await randomScrambleForEvent(selectedValue);
         setScramble(newScramble.toString());
-    }, []);
+    }, [selectedValue]);
 
     useHotkeys('space', (event) => { // KEYDOWN
         event.preventDefault();
@@ -120,11 +137,11 @@ export default function TimerPage() {
 
     useEffect(() => {
         getNewScramble();
-    }, []);
+    }, [getNewScramble]);
 
     useEffect(() => {
         if (session) {
-            fetchSolves();
+            setTimeout(fetchSolves, 50);// Database was not updating in time
         }
     }, [scramble, session]);
 
@@ -134,27 +151,31 @@ export default function TimerPage() {
 
     return (
         <Stack justify="center" marginBottom="2rem" spacing={4} mt={4}>
-            
-            <Timer scramble={scramble} />
+            <Timer
+                showDropDown={true}
+                scramble={scramble}
+                onValueChange={setSelectedValue}
+            />
+            {session && (
+            <Heading as="h2" size="lg" textAlign="center">
+                {selectedValue === "333" ? "3x3x3 Solves" : selectedValue === "222" ? "2x2x2 Solves" : ""}
+            </Heading>
+            )}
 
             <HStack align="center" justify="center" spacing={5}>
-                
                 <Card p="1rem" w="auto" textAlign="center">
                     <Heading size="md">Average of 3: {averageOf3 ? `${averageOf3}s` : '—'}</Heading>
                 </Card>
-            
-            
+
                 <Card p="1rem" w="auto" textAlign="center">
                     <Heading size="md">Average of 5: {averageOf5 ? `${averageOf5}s` : '—'}</Heading>
                 </Card>
-            
-            
+
                 <Card p="1rem" w="auto" textAlign="center">
                     <Heading size="md">Average of 12: {averageOf12 ? `${averageOf12}s` : '—'}</Heading>
                 </Card>
-             
             </HStack>
-            
+
             <Card ml={"15%"} mr={"15%"} >
                 {/* passing entries as solves */}
                 {session && (

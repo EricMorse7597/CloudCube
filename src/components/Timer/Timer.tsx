@@ -1,6 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
-import { randomScrambleForEvent } from "cubing/scramble";
 import { supabase } from "src/utils/SupabaseClient";
 import { useAuth } from "src/utils/AuthContext";
 import {
@@ -11,14 +10,38 @@ import {
     Heading,
     useToast,
 } from "@chakra-ui/react";
+import DropDown from "../DropDown";
+import styled from "styled-components";
 
-export default function Timer({ scramble }: { scramble: string }) {
+const ScrambleWrapper = styled.div`
+        display:grid;
+        place-items:center;
+        gap:1rem;
+        grid-template-columns:1fr auto 1fr;
+        & > :first-child {
+        margin-right: auto;
+        }
+
+    `
+
+    const Scramble = styled.h1`
+        grid-column-start: 2;
+    `
+
+type TimerProps = {
+    scramble: string;
+    showDropDown?: boolean;
+    onValueChange: (value: string) => void;
+}
+
+export default function Timer({ scramble, showDropDown=false, onValueChange }: TimerProps) {
     const [isRunning, setIsRunning] = useState(false);
     const [time, setTime] = useState(0);
     const [isHolding, setIsHolding] = useState(false);
     const [spaceDownTime, setSpaceDownTime] = useState(0);
     const [delayTime, setDelayTime] = useState(0);
     const [colorDelay, setColorDelay] = useState(false);
+    const [selectedValue, setSelectedValue] = useState("333");
     const [pushedTime, setPushedTime] = useState(0);
 
     const { session } = useAuth();
@@ -53,6 +76,7 @@ export default function Timer({ scramble }: { scramble: string }) {
                     user_id: session.user?.id as string,
                     scramble: scramble,
                     solve_time: time,
+                    event: selectedValue
                 });
                 if (error) throw error;
                 showSuccess();
@@ -132,15 +156,21 @@ export default function Timer({ scramble }: { scramble: string }) {
 
     const color = useColorModeValue("black", "white");
 
+
+
     return (
         <Stack align="center" >
             <HStack spacing={4}>
                 <Heading size="md">Timer</Heading>
             </HStack>
             <Card p="1.5rem" w="75%">
-                <Stack spacing={4} align="center">
-                    <h1>Scramble: {scramble}</h1>
-                </Stack>
+                <ScrambleWrapper>
+                    {showDropDown && <DropDown onValueChange={(value) => {
+                        setSelectedValue(value);
+                        onValueChange(value);
+                    }} />}
+                    <Scramble>Scramble: {scramble}</Scramble>
+                </ScrambleWrapper>
             </Card>
 
             <Card id="timer" p="6.5rem" w="40%" textAlign="center" data-time={pushedTime}>
