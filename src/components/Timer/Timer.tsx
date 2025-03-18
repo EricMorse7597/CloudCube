@@ -192,6 +192,7 @@ export default function Timer({ scramble, showDropDown=false, onValueChange, onT
                 updateSolves(); // Insert new solve after stopping timer
             }
             setIsRunning(false);
+            onTimerStop();
         }
     });
 
