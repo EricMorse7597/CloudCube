@@ -14,7 +14,7 @@ import {
     useDisclosure
 } from "@chakra-ui/react";
 import styled from "styled-components";
-import LeaderboardCard from "src/components/Leaderboard/LeaderboardCard";
+import LobbySelectorCard from "src/components/Multiplayer/LobbySelectorCard";
 import Timer from "src/components/Timer/Timer";
 import { useEffect, useState } from "react";
 import { supabase } from "src/utils/SupabaseClient";
@@ -23,6 +23,8 @@ import { useAuth } from "src/utils/AuthContext";
 import { solve } from "src/lib/search";
 import { format } from "path";
 import { useHotkeys } from "react-hotkeys-hook";
+import { time } from "console";
+import { AddIcon } from "@chakra-ui/icons";
 
 const Heading = styled.h1`
     font-size: 1.4rem;
@@ -50,14 +52,20 @@ export default function MultiplayerLobbiesPage() {
                 />
             </HStack>
             <Stack spacing={4} align={"center"}>
-                <Stack>
-                    <Heading>Create</Heading>
+                <Stack m={4} spacing={4} w={"60vw"} >
+                    <HStack>
+                        <Heading>Create</Heading>
+                        <Button colorScheme="green"><AddIcon /></Button>
+                    </HStack>
+                    <LobbySelectorCard name="Invitee" type="Type" date="Creation Date" />
                 </Stack>
-                <Stack>
+                <Stack m={4} spacing={4} w={"60vw"} >
                     <Heading>Join</Heading>
+                    <LobbySelectorCard name="Inviter" type="Type" date="Creation Date" />
                 </Stack>
-                <Stack>
+                <Stack m={4} spacing={4} w={"60vw"} >
                     <Heading>History</Heading>
+                    <LobbySelectorCard name="Opponent" type="Type" date="Creation Date" />
                 </Stack>
             </Stack>
         </div>

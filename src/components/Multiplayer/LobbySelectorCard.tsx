@@ -43,7 +43,7 @@ const Image = styled.img<{ shadowColor: string }>`
     filter: drop-shadow(5px 5px 1px ${props => props.shadowColor});
 `;
 
-export default function DefinitionCard({ name, type, date }: { name: string, type: string, date: Date }) {
+export default function DefinitionCard({ name, type, date }: { name: string, type: string, date: string }) {
 
     const minWidth = window.innerWidth / 3 > 400 ? "400px" : "50vw";
 
@@ -58,7 +58,7 @@ export default function DefinitionCard({ name, type, date }: { name: string, typ
             >
                 <p>{name}</p>
                 <p>{type}</p>
-                <p>{date.toDateString()}</p>
+                <p>{date}</p>
             </Flex>
         </Card >
     );
