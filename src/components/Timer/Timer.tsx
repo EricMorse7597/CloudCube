@@ -300,6 +300,7 @@ export default function Timer({ scramble, showDropDown=false, onValueChange, onT
                 Scramble: {scramble}
                 <Card p="1.5rem" w="75%">
                     <TwistyTimer
+                        puzzle={selectedValue === "333" ? "3x3x3" : "2x2x2"}
                         key={isChecked ? "PG3D" : "2D"}
                         alg={scramble}
                         visualization={isChecked ? "PG3D" : "2D"}
