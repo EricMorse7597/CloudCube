@@ -40,16 +40,17 @@ type ButtonProps = {
   text: string;
   color?: string;
   size?: string;
+  isMobile?: boolean,
 };
 
 
 import { Link as RouterLink } from "react-router-dom";
-export function NavButton({ href, text, color=undefined, size="md" }: ButtonProps): JSX.Element {
+export function NavButton({ href, text, color = undefined, size = "md", isMobile = false}: ButtonProps): JSX.Element {
   return (
     <Button
       as={href ? RouterLink : undefined}
       to={href?? ""}
-      display={{ base: "none", md: "inline-flex" }}
+      display={isMobile ? { base: "inline-flex", md: "none" } : { base: "none", md: "inline-flex" }}
       fontSize={size}
       fontWeight={600}
       margin="0 0.5em"
