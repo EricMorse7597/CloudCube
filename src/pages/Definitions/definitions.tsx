@@ -52,7 +52,7 @@ const DefinitionsPage = () => {
   }, []);
 
   return (
-    <div>
+    <>
       <Container
         p={4}>
         <Input
@@ -63,93 +63,33 @@ const DefinitionsPage = () => {
 
       <Stack align={"center"} justify={"center"}>
 
-        <Divider />
-        <Heading>Moves</Heading>
-        <Flex
-          gap={6}
-          p={4}
-          wrap={"wrap"}
-          justify={"center"}
-          align={"stretch"}
-        >
+        // map each category to a stack
+        {Object.values(category).map((cat: category) => {
+          return (
+            <>
+              <Divider />
+              <Heading>{cat}</Heading>
+              <Flex
+                gap={6}
+                p={4}
+                wrap={"wrap"}
+                justify={"center"}
+                align={"stretch"}
+              >
+                {DEFINITION_ITEMS.map((item: DefinitionItem) => {
+                  if (item.category === cat && item.label.toUpperCase().includes(searchBox.toUpperCase())) {
+                    return <DefinitionCard key={item.label.replace(" ", "_")} label={item.label} text={item.text} imgHref={item.imgHref} />
+                  }
+                })}
+              </Flex>
+            </>
+          );
 
-          {Move.map((item: DefinitionItem) => {
-            if (item.label.toUpperCase().includes(searchBox.toUpperCase())) {
-              return <DefinitionCard key={item.label.replace(" ", "_")} label={item.label} text={item.text} imgHref={item.imgHref} />
-            }
-          })}
-
-        </Flex >
-
-        <Divider />
-        <Heading>Speedcubing Methods & Techniques</Heading>
-        <Flex
-          gap={6}
-          p={4}
-          wrap={"wrap"}
-          justify={"center"}
-          align={"stretch"}
-        >
-          {Method.map((item: DefinitionItem) => {
-            if (item.label.toUpperCase().includes(searchBox.toUpperCase())) {
-              return <DefinitionCard key={item.label.replace(" ", "_")} label={item.label} text={item.text} imgHref={item.imgHref} />
-            }
-          })}
-        </Flex >
-
-        <Divider />
-        <Heading>Common Algorithms & Concepts</Heading>
-        <Flex
-          gap={6}
-          p={4}
-          wrap={"wrap"}
-          justify={"center"}
-          align={"stretch"}
-        >
-          {Algorithm.map((item: DefinitionItem) => {
-            if (item.label.toUpperCase().includes(searchBox.toUpperCase())) {
-              return <DefinitionCard key={item.label.replace(" ", "_")} label={item.label} text={item.text} imgHref={item.imgHref} />
-            }
-          })
-          }
-        </Flex >
-
-        <Divider />
-        <Heading>Cubing Terms & Techniques</Heading>
-        <Flex
-          gap={6}
-          p={4}
-          wrap={"wrap"}
-          justify={"center"}
-          align={"stretch"}
-        >
-          {Term.map((item: DefinitionItem) => {
-            if (item.label.toUpperCase().includes(searchBox.toUpperCase())) {
-              return <DefinitionCard key={item.label.replace(" ", "_")} label={item.label} text={item.text} imgHref={item.imgHref} />
-            }
-          })
-          }
-        </Flex >
-
-        <Divider />
-        <Heading>Timing & Competition Terms</Heading>
-        <Flex
-          gap={6}
-          p={4}
-          wrap={"wrap"}
-          justify={"center"}
-          align={"stretch"}
-        >
-          {Competition.map((item: DefinitionItem) => {
-            if (item.label.toUpperCase().includes(searchBox.toUpperCase())) {
-              return <DefinitionCard key={item.label.replace(" ", "_")} label={item.label} text={item.text} imgHref={item.imgHref} />
-            }
-          })
-          }
-        </Flex >
+        }
+        )}
 
       </Stack>
-    </div >
+    </ >
   );
 };
 
