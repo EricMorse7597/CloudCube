@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { supabase } from "src/utils/SupabaseClient";
 import { useAuth } from "src/utils/AuthContext";
+import { TwistyPlayer } from "src/components/TwistyPlayer";
 import {
     useColorModeValue,
     Card,
@@ -18,7 +19,6 @@ import {
 import { Stackmat, Packet } from 'stackmat';
 import DropDown from "../DropDown";
 import styled from "styled-components";
-import "src/lib/puzzles/cube/cube";
 
 const ScrambleWrapper = styled.div`
         display:grid;
@@ -286,8 +286,17 @@ export default function Timer({ scramble, showDropDown=false, onValueChange, onT
             <ModalOverlay />
             <ModalContent>
                 <Card p="1rem" w="auto" textAlign="center">
+                    Scramble: {scramble}
+                    <TwistyPlayer
+                        alg={scramble}
+                        visualization="PG3D"
+                        background="none"
+                        controlPanel="none"
+                        viewerLink="twizzle"
 
-                Pickle Rick
+                    />
+
+                
                 </Card>
             </ModalContent>
         </Modal>
