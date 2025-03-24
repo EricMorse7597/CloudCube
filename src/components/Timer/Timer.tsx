@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { supabase } from "src/utils/SupabaseClient";
 import { useAuth } from "src/utils/AuthContext";
-import { TwistyPlayer } from "src/components/TwistyPlayer";
+import { TwistyTimer } from "src/components/TwistyTimer";
 import {
     useColorModeValue,
     Card,
@@ -14,7 +14,11 @@ import {
     useDisclosure,
     Modal,
     ModalOverlay,
-    ModalContent
+    ModalContent,
+    FormControl,
+    FormLabel,
+    Switch,
+    VStack,
 } from "@chakra-ui/react";
 import { Stackmat, Packet } from 'stackmat';
 import DropDown from "../DropDown";
@@ -249,6 +253,7 @@ export default function Timer({ scramble, showDropDown=false, onValueChange, onT
 
     const color = useColorModeValue("black", "white");
     const { isOpen, onOpen, onClose } = useDisclosure()
+    const [isChecked, setChecked] = useState(false);
 
 
 
@@ -282,22 +287,40 @@ export default function Timer({ scramble, showDropDown=false, onValueChange, onT
             </Card>
             <p>Press spacebar {isConnected? "or Stackmat": ""} to start/stop the timer</p>
             <br />
-            <Modal isOpen={isOpen} onClose={onClose}>
+            <Modal isOpen={isOpen} onClose={onClose} >
             <ModalOverlay />
-            <ModalContent>
-                <Card p="1rem" w="auto" textAlign="center">
-                    Scramble: {scramble}
-                    <TwistyPlayer
+            <ModalContent 
+            maxW={"50rem"} 
+            maxH={"50rem"} 
+            //textAlign={"center"} 
+            // justifyContent={"center"} 
+            alignItems={"center"} 
+            p={4}
+            >
+                Scramble: {scramble}
+                <Card p="1.5rem" w="75%">
+                    <TwistyTimer
+                        key={isChecked ? "PG3D" : "2D"}
                         alg={scramble}
-                        visualization="PG3D"
+                        visualization={isChecked ? "PG3D" : "2D"}
                         background="none"
                         controlPanel="none"
                         viewerLink="twizzle"
-
-                    />
-
-                
+                        cameraDistance={6}
+                        />
                 </Card>
+                <FormControl p={"0.5rem"} as={VStack}>
+                <FormLabel mb={0}>2D/3D</FormLabel>
+                <Switch 
+                id="is3D"
+                size={"md"}
+                ml={"-2.5"}
+                onChange={(e) => { 
+                    const checked = e.target.checked;
+                    setChecked(checked); 
+                    console.log(checked); 
+                }}/>
+                </FormControl>
             </ModalContent>
         </Modal>
         </Stack>
