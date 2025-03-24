@@ -9,10 +9,16 @@ import {
     HStack,
     Heading,
     useToast,
+    Button,
+    useDisclosure,
+    Modal,
+    ModalOverlay,
+    ModalContent
 } from "@chakra-ui/react";
 import { Stackmat, Packet } from 'stackmat';
 import DropDown from "../DropDown";
 import styled from "styled-components";
+import "src/lib/puzzles/cube/cube";
 
 const ScrambleWrapper = styled.div`
         display:grid;
@@ -242,6 +248,7 @@ export default function Timer({ scramble, showDropDown=false, onValueChange, onT
     }, [isHolding]);
 
     const color = useColorModeValue("black", "white");
+    const { isOpen, onOpen, onClose } = useDisclosure()
 
 
 
@@ -257,6 +264,16 @@ export default function Timer({ scramble, showDropDown=false, onValueChange, onT
                         onValueChange(value);
                     }} />}
                     <Scramble>Scramble: {scramble}</Scramble>
+                    <Button
+                    height={"38px"}
+                    width={"157px"}
+                    variant={"outline"}
+                    colorScheme={"green"} 
+                    onClick={onOpen}
+                    ml={10}
+                    >
+                    Show    
+                    </Button>
                 </ScrambleWrapper>
             </Card>
 
@@ -265,6 +282,17 @@ export default function Timer({ scramble, showDropDown=false, onValueChange, onT
             </Card>
             <p>Press spacebar {isConnected? "or Stackmat": ""} to start/stop the timer</p>
             <br />
+            <Modal isOpen={isOpen} onClose={onClose}>
+            <ModalOverlay />
+            <ModalContent>
+                <Card p="1rem" w="auto" textAlign="center">
+
+                Pickle Rick
+                </Card>
+            </ModalContent>
+        </Modal>
         </Stack>
+        
+
     );
 }
