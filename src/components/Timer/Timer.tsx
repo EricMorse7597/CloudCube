@@ -273,7 +273,7 @@ export default function Timer({ scramble, showDropDown=false, onValueChange, onT
                     height={"38px"}
                     width={"157px"}
                     variant={"outline"}
-                    colorScheme={"green"} 
+                    colorScheme={"blue"} 
                     onClick={onOpen}
                     ml={10}
                     >
