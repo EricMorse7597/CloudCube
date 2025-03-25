@@ -316,10 +316,10 @@ export default function Timer({ scramble, showDropDown=false, onValueChange, onT
                 id="is3D"
                 size={"md"}
                 ml={"-2.5"}
+                isChecked={isChecked}
                 onChange={(e) => { 
                     const checked = e.target.checked;
-                    setChecked(checked); 
-                    console.log(checked); 
+                    setChecked(checked);  
                 }}/>
                 </FormControl>
             </ModalContent>
