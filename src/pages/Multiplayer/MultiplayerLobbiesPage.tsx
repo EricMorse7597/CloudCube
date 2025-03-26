@@ -34,6 +34,8 @@ const Heading = styled.h1`
 
 const multiplayerImage = "assets/multiplayer_logo.svg";
 export default function MultiplayerLobbiesPage() {
+    const { isOpen, onOpen, onClose } = useDisclosure();
+
     return (
         <div>
             <HStack align={"center"} justify={"center"} spacing={4} m={4}>
@@ -55,7 +57,12 @@ export default function MultiplayerLobbiesPage() {
                 <Stack m={4} spacing={4} w={"60vw"} >
                     <HStack>
                         <Heading>Create</Heading>
-                        <Button colorScheme="green"><AddIcon /></Button>
+                        <Button
+                            onClick={onOpen}
+                            colorScheme="green"
+                        >
+                            <AddIcon />
+                        </Button>
                     </HStack>
                     <LobbySelectorCard name="Invitee" type="Type" date="Creation Date" />
                 </Stack>
@@ -68,6 +75,18 @@ export default function MultiplayerLobbiesPage() {
                     <LobbySelectorCard name="Opponent" type="Type" date="Creation Date" />
                 </Stack>
             </Stack>
-        </div>
+
+            <Modal isOpen={isOpen} onClose={onClose} >
+                <ModalOverlay />
+                <ModalContent
+                    maxW={"50rem"}
+                    maxH={"50rem"}
+                    alignItems={"center"}
+                    p={4}
+                >
+                    <h1>test</h1>
+                </ModalContent>
+            </Modal>
+        </div >
     )
 }
