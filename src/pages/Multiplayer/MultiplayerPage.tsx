@@ -16,15 +16,27 @@ import { useParams } from "react-router-dom";
 
 import GameResultCard from "src/components/Multiplayer/GameResultCard";
 
-const multiplayerImage = "assets/multiplayer_logo.svg";
+const multiplayerImage = "/assets/multiplayer_logo.svg";
+
+// used to fetch the username of a given UID
+const fetchUsername = async (userID: string) => {
+    const { data } = await supabase
+        .from("profiles")
+        .select("username")
+        .eq("id", userID).single();
+    return data?.username || "Unknown";
+}
 
 export default function TimerPage() {
     const [scramble, setScramble] = useState("");
     const [isLoading, setIsLoading] = useState(true);
     const [solved, setSolved] = useState(false);
+    const [solveTimes, setSolveTimes] = useState<any[]>([])
 
     const toast = useToast();
     const { session } = useAuth();
+
+    console.log("session: " + session);
 
     const gameID = useParams<{ id: string }>().id;
 
@@ -65,13 +77,28 @@ export default function TimerPage() {
         if (!scramble.toString()) return;
 
         const { data, error } = await supabase
-            .from("racing_sessions")
-            .select("solve_times")
-            .eq("id", gameID)
-            .single();
+            .from("solve")
+            .select("user_id, solve_time")
+            .eq("racing_session", gameID)
+            .order("solve_time", { ascending: true })
 
         if (data) {
-            console.log(data);
+            if (session) { // check if user has already solved this weeks scramble
+                data.find((solve) => {
+                    if (solve.user_id === session.user.id) {
+                        setSolved(true);
+                    }
+                })
+            }
+
+            const formattedData = await Promise.all(data.map(async (solve, index) => ({
+                rank: index + 1,
+                name: await fetchUsername(solve.user_id),
+                time: solve.solve_time
+            })));
+
+
+            setSolveTimes(formattedData);
         } else {
             toast({
                 title: 'Error!',
@@ -115,6 +142,12 @@ export default function TimerPage() {
                 />
                 <Stack align="center" marginBottom="2rem" spacing={4} mt={4}>
                     <GameResultCard playerName={"Playername"} time={"Solve Time"} />
+                    {solveTimes.length > 0 ?
+                        solveTimes.map(solve => (
+                            <GameResultCard playerName={solve.name} time={solve.time} isUser={session && solve.name === session.user.user_metadata.username} />
+                        ))
+                        :
+                        <p>No in the lobby has submitted a solve!</p>}
                 </Stack>
             </Stack >
             )
