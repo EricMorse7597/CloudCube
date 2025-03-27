@@ -1,10 +1,8 @@
 import {
-  Box,
   Container,
   Flex,
   Input,
   Heading,
-  HStack,
   Stack
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
@@ -44,6 +42,10 @@ const sortItems = () => {
 
 sortItems();
 
+const containsSubstring = (str: string, substr: string): boolean => {
+  return str.toUpperCase().includes(substr.toUpperCase());
+}
+
 const DefinitionsPage = () => {
   const [searchBox, setSearch] = useState("");
 
@@ -62,10 +64,16 @@ const DefinitionsPage = () => {
       </Container>
 
       <Stack align={"center"} justify={"center"}>
-
-        // map each category to a stack
         {Object.values(category).map((cat: category) => {
-          return (
+
+          /* gets all definitions for each category that also contains the text string in the title or description */
+          const filteredDefinitions = DEFINITION_ITEMS.filter(
+            (item: DefinitionItem) =>
+              item.category === cat &&
+              (containsSubstring(item.label, searchBox) || containsSubstring(item.text, searchBox))
+          );
+          
+          return (!filteredDefinitions.length)? <></> : (
             <>
               <Divider />
               <Heading>{cat}</Heading>
@@ -76,18 +84,14 @@ const DefinitionsPage = () => {
                 justify={"center"}
                 align={"stretch"}
               >
-                {DEFINITION_ITEMS.map((item: DefinitionItem) => {
-                  if (item.category === cat && item.label.toUpperCase().includes(searchBox.toUpperCase())) {
-                    return <DefinitionCard key={item.label.replace(" ", "_")} label={item.label} text={item.text} imgHref={item.imgHref} />
-                  }
+                {filteredDefinitions.map((item: DefinitionItem) => {
+                  return <DefinitionCard key={item.label.replace(" ", "_")} label={item.label} text={item.text} imgHref={item.imgHref} subStringHighlight={searchBox} />
                 })}
               </Flex>
             </>
           );
 
-        }
-        )}
-
+        })}
       </Stack>
     </ >
   );
