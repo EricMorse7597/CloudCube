@@ -11,7 +11,14 @@ import {
     ModalFooter,
     ModalBody,
     ModalCloseButton,
-    useDisclosure
+    useDisclosure,
+    FormControl,
+    FormLabel,
+    FormErrorMessage,
+    FormHelperText,
+    Input,
+    Select,
+    Flex,
 } from "@chakra-ui/react";
 import styled from "styled-components";
 import LobbySelectorCard from "src/components/Multiplayer/LobbySelectorCard";
@@ -25,6 +32,9 @@ import { format } from "path";
 import { useHotkeys } from "react-hotkeys-hook";
 import { time } from "console";
 import { AddIcon } from "@chakra-ui/icons";
+import { e } from "cubing/dist/types/KState-8f0d81ea";
+import { randomScrambleForEvent } from "cubing/scramble";
+
 
 const Heading = styled.h1`
     font-size: 1.4rem;
@@ -33,8 +43,141 @@ const Heading = styled.h1`
 `;
 
 const multiplayerImage = "assets/multiplayer_logo.svg";
+
 export default function MultiplayerLobbiesPage() {
+    const [searchedUser, setSearchedUser] = useState("")
+    const [puzzleType, setPuzzleType] = useState("333")
+    const [isUsernameInvalid, setIsUsernameInvalid] = useState(false)
+    const [isUserNotFound, setIsUserNotFound] = useState(false)
+
     const { isOpen, onOpen, onClose } = useDisclosure();
+
+    const { session } = useAuth();
+
+    const searchUser = async(username: String) => {
+        try {
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('username', username)
+                .single()
+            if (data) {
+                setSearchedUser(data.username)
+                return true
+            }
+            return false
+        } catch(error) {
+            console.log("Error searching user!")
+        }
+        return false
+    }
+
+    const translateUsername = async (username: String) => {
+        try {
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('id')
+                .eq('username', username)
+                .single()
+            if (data) {
+                console.log(username + "s id is " + data?.id)
+                return data.id
+            }
+        } catch(error) {
+            console.log("Error finding user!")
+        }
+        return null;
+    }
+
+    // this function will fetch all active lobbies a player has been invited to
+    const fetchActiveLobbies = async () => {
+
+    }
+
+    // this function will fetch all completed lobbies
+    const fetchHistoricLobbies = async () => {
+
+    }
+
+    // this function will create a lobby and send a session invite
+    //  in future, takes array of usernames
+    const sendInvite = async (username: String) => {
+    }
+    
+    const genScramble = async (puzzleType: string) => {
+        const newScramble = await randomScrambleForEvent(puzzleType);
+        return newScramble.toString()
+    }
+
+    useEffect(() => {
+        const invite_channel = supabase
+        .channel('public:racing_invites')
+        .on('postgres_changes', {
+            event: '*',
+            schema: 'public',
+            table: 'racing_sessions',
+            filter: 'sender_id=eq.${session.user.id}'
+        }, payload => {
+            console.log("new update from sender column")
+        })
+        .on('postgres_changes', {
+            event: '*',
+            schema: 'public',
+            table: 'racing_sessions',
+            filter: 'receiver_id=eq.${session.user.id}'
+        }, payload => {
+            console.log("new update from receiver column")
+        })
+        .subscribe()
+//
+        // this ensures channels are unsubscribed from on page change
+        window.addEventListener('beforeunload', async () => {
+            await supabase.removeAllChannels()
+        })
+    }, [session])
+
+    const createLobby = async () => {
+        try {
+            //if no user was entered
+            if (!searchedUser.trim()) {
+                setIsUsernameInvalid(true)
+                setIsUserNotFound(true)
+                return;
+            }
+            setIsUsernameInvalid(false)
+
+            // look for user in db
+            const userExists = await searchUser(searchedUser)
+            if (!userExists) {
+                setIsUserNotFound(true)
+                return
+            }
+            setIsUserNotFound(false)
+
+            const receiver_id = await translateUsername(searchedUser)
+            console.log("translatedID is " + receiver_id)
+
+            const scramble = await genScramble(puzzleType)
+            //proceed to lobby creation
+            
+            const { data, error } = await supabase
+                .from('racing_sessions')
+                .insert({
+                    sender_id: session?.user?.id,
+                    receiver_id: receiver_id,
+                    sender_username: session?.user?.user_metadata?.username,
+                    receiver_username: searchedUser,
+                    status: 'active',
+                    event: puzzleType,
+                    scramble: scramble
+                })
+                if (error) {
+                    throw error;
+                }
+        } catch(error) {
+            console.log("error creating session!")
+        }
+    }
 
     return (
         <div>
@@ -84,7 +227,37 @@ export default function MultiplayerLobbiesPage() {
                     alignItems={"center"}
                     p={4}
                 >
-                    <h1>test</h1>
+                    <ModalBody>
+                      <Stack spacing={4}>
+                        <FormControl isRequired isInvalid={isUsernameInvalid || isUserNotFound}>
+                          <FormLabel>Username</FormLabel>
+                          <Input
+                            placeholder="Enter username"
+                            value={searchedUser}
+                            onChange={(e) => setSearchedUser(e.target.value)}
+                          />
+                          {isUsernameInvalid && <FormErrorMessage>Username is required.</FormErrorMessage>}
+                          {isUserNotFound && <FormErrorMessage>User not found.</FormErrorMessage>}
+                        </FormControl>
+                        
+                        <FormControl isRequired>
+                          <FormLabel>Event</FormLabel>
+                          <Select
+                            value={puzzleType}
+                            onChange={(e) => setPuzzleType(e.target.value)}
+                          >
+                            <option value="333">3x3</option>
+                            <option value="222">2x2</option>
+                          </Select>
+                        </FormControl>
+                        
+                        <Flex justify="center">
+                          <Button colorScheme="green" mt={2} onClick={createLobby}>
+                            Create Lobby
+                          </Button>
+                        </Flex>
+                      </Stack>
+                    </ModalBody>
                 </ModalContent>
             </Modal>
         </div >

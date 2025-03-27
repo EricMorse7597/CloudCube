@@ -1,5 +1,7 @@
 import { Container, Heading, Link, Text, VStack } from "@chakra-ui/react";
 
+
+
 export default function AboutPage() {
   return (
     <Container maxW="container.sm">
