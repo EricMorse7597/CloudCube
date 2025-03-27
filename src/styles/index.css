@@ -6,6 +6,10 @@
   padding-top: 3%;
   text-align: center;
   margin: auto;
+
+  @media (max-width: 768px) {
+      padding: 10%;
+  }
 }
 
 .element-style-verify{
