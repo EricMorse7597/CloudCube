@@ -67,6 +67,10 @@
     padding: 1%;
     padding-top: 2%;
     margin: auto;
+    @media (max-width: 768px) {
+      max-width: 100%;
+      padding: 0%;
+    }
   }
 
 .title{
@@ -75,17 +79,31 @@
     padding-bottom: 2%;
 }
 
-.sidebarProfile{
+/* .sidebarProfile{
   width: 100%;
   padding: 2.4em;
   border-radius: var(--chakra-radii-md);
   margin-top: 30%;
-}
+} */
 
+.sidebarProfile {
+  width: 100%;
+  display: flex;
+  justify-content: center; /* Centers items horizontally */
+  gap: 4rem; /* Space between buttons */
+  padding: 1rem;
+  padding-left: 2%;
+  }
 form.FormInfo {
   display: flex !important;
   justify-content: center !important;
   gap: 10px !important;
   margin: auto !important;
-  margin-bottom: 2rem !important;
+  margin-bottom: 1rem !important;
+  margin-top: 1rem !important;
 }
+
+.tableDisplay{
+  grid-template-columns: 100% 1fr;
+}
+
