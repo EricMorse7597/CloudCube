@@ -6,17 +6,23 @@ import {
     Card,
     Stack,
     useToast,
-    Heading,
     HStack,
     Image,
 } from "@chakra-ui/react";
-import UserSolveTable from "src/components/User/UserSolveTable";
+import { Divider } from "src/styles/common";
+import styled from "styled-components";
 import { useAuth } from "src/utils/AuthContext";
 import { useParams } from "react-router-dom";
 
 import GameResultCard from "src/components/Multiplayer/GameResultCard";
 
 const multiplayerImage = "/assets/multiplayer_logo.svg";
+
+const Heading = styled.h1`
+    font-size: 1.4rem;
+    font-weight: bold;
+    margin: 0;
+`;
 
 // used to fetch the username of a given UID
 const fetchUsername = async (userID: string) => {
@@ -119,23 +125,28 @@ export default function TimerPage() {
             (<p>Loading...</p>)
             :
             (<Stack justify="center" marginBottom="2rem" spacing={4} mt={4}>
-                <HStack align={"center"} justify={"center"} spacing={4} m={4}>
-                    <Image
-                        src={multiplayerImage}
-                        alt="gamepad"
-                        width="3rem"
-                        height="3rem"
-                    />
-                    <Heading>Multiplayer</Heading>
-                    <Image
-                        src={multiplayerImage}
-                        alt="gamepad"
-                        width="3rem"
-                        height="3rem"
-                    />
-                </HStack >
+                <Stack align={"center"} >
+                    <HStack align={"center"} justify={"center"} spacing={4} ml={4} mr={4}>
+                        <Image
+                            src={multiplayerImage}
+                            alt="gamepad"
+                            width="3rem"
+                            height="3rem"
+                        />
+                        <Heading>Multiplayer</Heading>
+                        <Image
+                            src={multiplayerImage}
+                            alt="gamepad"
+                            width="3rem"
+                            height="3rem"
+                        />
+                    </HStack >
 
-                <Heading >Game: {gameID}</Heading>
+                    <Heading  >Game: {gameID}</Heading>
+                </Stack>
+
+                <Divider />
+
                 <Timer
                     scramble={scramble}
                     onValueChange={(value: string) => console.log(value)}
