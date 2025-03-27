@@ -213,7 +213,7 @@ export default function NavBar() {
                 </Popover></>
               ) : (
                 <Flex>
-                  <NavButton href="/login" text="Sign In" color="blue" size="sm" isMobile={false}/>
+                  <NavButton href="/login" text="Sign In" color="blue" size="sm" isMobile={false} />
                   <NavButton href="/register" text="Sign Up" color="teal" size="sm" isMobile={false}/>
                 </Flex>
               )}
@@ -346,6 +346,7 @@ const MobileNav = ({
   isAuthenticated: boolean;
   logout: () => Promise<void>;
   onClose: () => void;
+  
 }) => {
   const navigate = useNavigate();
   const bucketUrl = "https://mxvnbjoezxeubbcwdnqh.supabase.co/storage/v1/object/public/avatars";
@@ -359,9 +360,9 @@ const MobileNav = ({
           <Text fontWeight="bold">{userName}</Text>
         </HStack>
       ) : (
-        <Flex justify="center" mb={4}>
-          <NavButton href="/login" text="Sign In" color="blue" size="sm" isMobile={true}/>
-          <NavButton href="/register" text="Sign Up" color="teal" size="sm" isMobile={true}/>
+        <Flex justify="center" mb={4} >
+          <NavButton href="/login" text="Sign In" color="blue" size="sm" isMobile={true}  onClick={onClose}/>
+          <NavButton href="/register" text="Sign Up" color="teal" size="sm" isMobile={true}  onClick={onClose}/>
         </Flex>
       )}
 

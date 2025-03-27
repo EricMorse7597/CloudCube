@@ -41,11 +41,12 @@ type ButtonProps = {
   color?: string;
   size?: string;
   isMobile?: boolean,
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 };
 
 
 import { Link as RouterLink } from "react-router-dom";
-export function NavButton({ href, text, color = undefined, size = "md", isMobile = false}: ButtonProps): JSX.Element {
+export function NavButton({ href, text, color = undefined, size = "md", isMobile = false, onClick}: ButtonProps): JSX.Element {
   return (
     <Button
       as={href ? RouterLink : undefined}
@@ -57,6 +58,7 @@ export function NavButton({ href, text, color = undefined, size = "md", isMobile
       size={size}
       colorScheme={color}
       bg={color? undefined: "none"}
+      onClick={onClick}
     >
       {text}
     </Button>
