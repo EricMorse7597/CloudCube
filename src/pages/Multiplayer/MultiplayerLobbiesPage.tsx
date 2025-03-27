@@ -50,6 +50,10 @@ export default function MultiplayerLobbiesPage() {
     const [isUsernameInvalid, setIsUsernameInvalid] = useState(false)
     const [isUserNotFound, setIsUserNotFound] = useState(false)
 
+    const [createdLobbies, setCreatedLobbies] = useState<any>([])
+    const [receivedLobbies, setReceivedLobbies] = useState<any>([])
+    const [historicLobbies, setHistoricLobbies] = useState<any>([])
+
     const { isOpen, onOpen, onClose } = useDisclosure();
 
     const { session } = useAuth();
@@ -90,20 +94,26 @@ export default function MultiplayerLobbiesPage() {
     }
 
     // this function will fetch all active lobbies a player has been invited to
-    const fetchActiveLobbies = async () => {
+    const fetchLobbies = async () => {
+        if (!session?.user?.id) return;
 
+        try {
+            const { data, error } = await supabase
+                .from('racing_sessions')
+                .select("*")
+                .or(`sender_id.eq.${session.user.id},receiver_id.eq.${session.user.id}`)
+            if (error) throw error;
+            if (data) {
+                setCreatedLobbies(data.filter(d => d.sender_id === session.user.id && d.status === 'active'))
+                setReceivedLobbies(data.filter(d => d.receiver_id === session.user.id && d.status === 'active'))
+                setHistoricLobbies(data.filter(d => d.status === 'completed'))
+                console.log("created: " + createdLobbies)
+            }
+        } catch(error) {
+            console.error("Error fetching lobbies", error)
+        }
     }
 
-    // this function will fetch all completed lobbies
-    const fetchHistoricLobbies = async () => {
-
-    }
-
-    // this function will create a lobby and send a session invite
-    //  in future, takes array of usernames
-    const sendInvite = async (username: String) => {
-    }
-    
     const genScramble = async (puzzleType: string) => {
         const newScramble = await randomScrambleForEvent(puzzleType);
         return newScramble.toString()
@@ -134,6 +144,8 @@ export default function MultiplayerLobbiesPage() {
         window.addEventListener('beforeunload', async () => {
             await supabase.removeAllChannels()
         })
+
+        fetchLobbies()
     }, [session])
 
     const createLobby = async () => {
@@ -174,6 +186,9 @@ export default function MultiplayerLobbiesPage() {
                 if (error) {
                     throw error;
                 }
+
+                await fetchLobbies()
+                onClose()
         } catch(error) {
             console.log("error creating session!")
         }
@@ -207,15 +222,43 @@ export default function MultiplayerLobbiesPage() {
                             <AddIcon />
                         </Button>
                     </HStack>
-                    <LobbySelectorCard name="Invitee" type="Type" date="Creation Date" />
+                    {createdLobbies.map((lobby: any, i: number) => (
+                      <LobbySelectorCard
+                        key={lobby.id || i}
+                        name={lobby.receiver_username}
+                        type={lobby.event}
+                        date={new Date(lobby.created_at).toLocaleDateString()}
+                        // add onclick here
+                      />
+                    ))}
                 </Stack>
                 <Stack m={4} spacing={4} w={"60vw"} >
                     <Heading>Join</Heading>
-                    <LobbySelectorCard name="Inviter" type="Type" date="Creation Date" />
+                    {receivedLobbies.map((lobby: any, i: number) => (
+                      <LobbySelectorCard
+                        key={lobby.id || i}
+                        name={lobby.sender_username}
+                        type={lobby.event}
+                        date={new Date(lobby.created_at).toLocaleDateString()}
+                        // add onclick here
+                      />
+                    ))}
                 </Stack>
                 <Stack m={4} spacing={4} w={"60vw"} >
                     <Heading>History</Heading>
-                    <LobbySelectorCard name="Opponent" type="Type" date="Creation Date" />
+                    {historicLobbies.map((lobby: any, i: number) => (
+                      <LobbySelectorCard
+                        key={lobby.id || i}
+                        name={
+                          session?.user?.id === lobby.sender_id
+                            ? lobby.receiver_username
+                            : lobby.sender_username
+                        }
+                        type={lobby.event}
+                        date={new Date(lobby.created_at).toLocaleDateString()}
+                        // add onclick here
+                      />
+                    ))}
                 </Stack>
             </Stack>
 

@@ -55,6 +55,8 @@ export default function DefinitionCard({ name, type, date }: { name: string, typ
                 wrap={"wrap"}
                 justify={"space-between"}
                 align={"stretch"}
+                _hover={{ bg: "purple" }}
+                // add onClick={props.onClick}
             >
                 <p>{name}</p>
                 <p>{type}</p>
