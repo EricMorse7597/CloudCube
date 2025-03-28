@@ -17,7 +17,7 @@ import {
     Heading,
     Stack,
     ModalCloseButton,
-    ModalHeader
+    useColorModeValue
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { supabase } from "src/utils/SupabaseClient";
@@ -70,9 +70,6 @@ export default function UserSolveTable({ user_id }: { user_id: string }) {
             if (error) {
                 throw error
             }
-            console.log("rowEntry", rowEntry)
-
-            console.log("Solve deleted:", rowEntry)
             toast({
                 title: "Data Deleted",
                 description: `User has had their solve deleted`,
@@ -104,10 +101,10 @@ export default function UserSolveTable({ user_id }: { user_id: string }) {
             (<p>Loading...</p>)
             :
             (<div>
-                <TableContainer maxHeight="600px" overflowY="auto">
+                <TableContainer maxHeight="calc(100vh - 250px)" overflowY="auto">
                     <Table>
                         <Thead>
-                            <Tr>
+                            <Tr position={"sticky"} top={0} bg={useColorModeValue("#ffffff","#2D3748")} zIndex={1} boxShadow={"md"}>
                                 <Th>Scramble</Th>
                                 <Th>Solve Time (seconds)</Th>
                                 <Th>Date Added</Th>
@@ -145,7 +142,7 @@ export default function UserSolveTable({ user_id }: { user_id: string }) {
                 </Flex>
                 <Modal isOpen={isOpen} onClose={onClose} size={"6xl"} >
                     <ModalOverlay />
-                    <ModalContent p={4}>
+                    <ModalContent m={"auto"} p={4} maxWidth="min(calc(100vw - 2rem), 1200px)" >
                         <ModalCloseButton />
                         <ModalBody>
                             <Stack mt={4} justify="center" gap={4}>
