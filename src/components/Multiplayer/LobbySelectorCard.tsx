@@ -43,7 +43,7 @@ const Image = styled.img<{ shadowColor: string }>`
     filter: drop-shadow(5px 5px 1px ${props => props.shadowColor});
 `;
 
-export default function DefinitionCard({ name, type, date }: { name: string, type: string, date: string }) {
+export default function DefinitionCard({ name, type, date, onClick }: { name: string, type: string, date: string, onClick?: () => void }) {
 
     const minWidth = window.innerWidth / 3 > 400 ? "400px" : "50vw";
 
@@ -55,8 +55,8 @@ export default function DefinitionCard({ name, type, date }: { name: string, typ
                 wrap={"wrap"}
                 justify={"space-between"}
                 align={"stretch"}
-                _hover={{ bg: "purple" }}
-                // add onClick={props.onClick}
+                _hover={onClick != null ? { bg: "grey", borderRadius: "0.375rem" } : {}}
+                onClick={onClick}
             >
                 <p>{name}</p>
                 <p>{type}</p>

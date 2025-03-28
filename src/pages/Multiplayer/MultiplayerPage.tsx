@@ -24,6 +24,23 @@ const Heading = styled.h1`
     margin: 0;
 `;
 
+
+const Scramble = styled.h1`
+        grid-column-start: 2;
+    `
+
+const ScrambleWrapper = styled.div`
+display:grid;
+place-items:center;
+gap:1rem;
+grid-template-columns:1fr auto 1fr;
+& > :first-child {
+margin-right: auto;
+}
+
+`
+
+
 // used to fetch the username of a given UID
 const fetchUsername = async (userID: string) => {
     const { data } = await supabase
@@ -147,10 +164,15 @@ export default function TimerPage() {
 
                 <Divider />
 
-                <Timer
-                    scramble={scramble}
-                    onValueChange={(value: string) => console.log(value)}
-                />
+                {solved ?
+                    (<Stack align={"center"} ><Card p="1.5rem" w="75%" justify={"center"}><ScrambleWrapper><Scramble>scramble: {scramble}</Scramble></ScrambleWrapper></Card></Stack>)
+                    :
+                    (<Timer
+                        scramble={scramble}
+                        onValueChange={(value: string) => console.log(value)}
+                        lobbyID={gameID}
+                    />)}
+
                 <Stack align="center" marginBottom="2rem" spacing={4} mt={4}>
                     <GameResultCard playerName={"Playername"} time={"Solve Time"} />
                     {solveTimes.length > 0 ?

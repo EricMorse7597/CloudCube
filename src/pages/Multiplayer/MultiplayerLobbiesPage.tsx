@@ -34,7 +34,7 @@ import { time } from "console";
 import { AddIcon } from "@chakra-ui/icons";
 import { e } from "cubing/dist/types/KState-8f0d81ea";
 import { randomScrambleForEvent } from "cubing/scramble";
-
+import { useNavigate } from "react-router-dom";
 
 const Heading = styled.h1`
     font-size: 1.4rem;
@@ -54,11 +54,12 @@ export default function MultiplayerLobbiesPage() {
     const [receivedLobbies, setReceivedLobbies] = useState<any>([])
     const [historicLobbies, setHistoricLobbies] = useState<any>([])
 
-    const { isOpen, onOpen, onClose } = useDisclosure();
 
     const { session } = useAuth();
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    const navigate = useNavigate();
 
-    const searchUser = async(username: String) => {
+    const searchUser = async (username: String) => {
         try {
             const { data, error } = await supabase
                 .from('profiles')
@@ -70,7 +71,7 @@ export default function MultiplayerLobbiesPage() {
                 return true
             }
             return false
-        } catch(error) {
+        } catch (error) {
             console.log("Error searching user!")
         }
         return false
@@ -87,7 +88,7 @@ export default function MultiplayerLobbiesPage() {
                 console.log(username + "s id is " + data?.id)
                 return data.id
             }
-        } catch(error) {
+        } catch (error) {
             console.log("Error finding user!")
         }
         return null;
@@ -109,7 +110,7 @@ export default function MultiplayerLobbiesPage() {
                 setHistoricLobbies(data.filter(d => d.status === 'completed'))
                 console.log("created: " + createdLobbies)
             }
-        } catch(error) {
+        } catch (error) {
             console.error("Error fetching lobbies", error)
         }
     }
@@ -121,25 +122,25 @@ export default function MultiplayerLobbiesPage() {
 
     useEffect(() => {
         const invite_channel = supabase
-        .channel('public:racing_invites')
-        .on('postgres_changes', {
-            event: '*',
-            schema: 'public',
-            table: 'racing_sessions',
-            filter: 'sender_id=eq.${session.user.id}'
-        }, payload => {
-            console.log("new update from sender column")
-        })
-        .on('postgres_changes', {
-            event: '*',
-            schema: 'public',
-            table: 'racing_sessions',
-            filter: 'receiver_id=eq.${session.user.id}'
-        }, payload => {
-            console.log("new update from receiver column")
-        })
-        .subscribe()
-//
+            .channel('public:racing_invites')
+            .on('postgres_changes', {
+                event: '*',
+                schema: 'public',
+                table: 'racing_sessions',
+                filter: 'sender_id=eq.${session.user.id}'
+            }, payload => {
+                console.log("new update from sender column")
+            })
+            .on('postgres_changes', {
+                event: '*',
+                schema: 'public',
+                table: 'racing_sessions',
+                filter: 'receiver_id=eq.${session.user.id}'
+            }, payload => {
+                console.log("new update from receiver column")
+            })
+            .subscribe()
+        //
         // this ensures channels are unsubscribed from on page change
         window.addEventListener('beforeunload', async () => {
             await supabase.removeAllChannels()
@@ -171,7 +172,7 @@ export default function MultiplayerLobbiesPage() {
 
             const scramble = await genScramble(puzzleType)
             //proceed to lobby creation
-            
+
             const { data, error } = await supabase
                 .from('racing_sessions')
                 .insert({
@@ -183,13 +184,13 @@ export default function MultiplayerLobbiesPage() {
                     event: puzzleType,
                     scramble: scramble
                 })
-                if (error) {
-                    throw error;
-                }
+            if (error) {
+                throw error;
+            }
 
-                await fetchLobbies()
-                onClose()
-        } catch(error) {
+            await fetchLobbies()
+            onClose()
+        } catch (error) {
             console.log("error creating session!")
         }
     }
@@ -222,42 +223,48 @@ export default function MultiplayerLobbiesPage() {
                             <AddIcon />
                         </Button>
                     </HStack>
+                    <LobbySelectorCard name="Invitee" type="Type" date="Creation Date" />
+
                     {createdLobbies.map((lobby: any, i: number) => (
-                      <LobbySelectorCard
-                        key={lobby.id || i}
-                        name={lobby.receiver_username}
-                        type={lobby.event}
-                        date={new Date(lobby.created_at).toLocaleDateString()}
-                        // add onclick here
-                      />
+                        <LobbySelectorCard
+                            key={lobby.id || i}
+                            name={lobby.receiver_username}
+                            type={lobby.event}
+                            date={new Date(lobby.created_at).toLocaleDateString()}
+                            onClick={() => { navigate(`/multiplayer/${lobby.id}`) }}
+                        />
                     ))}
                 </Stack>
                 <Stack m={4} spacing={4} w={"60vw"} >
                     <Heading>Join</Heading>
+                    <LobbySelectorCard name="Inviter" type="Type" date="Creation Date" />
+
                     {receivedLobbies.map((lobby: any, i: number) => (
-                      <LobbySelectorCard
-                        key={lobby.id || i}
-                        name={lobby.sender_username}
-                        type={lobby.event}
-                        date={new Date(lobby.created_at).toLocaleDateString()}
-                        // add onclick here
-                      />
+                        <LobbySelectorCard
+                            key={lobby.id || i}
+                            name={lobby.sender_username}
+                            type={lobby.event}
+                            date={new Date(lobby.created_at).toLocaleDateString()}
+                            onClick={() => { navigate(`/multiplayer/${lobby.id}`) }}
+                        />
                     ))}
                 </Stack>
                 <Stack m={4} spacing={4} w={"60vw"} >
                     <Heading>History</Heading>
+                    <LobbySelectorCard name="Opponent" type="Type" date="Creation Date" />
+
                     {historicLobbies.map((lobby: any, i: number) => (
-                      <LobbySelectorCard
-                        key={lobby.id || i}
-                        name={
-                          session?.user?.id === lobby.sender_id
-                            ? lobby.receiver_username
-                            : lobby.sender_username
-                        }
-                        type={lobby.event}
-                        date={new Date(lobby.created_at).toLocaleDateString()}
-                        // add onclick here
-                      />
+                        <LobbySelectorCard
+                            key={lobby.id || i}
+                            name={
+                                session?.user?.id === lobby.sender_id
+                                    ? lobby.receiver_username
+                                    : lobby.sender_username
+                            }
+                            type={lobby.event}
+                            date={new Date(lobby.created_at).toLocaleDateString()}
+                            onClick={() => { navigate(`/multiplayer/${lobby.id}`) }}
+                        />
                     ))}
                 </Stack>
             </Stack>
@@ -271,35 +278,35 @@ export default function MultiplayerLobbiesPage() {
                     p={4}
                 >
                     <ModalBody>
-                      <Stack spacing={4}>
-                        <FormControl isRequired isInvalid={isUsernameInvalid || isUserNotFound}>
-                          <FormLabel>Username</FormLabel>
-                          <Input
-                            placeholder="Enter username"
-                            value={searchedUser}
-                            onChange={(e) => setSearchedUser(e.target.value)}
-                          />
-                          {isUsernameInvalid && <FormErrorMessage>Username is required.</FormErrorMessage>}
-                          {isUserNotFound && <FormErrorMessage>User not found.</FormErrorMessage>}
-                        </FormControl>
-                        
-                        <FormControl isRequired>
-                          <FormLabel>Event</FormLabel>
-                          <Select
-                            value={puzzleType}
-                            onChange={(e) => setPuzzleType(e.target.value)}
-                          >
-                            <option value="333">3x3</option>
-                            <option value="222">2x2</option>
-                          </Select>
-                        </FormControl>
-                        
-                        <Flex justify="center">
-                          <Button colorScheme="green" mt={2} onClick={createLobby}>
-                            Create Lobby
-                          </Button>
-                        </Flex>
-                      </Stack>
+                        <Stack spacing={4}>
+                            <FormControl isRequired isInvalid={isUsernameInvalid || isUserNotFound}>
+                                <FormLabel>Username</FormLabel>
+                                <Input
+                                    placeholder="Enter username"
+                                    value={searchedUser}
+                                    onChange={(e) => setSearchedUser(e.target.value)}
+                                />
+                                {isUsernameInvalid && <FormErrorMessage>Username is required.</FormErrorMessage>}
+                                {isUserNotFound && <FormErrorMessage>User not found.</FormErrorMessage>}
+                            </FormControl>
+
+                            <FormControl isRequired>
+                                <FormLabel>Event</FormLabel>
+                                <Select
+                                    value={puzzleType}
+                                    onChange={(e) => setPuzzleType(e.target.value)}
+                                >
+                                    <option value="333">3x3</option>
+                                    <option value="222">2x2</option>
+                                </Select>
+                            </FormControl>
+
+                            <Flex justify="center">
+                                <Button colorScheme="green" mt={2} onClick={createLobby}>
+                                    Create Lobby
+                                </Button>
+                            </Flex>
+                        </Stack>
                     </ModalBody>
                 </ModalContent>
             </Modal>

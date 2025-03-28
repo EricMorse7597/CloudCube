@@ -35,18 +35,19 @@ const ScrambleWrapper = styled.div`
 
     `
 
-    const Scramble = styled.h1`
+const Scramble = styled.h1`
         grid-column-start: 2;
     `
 
 type TimerProps = {
     scramble: string;
+    lobbyID?: string;
     showDropDown?: boolean;
     onValueChange: (value: string) => void;
     onTimerStop?: () => void;
 }
 
-export default function Timer({ scramble, showDropDown=false, onValueChange, onTimerStop = () => {}}: TimerProps) {
+export default function Timer({ scramble, lobbyID, showDropDown = false, onValueChange, onTimerStop = () => { } }: TimerProps) {
     const [isRunning, setIsRunning] = useState(false);
     const [time, setTime] = useState(0);
     const [isHolding, setIsHolding] = useState(false);
@@ -159,7 +160,7 @@ export default function Timer({ scramble, showDropDown=false, onValueChange, onT
         });
     };
 
-    async function updateSolves(newTime: number|null = null) {
+    async function updateSolves(newTime: number | null = null) {
         if (newTime === null) {
             newTime = time;
         }
@@ -170,7 +171,8 @@ export default function Timer({ scramble, showDropDown=false, onValueChange, onT
                     user_id: session?.user?.id as string,
                     scramble: scramble,
                     solve_time: newTime,
-                    event: selectedValue
+                    event: selectedValue,
+                    racing_session: lobbyID,
                 });
                 if (error) {
                     throw error;
@@ -178,7 +180,7 @@ export default function Timer({ scramble, showDropDown=false, onValueChange, onT
                 showSuccess();
                 setPushedTime(newTime);
 
-                
+
             } else {
                 showFailure();
             }
@@ -270,14 +272,14 @@ export default function Timer({ scramble, showDropDown=false, onValueChange, onT
                     }} />}
                     <Scramble>Scramble: {scramble}</Scramble>
                     <Button
-                    height={"38px"}
-                    width={"157px"}
-                    variant={"outline"}
-                    colorScheme={"blue"} 
-                    onClick={onOpen}
-                    ml={10}
+                        height={"38px"}
+                        width={"157px"}
+                        variant={"outline"}
+                        colorScheme={"blue"}
+                        onClick={onOpen}
+                        ml={10}
                     >
-                    Show    
+                        Show
                     </Button>
                 </ScrambleWrapper>
             </Card>
@@ -285,47 +287,47 @@ export default function Timer({ scramble, showDropDown=false, onValueChange, onT
             <Card id="timer" p="6.5rem" w="40%" textAlign="center" data-time={pushedTime}>
                 <Heading style={{ fontVariantNumeric: "tabular-nums", color: isHolding ? (colorDelay ? 'green' : 'yellow') : color }} size="4xl">{time.toFixed(2)}s</Heading>
             </Card>
-            <p>Press spacebar {isConnected? "or Stackmat": ""} to start/stop the timer</p>
+            <p>Press spacebar {isConnected ? "or Stackmat" : ""} to start/stop the timer</p>
             <br />
             <Modal isOpen={isOpen} onClose={onClose} >
-            <ModalOverlay />
-            <ModalContent 
-            maxW={"50rem"} 
-            maxH={"50rem"} 
-            //textAlign={"center"} 
-            // justifyContent={"center"} 
-            alignItems={"center"} 
-            p={4}
-            >
-                Scramble: {scramble}
-                <Card p="1.5rem" w="75%">
-                    <TwistyTimer
-                        puzzle={selectedValue === "333" ? "3x3x3" : "2x2x2"}
-                        key={isChecked ? "PG3D" : "2D"}
-                        alg={scramble}
-                        visualization={isChecked ? "PG3D" : "2D"}
-                        background="none"
-                        controlPanel="none"
-                        viewerLink="twizzle"
-                        cameraDistance={6}
+                <ModalOverlay />
+                <ModalContent
+                    maxW={"50rem"}
+                    maxH={"50rem"}
+                    //textAlign={"center"} 
+                    // justifyContent={"center"} 
+                    alignItems={"center"}
+                    p={4}
+                >
+                    Scramble: {scramble}
+                    <Card p="1.5rem" w="75%">
+                        <TwistyTimer
+                            puzzle={selectedValue === "333" ? "3x3x3" : "2x2x2"}
+                            key={isChecked ? "PG3D" : "2D"}
+                            alg={scramble}
+                            visualization={isChecked ? "PG3D" : "2D"}
+                            background="none"
+                            controlPanel="none"
+                            viewerLink="twizzle"
+                            cameraDistance={6}
                         />
-                </Card>
-                <FormControl p={"0.5rem"} as={VStack}>
-                <FormLabel mb={0}>2D/3D</FormLabel>
-                <Switch 
-                id="is3D"
-                size={"md"}
-                ml={"-2.5"}
-                isChecked={isChecked}
-                onChange={(e) => { 
-                    const checked = e.target.checked;
-                    setChecked(checked);  
-                }}/>
-                </FormControl>
-            </ModalContent>
-        </Modal>
+                    </Card>
+                    <FormControl p={"0.5rem"} as={VStack}>
+                        <FormLabel mb={0}>2D/3D</FormLabel>
+                        <Switch
+                            id="is3D"
+                            size={"md"}
+                            ml={"-2.5"}
+                            isChecked={isChecked}
+                            onChange={(e) => {
+                                const checked = e.target.checked;
+                                setChecked(checked);
+                            }} />
+                    </FormControl>
+                </ModalContent>
+            </Modal>
         </Stack>
-        
+
 
     );
 }
