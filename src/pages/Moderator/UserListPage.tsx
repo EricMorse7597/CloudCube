@@ -1,21 +1,7 @@
 import {
-    useColorModeValue,
     Card,
     Stack,
-    HStack,
     Heading,
-    useToast,
-    Image,
-    Button,
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalHeader,
-    ModalFooter,
-    ModalBody,
-    ModalCloseButton,
-    useDisclosure,
-    Center
 } from "@chakra-ui/react";
 import styled from "styled-components";
 import UserList from "src/components/Moderator/UserList";
@@ -58,8 +44,8 @@ export default function UserListPage() {
             :
             isMod ? (
                 <div>
-                    <Stack justify="center" marginBottom="2rem" spacing={4} mt={4}>
-                        <Card ml={"15%"} mr={"15%"} >
+                    <Stack padding={"2rem 1rem"} justify="center" spacing={4}>
+                        <Card p={"0.5rem"}>
                             <UserList/>
                         </Card>
                     </Stack>
