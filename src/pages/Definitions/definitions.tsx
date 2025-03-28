@@ -64,7 +64,7 @@ const DefinitionsPage = () => {
       <Stack align={"center"} justify={"center"}>
 
         <Divider />
-        <Heading>Moves</Heading>
+        <Heading textAlign={"center"}>Moves</Heading>
         <Flex
           gap={6}
           p={4}
@@ -82,7 +82,7 @@ const DefinitionsPage = () => {
         </Flex >
 
         <Divider />
-        <Heading>Speedcubing Methods & Techniques</Heading>
+        <Heading textAlign={"center"}>Speedcubing Methods & Techniques</Heading>
         <Flex
           gap={6}
           p={4}
@@ -98,7 +98,7 @@ const DefinitionsPage = () => {
         </Flex >
 
         <Divider />
-        <Heading>Common Algorithms & Concepts</Heading>
+        <Heading textAlign={"center"}>Common Algorithms & Concepts</Heading>
         <Flex
           gap={6}
           p={4}
@@ -115,7 +115,7 @@ const DefinitionsPage = () => {
         </Flex >
 
         <Divider />
-        <Heading>Cubing Terms & Techniques</Heading>
+        <Heading textAlign={"center"}>Cubing Terms & Techniques</Heading>
         <Flex
           gap={6}
           p={4}
@@ -132,7 +132,7 @@ const DefinitionsPage = () => {
         </Flex >
 
         <Divider />
-        <Heading>Timing & Competition Terms</Heading>
+        <Heading textAlign={"center"}>Timing & Competition Terms</Heading>
         <Flex
           gap={6}
           p={4}

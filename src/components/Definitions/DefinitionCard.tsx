@@ -45,11 +45,15 @@ const Image = styled.img<{ shadowColor: string }>`
 
 export default function DefinitionCard({ label, text, imgHref }: { label: string, text: string, imgHref: string | undefined }) {
 
-    const minWidth = window.innerWidth / 3 > 400 ? "400px" : "50vw";
-
-
     return (
-        <Card p="1rem" w="30%" justify={"center"} style={{ minWidth: minWidth }}>
+        <Card 
+            p="1rem" 
+            justify={"center"} 
+            flexGrow={1}
+            flexBasis="400px"
+            width="100%"
+            maxWidth="600px"
+        >
             <InfoWrapper >
                 <TextWrapper>
                     <Heading>{label}</Heading>
