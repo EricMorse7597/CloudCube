@@ -25,6 +25,7 @@
     "cookie": "^1.0.2",
     "cstimer_module": "^0.1.4",
     "cubing": "^0.35.19",
+    "emailjs-com": "^3.2.0",
     "framer-motion": "^10.12.16",
     "immer": "^10.0.2",
     "jotai": "^1.13.0",
