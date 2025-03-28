@@ -59,16 +59,18 @@ export default function TimerPage() {
     const toast = useToast();
     const { session } = useAuth();
 
-    console.log("session: " + session);
-
     const gameID = useParams<{ id: string }>().id;
 
     useEffect(() => {
-        fetchScramble();
-        fetchSolves();
-    }, []);
+        console.log("session: " + session + " gameID: " + gameID);
+        if (session && gameID) {
+            fetchScramble();
+            fetchSolves();
+        }
+    }, [session]);
 
     const fetchScramble = async () => {
+        if (!gameID) return;
         setIsLoading(true);
 
         const { data, error } = await supabase
@@ -96,13 +98,13 @@ export default function TimerPage() {
 
     // Fetch the solves for the session
     const fetchSolves = async () => {
-
-        if (!scramble.toString()) return;
+        if (!gameID) return;
+        setIsLoading(true);
 
         const { data, error } = await supabase
             .from("solve")
             .select("user_id, solve_time")
-            .eq("racing_session", gameID)
+            .eq("racing_session", parseInt(gameID))
             .order("solve_time", { ascending: true })
 
         if (data) {
@@ -119,7 +121,6 @@ export default function TimerPage() {
                 name: await fetchUsername(solve.user_id),
                 time: solve.solve_time
             })));
-
 
             setSolveTimes(formattedData);
         } else {
@@ -177,7 +178,7 @@ export default function TimerPage() {
                     <GameResultCard playerName={"Playername"} time={"Solve Time"} />
                     {solveTimes.length > 0 ?
                         solveTimes.map(solve => (
-                            <GameResultCard playerName={solve.name} time={solve.time} isUser={session && solve.name === session.user.user_metadata.username} />
+                            <GameResultCard key={solve.name + "-time"} playerName={solve.name} time={solve.time} isUser={session && solve.name === session.user.user_metadata.username} />
                         ))
                         :
                         <p>No in the lobby has submitted a solve!</p>}
