@@ -339,7 +339,7 @@ export default function ProfilePage({ session }: { session: any }) {
                         <Button colorScheme="red" onClick={onOpen}>Clear Solves</Button>
                             <Modal isOpen={isOpen} onClose={onClose}>
                                 <ModalOverlay />
-                                <ModalContent>
+                                <ModalContent maxW={{ base: "90%", md: "500px" }} width="100%">
                                     <ModalHeader>Confirm Deletion</ModalHeader>
                                     <ModalBody>
                                         {entries.length === 0 ? (
