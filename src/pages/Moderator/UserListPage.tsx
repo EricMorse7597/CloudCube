@@ -1,6 +1,6 @@
 import {
     Card,
-    Stack,
+    Flex,
     Heading,
 } from "@chakra-ui/react";
 import styled from "styled-components";
@@ -44,11 +44,11 @@ export default function UserListPage() {
             :
             isMod ? (
                 <div>
-                    <Stack padding={"2rem 1rem"} justify="center" spacing={4}>
-                        <Card p={"0.5rem"}>
+                    <Flex padding={"2rem 1rem"} justify="center">
+                        <Card p={"0.5rem"} flexGrow="1" maxWidth={"1500px"} m={"auto"}>
                             <UserList/>
                         </Card>
-                    </Stack>
+                    </Flex>
                 </div >)
                 :
                 (<Heading padding={16} textAlign={"center"}>You are not a mod!</Heading>)
