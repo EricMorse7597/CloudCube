@@ -125,7 +125,7 @@ export default function NavBar() {
               <Text
                 textAlign={useBreakpointValue({ base: "center", md: "left" })}
                 fontFamily="heading"
-                fontSize="lg"
+                fontSize="md"
                 color={useColorModeValue("gray.800", "white")}
                 fontWeight="semibold"
                 as={RouterLink}
@@ -154,13 +154,18 @@ export default function NavBar() {
                       fontWeight={500}
                       color={linkColor}
                       bg="none"
-                      onClick={() => navigate("/profile")}
+                      onClick={() => {
+                        
+                        navigate("/profile");  
+                      }}
                       _hover={{
                         textDecoration: "none",
                         color: linkHoverColor,
                         bg: buttonColor,
                         boxShadow: "10px 0 0 0 " + buttonColor,
                       }}
+
+                    
                     >
                       {userName}
                       <Flex justify="center">
@@ -178,8 +183,8 @@ export default function NavBar() {
                           />
                         ) : (
                           <Image
-                            boxSize="32px" // Ensure it's a square
-                            borderRadius="full" // Makes it circular
+                            boxSize="32px" 
+                            borderRadius="full" 
                             src="/assets/default.png"
                             alt="Default Avatar"
                             ml={10}
@@ -260,6 +265,7 @@ const DesktopNav = ({ isMod }: { isMod: boolean }) => {
                     color: linkHoverColor,
                     bg: buttonColor,
                   }}
+               
                 >
                   {navItem.label}
                 </Button>
@@ -355,7 +361,7 @@ const MobileNav = ({
   return (
     <Stack bg={useColorModeValue("white", "gray.800")} p={4} display={{ md: "none" }}>
       {isAuthenticated && userName ? (
-        <HStack onClick={() => navigate("/profile")} cursor="pointer" mb={4}>
+        <HStack   onClick={() => {onClose(); navigate("/profile");}} cursor="pointer" mb={4}>
           <Image boxSize="40px" borderRadius="full" src={fullAvatarUrl} />
           <Text fontWeight="bold">{userName}</Text>
         </HStack>

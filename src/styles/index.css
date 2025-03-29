@@ -13,27 +13,27 @@
 }
 
 .element-style-verify{
-    max-width: fit-content;
-    padding-top: 3%;
-    text-align: center;
-    margin: auto;
+  max-width: fit-content;
+  padding-top: 3%;
+  text-align: center;
+  margin: auto;
   }
   
 
 .input-style {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1.5px solid #ccc;
-    border-radius: 12px;
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1.5px solid #ccc;
+  border-radius: 12px;
 }
 
 .button-style{
-    font-size: 1.2rem;
-    padding: 0.5rem 2.5rem;
-    margin: 10px;
-    border: 1.5px solid #ccc;
-    border-radius: 12px;
+  font-size: 1.2rem;
+  padding: 0.5rem 2.5rem;
+  margin: 10px;
+  border: 1.5px solid #ccc;
+  border-radius: 12px;
 }
 
 .link{
@@ -44,19 +44,17 @@
   text-decoration: underline;
 }
 
-
-
 .error-message {
-    color: red;
-    font-size: 14px;
-    margin-top: 10px;
-    padding: 1px 1px 1px 10px;
+  color: red;
+  font-size: 14px;
+  margin-top: 10px;
+  padding: 1px 1px 1px 10px;
 }
 
 .success-message {
-    color: white;
-    font-size: 14px;
-    margin-top: 3%;
+  color: white;
+  font-size: 14px;
+  margin-top: 3%;
 }
 
 
@@ -67,19 +65,25 @@
     padding: 1%;
     padding-top: 2%;
     margin: auto;
+    @media (max-width: 768px) {
+      max-width: 100%;
+      padding: 0%;
+    }
   }
 
 .title{
-    font-weight: bold;
-    font-size: large;
-    padding-bottom: 2%;
+  font-weight: bold;
+  font-size: large;
+  padding-bottom: 2%;
 }
 
-.sidebarProfile{
+.sidebarProfile {
   width: 100%;
-  padding: 2.4em;
-  border-radius: var(--chakra-radii-md);
-  margin-top: 30%;
+  display: flex;
+  justify-content: center; /* Centers items horizontally */
+  gap: 4rem; /* Space between buttons */
+  padding: 1rem;
+  padding-left: 2%;
 }
 
 form.FormInfo {
@@ -87,5 +91,7 @@ form.FormInfo {
   justify-content: center !important;
   gap: 10px !important;
   margin: auto !important;
-  margin-bottom: 2rem !important;
+  margin-bottom: 1rem !important;
+  margin-top: 1rem !important;
 }
+
