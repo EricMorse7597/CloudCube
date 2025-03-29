@@ -8,12 +8,13 @@ export interface DefinitionItem {
 }
 
 export enum category {
-    Move,
-    Method,
-    Algorithm,
-    Term,
-    Competition,
+    Move = "Moves",
+    Method = "Speedcubing Methods & Techniques",
+    Algorithm = "Common Algorithms & Concepts",
+    Term = "Cubing Terms & Techniques",
+    Competition = "Timing & Competition Terms",
 }
+
 
 const DEFINITION_ITEMS: Array<DefinitionItem> = [
     {

@@ -36,14 +36,52 @@ const Description = styled.p`
     margin: 0;
 `;
 
+const Highlighted = styled.span<{ highlightColor: string }>`
+    background-color: ${props => props.highlightColor};
+`;
+
 const Image = styled.img<{ shadowColor: string }>`
     width: 75px;
     aspect-ratio: 1 / 1;
     justify-content: center;
+    user-select: none;
+    pointer-events: none;
     filter: drop-shadow(5px 5px 1px ${props => props.shadowColor});
 `;
 
-export default function DefinitionCard({ label, text, imgHref }: { label: string, text: string, imgHref: string | undefined }) {
+const highlightSubstring = (text: string, subString: string): JSX.Element => {
+
+    // filter out empty parameters or cases where substring is not present
+    if ( !text || !subString|| !text.toUpperCase().includes(subString.toUpperCase())) return <>{text}</>;
+
+    const index: number = text.toUpperCase().indexOf(subString.toUpperCase());
+
+    const before:string = text.substring(0, index);
+    const match:string = text.substring(index, index + subString.length);
+    const after:JSX.Element = highlightSubstring(text.substring(index + subString.length), subString);
+
+    return (
+        <>
+            {before}
+            <Highlighted highlightColor={useColorModeValue("#90cdf4", "#2b6cb0")}>
+                {match}
+            </Highlighted>
+            {after}
+        </>
+    );
+}
+
+type DefinitionCardProps = {
+    label: string;
+    text: string;
+    imgHref: string | undefined;
+    subStringHighlight?: string;
+}
+
+export default function DefinitionCard({ label, text, imgHref, subStringHighlight }: DefinitionCardProps) {
+
+    let jsxLabel: JSX.Element = highlightSubstring(label, subStringHighlight || "");
+    let jsxText: JSX.Element = highlightSubstring(text, subStringHighlight || "");
 
     return (
         <Card 
@@ -56,8 +94,8 @@ export default function DefinitionCard({ label, text, imgHref }: { label: string
         >
             <InfoWrapper >
                 <TextWrapper>
-                    <Heading>{label}</Heading>
-                    <Description>{text}</Description>
+                    <Heading>{jsxLabel}</Heading>
+                    <Description>{jsxText}</Description>
                 </TextWrapper>
 
                 {imgHref && (
