@@ -13,8 +13,6 @@ const DropDown = ({ onValueChange }: { onValueChange: (value: string) => void })
 
     return (
         <Select 
-            width="157px" 
-            height="40px" 
             textAlign="left"
             onChange={handleChange}
             value={selectedValue}
