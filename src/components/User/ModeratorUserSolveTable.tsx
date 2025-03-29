@@ -21,6 +21,7 @@ import {
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { supabase } from "src/utils/SupabaseClient";
+import emailjs from 'emailjs-com'; 
 
 export default function UserSolveTable({ user_id }: { user_id: string }) {
     const [isLoading, setIsLoading] = useState(true);
@@ -59,27 +60,71 @@ export default function UserSolveTable({ user_id }: { user_id: string }) {
             }
     };
 
+    // Delete selected solve and send email
     const deleteSelected = async () => {
         try {
-            const { error } = await supabase
-                .from('solve')
+            // Delete the solve from Supabase
+            const { error: deleteError } = await supabase
+                .from("solve")
                 .delete()
-                .eq('user_id', user_id)
-                .eq('scramble', rowEntry.scramble)
-            
-            if (error) {
-                throw error
+                .eq("user_id", user_id)
+                .eq("scramble", rowEntry.scramble);
+
+            if (deleteError) throw deleteError;
+
+            // Fetch user email from Supabase
+            const { data: userData, error: userError } = await supabase
+                .from("profiles")
+                .select("email")
+                .eq("id", user_id)
+                .single();
+
+            if (userError || !userData) {
+                toast({
+                    title: "Error",
+                    description: "User email not found.",
+                    status: "error",
+                    duration: 5000,
+                    isClosable: true,
+                });
+                return;
             }
-            toast({
-                title: "Data Deleted",
-                description: `User has had their solve deleted`,
-                status: "success",
-                duration: 5000,
-                isClosable: true,
-            });
-    
+
+            // sending the email using EmailJS
+            emailjs
+                .send("service_27az50e","template_ue3amim", {
+                    user_name: userData.email,
+                    scramble: rowEntry.scramble,
+                    solve_time: rowEntry.solve_time,
+                    email: userData.email
+                }, "gTwa0_dWfYuWIhxcw")
+                .then(
+                    () => {
+                        toast({
+                            title: "Data Deleted",
+                            description: "Solve deleted and user notified.",
+                            status: "success",
+                            duration: 5000,
+                            isClosable: true,
+                        });
+                    },
+                    (error) => {
+                        if (error?.text) {
+                            console.error("EmailJS error text:", error.text);
+                        }
+                        console.error("Error sending email:", error);
+                        toast({
+                            title: "Error",
+                            description: "Failed to send email.",
+                            status: "error",
+                            duration: 5000,
+                            isClosable: true,
+                        });
+                    }
+                );
+
+            await fetchSolves(); 
         } catch (error) {
-            console.error("Error deleting solve data:", error)
             toast({
                 title: "Error",
                 description: "Failed to delete solve data.",
@@ -88,9 +133,7 @@ export default function UserSolveTable({ user_id }: { user_id: string }) {
                 isClosable: true,
             });
         }
-
-        await fetchSolves()
-    }
+    };
 
     useEffect(() => {
         fetchSolves()

@@ -311,28 +311,35 @@ export default function ProfilePage({ session }: { session: any }) {
     };
 
     return (
+        <Grid templateRows="auto 1fr"  gap={4} p={4} minH="100vh" >
 
-        <Grid templateColumns="250px 1fr" gap={4} p={4} minH="100vh">
 
             {/* Sidebar Navigation */}
-            <GridItem w="100%" p={4} borderRadius="md" className="sidebarProfile" h="full">
-                <button onClick={handleDashboardClick} style={{ fontWeight: activeSection === "dashboard" ? "bold" : "normal" }}> Dashboard </button>
-                <br></br>
-                <br></br>
-                <button onClick={handleSettingsClick} style={{ fontWeight: activeSection === "settings" ? "bold" : "normal" }}> Settings </button>
+            <GridItem as="nav" className="sidebarProfile">
+            <button 
+            onClick={handleDashboardClick} 
+            style={{ fontWeight: activeSection === "dashboard" ? "bold" : "normal" }}
+        > 
+            Dashboard 
+        </button>
+        <button 
+            onClick={handleSettingsClick} 
+            style={{ fontWeight: activeSection === "settings" ? "bold" : "normal" }}
+        > 
+            Settings 
+        </button>
             </GridItem>
 
             {/* Dashboard Content */}
             {activeSection === "dashboard" && (
-                <GridItem w="100%">
-                    <Header1 style={{ fontWeight: "bold", textAlign: "center" }}>Your Solve History</Header1>
-
+                <GridItem w="100%" p={4} maxW="1200px" mx="auto" overflowX="auto">
+                    <h1 style={{ fontWeight: "bold", textAlign: "center", fontSize: "clamp(1.5rem, 4vw, 2rem)" }}>Your Solve History</h1>
                     <form className="FormInfo" onSubmit={(e) => { e.preventDefault(); exportToCSV(); }}>
                         <Button type="submit" colorScheme="green">Export to CSV</Button>
                         <Button colorScheme="red" onClick={onOpen}>Clear Solves</Button>
                             <Modal isOpen={isOpen} onClose={onClose}>
                                 <ModalOverlay />
-                                <ModalContent>
+                                <ModalContent maxW={{ base: "90%", md: "500px" }} width="100%">
                                     <ModalHeader>Confirm Deletion</ModalHeader>
                                     <ModalBody>
                                         {entries.length === 0 ? (
@@ -360,7 +367,10 @@ export default function ProfilePage({ session }: { session: any }) {
                             </Modal>
                     </form>
 
-                    <UserSolveTable solves={entries} />
+                    {/* Solve Table */}
+                    <div style={{ overflowX: "auto", width: "100%" }}> 
+                        <UserSolveTable solves={entries} />
+                    </div>
                 </GridItem>
             )}
 
