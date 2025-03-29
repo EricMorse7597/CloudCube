@@ -76,7 +76,7 @@ const DefinitionsPage = () => {
           return (!filteredDefinitions.length)? <></> : (
             <>
               <Divider />
-              <Heading>{cat}</Heading>
+              <Heading textAlign={"center"}>{cat}</Heading>
               <Flex
                 gap={6}
                 p={4}

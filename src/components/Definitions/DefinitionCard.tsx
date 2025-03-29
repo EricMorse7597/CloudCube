@@ -80,12 +80,18 @@ type DefinitionCardProps = {
 
 export default function DefinitionCard({ label, text, imgHref, subStringHighlight }: DefinitionCardProps) {
 
-    const minWidth = window.innerWidth / 3 > 400 ? "400px" : "50vw";
     let jsxLabel: JSX.Element = highlightSubstring(label, subStringHighlight || "");
     let jsxText: JSX.Element = highlightSubstring(text, subStringHighlight || "");
 
     return (
-        <Card p="1rem" w="30%" justify={"center"} style={{ minWidth: minWidth }}>
+        <Card 
+            p="1rem" 
+            justify={"center"} 
+            flexGrow={1}
+            flexBasis="400px"
+            width="100%"
+            maxWidth="600px"
+        >
             <InfoWrapper >
                 <TextWrapper>
                     <Heading>{jsxLabel}</Heading>
