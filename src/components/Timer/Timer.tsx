@@ -307,7 +307,7 @@ export default function Timer({ scramble, showDropDown=false, onValueChange, onT
                         setSelectedValue(value);
                         onValueChange(value);
                     }} />}
-                    <h1><b>Scramble</b><br/><span>{scramble}</span></h1>
+                    <h1><b>Scramble:</b><br/><span>{scramble}</span></h1>
                     <Button
                     variant={"outline"}
                     colorScheme={"blue"} 
@@ -333,7 +333,7 @@ export default function Timer({ scramble, showDropDown=false, onValueChange, onT
             alignItems={"center"} 
             p={4}
             >
-                <h1><b>Scramble</b><br/><span>{scramble}</span></h1>
+                <h1><b>Scramble:</b><br/><span>{scramble}</span></h1>
                 <Card p="1.5rem" w="75%">
                     <TwistyTimer
                         puzzle={selectedValue === "333" ? "3x3x3" : "2x2x2"}
