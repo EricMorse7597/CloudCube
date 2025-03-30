@@ -190,7 +190,7 @@ export default function LeaderboardPage() {
                             {userSolved ? <p>You have already solved this weeks scramble!</p>
                                 :
                                 <Button
-                                    display={{ base: "none", md: "inline-flex" }}
+                                    display={{ base: "inline-flex", md: "inline-flex" }}
                                     fontSize={"md"}
                                     fontWeight={600}
                                     margin="0 0.5em"
