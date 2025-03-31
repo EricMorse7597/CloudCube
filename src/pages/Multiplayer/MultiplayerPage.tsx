@@ -98,7 +98,7 @@ export default function TimerPage() {
         console.log(data)
         if (data != null && data.length >= 2) {
             console.log("session complete");
-            completeSession();
+            await completeSession();
         }
     }
 
@@ -107,8 +107,9 @@ export default function TimerPage() {
         const { data, error } = await supabase
             .from('racing_sessions')
             .update({status: 'completed'})
-            .eq('id', gameID)
-            console.log(data)
+            .eq('id', parseInt(gameID))
+            .select()
+        console.log(data)
     }
 
     const fetchScramble = async () => {
