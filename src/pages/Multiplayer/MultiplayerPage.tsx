@@ -64,32 +64,35 @@ export default function TimerPage() {
     const gameID = useParams<{ id: string }>().id;
 
     useEffect(() => {
+        if (!session || !gameID) return;
+    
+        console.log("Subscribing to solves channel...");
         const solves_channel = supabase
-            .channel('public:solve')
+            .channel(`public:solve:${gameID}`) // give it a unique name
             .on('postgres_changes', {
                 event: '*',
                 schema: 'public',
                 table: 'solve',
                 filter: `racing_session=eq.${gameID}`
             }, payload => {
-                console.log("new update for game session")
-                fetchSolves()
-                hideTimer()
-                checkComplete()
+                console.log("New solve posted:", payload);
+                fetchSolves();
+                hideTimer();
+                // checkComplete(); // optional, we know it’s not the issue
             })
-            .subscribe()
-        //
-        // this ensures channels are unsubscribed from on page change
-        
-        console.log("session: " + session + " gameID: " + gameID);
-        if (session && gameID) {
-            fetchScramble();
-            fetchSolves();
-        }
+            .subscribe();
+    
+        // Initial fetches
+        fetchScramble();
+        fetchSolves();
+        hideTimer();
+    
+        // Clean up properly
         return () => {
+            console.log("Unsubscribing from solves channel...");
             supabase.removeChannel(solves_channel);
         };
-    }, [session]);
+    }, [session, gameID]);
 
     const checkComplete = async () => {
         if (!gameID) return;
