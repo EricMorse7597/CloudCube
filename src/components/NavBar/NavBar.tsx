@@ -247,10 +247,13 @@ const DesktopNav = ({ isMod }: { isMod: boolean }) => {
   const popoverContentBgColor = useColorModeValue("white", "gray.800");
   const buttonColor = useColorModeValue("#EDF2F7", "#2C313D");
 
+  const { userName, isAuthenticated, logout, session } = useAuth();
+
   return (
     <Stack direction="row" spacing={4}>
       {NAV_ITEMS.map((navItem) => (
-        (navItem.label === "Mod Page" && isMod) || navItem.label != "Mod Page" ? (
+        ((navItem.label === "Mod Page" && isMod) || navItem.label !== "Mod Page") &&
+          ((navItem.label === "Multiplayer" && session) || navItem.label !== "Multiplayer") ? (
           <Box key={navItem.label}>
             <Popover trigger="hover" placement="bottom-start">
               <PopoverTrigger>

@@ -31,6 +31,8 @@ import ProfilePage from "./pages/user/ProfilePage";
 import RecoverPage from "./pages/user/RecoverPage";
 import TimerPage from "./pages/Timer/TimerPage";
 import LeaderboardPage from "./pages/Leaderboard/LeaderboardPage";
+import MultiplayerLobbiesPage from "./pages/Multiplayer/MultiplayerLobbiesPage";
+import MultiplayerPage from "./pages/Multiplayer/MultiplayerPage";
 import UserListPage from "./pages/Moderator/UserListPage";
 
 export const plausible = Plausible({
@@ -79,7 +81,9 @@ function createAppRouter(session: Session | null, solves: any[]) {
         <Route path="recover" element={<RecoverPage />} />
         <Route path="grid" element={<UserSolveTable solves={solves} />} />
         <Route path="leaderboard" element={<LeaderboardPage />} />
-        <Route path="userlist" element={<UserListPage/>}/>
+        <Route path="userlist" element={<UserListPage />} />
+        <Route path="multiplayer" element={<MultiplayerLobbiesPage />} />
+        <Route path="multiplayer/:id" element={<MultiplayerPage />} />
       </Route>
     )
   );

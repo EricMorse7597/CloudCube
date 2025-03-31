@@ -57,12 +57,13 @@ const ScrambleWrapper = styled.div`
 
 type TimerProps = {
     scramble: string;
+    lobbyID?: string;
     showDropDown?: boolean;
     onValueChange: (value: string) => void;
     onTimerStop?: () => void;
 }
 
-export default function Timer({ scramble, showDropDown=false, onValueChange, onTimerStop = () => {}}: TimerProps) {
+export default function Timer({ scramble, lobbyID, showDropDown = false, onValueChange, onTimerStop = () => { } }: TimerProps) {
     const [isRunning, setIsRunning] = useState(false);
     const [time, setTime] = useState(0);
     const [isHolding, setIsHolding] = useState(false);
@@ -175,7 +176,7 @@ export default function Timer({ scramble, showDropDown=false, onValueChange, onT
         });
     };
 
-    async function updateSolves(newTime: number|null = null) {
+    async function updateSolves(newTime: number | null = null) {
         if (newTime === null) {
             newTime = time;
         }
@@ -186,7 +187,8 @@ export default function Timer({ scramble, showDropDown=false, onValueChange, onT
                     user_id: session?.user?.id as string,
                     scramble: scramble,
                     solve_time: newTime,
-                    event: selectedValue
+                    event: selectedValue,
+                    racing_session: lobbyID,
                 });
                 if (error) {
                     throw error;
@@ -194,7 +196,7 @@ export default function Timer({ scramble, showDropDown=false, onValueChange, onT
                 showSuccess();
                 setPushedTime(newTime);
 
-                
+
             } else {
                 showFailure();
             }
@@ -303,17 +305,17 @@ export default function Timer({ scramble, showDropDown=false, onValueChange, onT
             </HStack>
             <Card p="1.5rem" w="100%">
             <ScrambleWrapper>
-                    {showDropDown && <DropDown onValueChange={(value) => {
+                    {showDropDown? <DropDown onValueChange={(value) => {
                         setSelectedValue(value);
                         onValueChange(value);
-                    }} />}
+                    }} />: <div></div>}
                     <h1><b>Scramble:</b><br/><span>{scramble}</span></h1>
                     <Button
                     variant={"outline"}
                     colorScheme={"blue"} 
                     onClick={onOpen}
                     >
-                    Show    
+                        Show
                     </Button>
                 </ScrambleWrapper>
             </Card>
@@ -345,23 +347,23 @@ export default function Timer({ scramble, showDropDown=false, onValueChange, onT
                         viewerLink="twizzle"
                         cameraDistance={6}
                         />
-                </Card>
-                <FormControl p={"0.5rem"} as={VStack}>
-                <FormLabel mb={0}>2D/3D</FormLabel>
-                <Switch 
-                id="is3D"
-                size={"md"}
-                ml={"-2.5"}
-                isChecked={isChecked}
-                onChange={(e) => { 
-                    const checked = e.target.checked;
-                    setChecked(checked);  
-                }}/>
-                </FormControl>
-            </ModalContent>
-        </Modal>
+                    </Card>
+                    <FormControl p={"0.5rem"} as={VStack}>
+                        <FormLabel mb={0}>2D/3D</FormLabel>
+                        <Switch
+                            id="is3D"
+                            size={"md"}
+                            ml={"-2.5"}
+                            isChecked={isChecked}
+                            onChange={(e) => {
+                                const checked = e.target.checked;
+                                setChecked(checked);
+                            }} />
+                    </FormControl>
+                </ModalContent>
+            </Modal>
         </Stack>
-        
+
 
     );
 }

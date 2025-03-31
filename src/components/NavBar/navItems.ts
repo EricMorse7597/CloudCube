@@ -47,9 +47,13 @@ const NAV_ITEMS: Array<NavItem> = [
     href: "leaderboard",
   },
   {
+    label: "Multiplayer",
+    href: "multiplayer"
+  },
+  {
     label: "Mod Page",
     href: "userlist"
-  }
+  },
   // {
   //   label: "",
   //   href: "dashboard",
