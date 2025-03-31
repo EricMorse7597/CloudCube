@@ -52,7 +52,7 @@ const fetchUsername = async (userID: string) => {
 
 export default function TimerPage() {
     const [scramble, setScramble] = useState("");
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const [solved, setSolved] = useState(false);
     const [solveTimes, setSolveTimes] = useState<any[]>([])
 
@@ -76,13 +76,14 @@ export default function TimerPage() {
                 checkComplete()
             })
             .subscribe()
-        //
+        
         // this ensures channels are unsubscribed from on page change
         
         console.log("session: " + session + " gameID: " + gameID);
         if (session && gameID) {
             fetchScramble();
             fetchSolves();
+            hideTimer()
         }
         return () => {
             supabase.removeChannel(solves_channel);
@@ -114,7 +115,7 @@ export default function TimerPage() {
 
     const fetchScramble = async () => {
         if (!gameID) return;
-        setIsLoading(true);
+        //setIsLoading(true);
 
         const { data, error } = await supabase
             .from("racing_sessions")
@@ -136,7 +137,7 @@ export default function TimerPage() {
             console.error(error);
         }
 
-        setIsLoading(false);
+        //setIsLoading(false);
     }
 
     const hideTimer = async () => {
@@ -157,7 +158,8 @@ export default function TimerPage() {
     // Fetch the solves for the session
     const fetchSolves = async () => {
         if (!gameID) return;
-        setIsLoading(true);
+        
+        //setIsLoading(true);
 
         const { data, error } = await supabase
             .from("solve")
@@ -186,7 +188,7 @@ export default function TimerPage() {
             console.error(error);
         }
 
-        setIsLoading(false);
+        //setIsLoading(false);
     }
 
     return (
