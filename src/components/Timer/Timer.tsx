@@ -305,10 +305,10 @@ export default function Timer({ scramble, lobbyID, showDropDown = false, onValue
             </HStack>
             <Card p="1.5rem" w="100%">
             <ScrambleWrapper>
-                    {showDropDown && <DropDown onValueChange={(value) => {
+                    {showDropDown? <DropDown onValueChange={(value) => {
                         setSelectedValue(value);
                         onValueChange(value);
-                    }} />}
+                    }} />: <div></div>}
                     <h1><b>Scramble:</b><br/><span>{scramble}</span></h1>
                     <Button
                     variant={"outline"}

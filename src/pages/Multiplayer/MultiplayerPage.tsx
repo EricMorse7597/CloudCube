@@ -195,7 +195,7 @@ export default function TimerPage() {
         isLoading ?
             (<p>Loading...</p>)
             :
-            (<Stack justify="center" marginBottom="2rem" spacing={4} mt={4}>
+            (<Stack justify="center" marginBottom="2rem" spacing={4} mt={4} maxWidth="1000px" mx="auto" p={4}>
                 <Stack align={"center"} >
                     <HStack align={"center"} justify={"center"} spacing={4} ml={4} mr={4}>
                         <Image
