@@ -64,6 +64,23 @@ export default function TimerPage() {
     const gameID = useParams<{ id: string }>().id;
 
     useEffect(() => {
+        const solves_channel = supabase
+            .channel('public:solve')
+            .on('postgres_changes', {
+                event: '*',
+                schema: 'public',
+                table: 'solve',
+                filter: `racing_session=eq.${gameID}`
+            }, payload => {
+                console.log("new update for game session")
+                fetchSolves()
+            })
+            .subscribe()
+        //
+        // this ensures channels are unsubscribed from on page change
+        window.addEventListener('beforeunload', async () => {
+            await supabase.removeAllChannels()
+        })
         console.log("session: " + session + " gameID: " + gameID);
         if (session && gameID) {
             fetchScramble();
