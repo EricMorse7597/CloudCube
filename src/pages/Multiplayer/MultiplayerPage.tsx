@@ -74,6 +74,7 @@ export default function TimerPage() {
             }, payload => {
                 console.log("new update for game session")
                 fetchSolves()
+                hideTimer()
                 checkComplete()
             })
             .subscribe()
@@ -139,6 +140,21 @@ export default function TimerPage() {
         setIsLoading(false);
     }
 
+    const hideTimer = async () => {
+        if (gameID) { // check if user has already solved this weeks scramble
+            const { data, error } = await supabase
+                .from("solve")
+                .select("user_id, solve_time")
+                .eq("racing_session", parseInt(gameID))
+                .order("solve_time", { ascending: true })
+            data?.find((solve) => {
+                if (solve.user_id === session.user.id) {
+                    setSolved(true);
+                }
+            })
+        }
+    }
+
     // Fetch the solves for the session
     const fetchSolves = async () => {
         if (!gameID) return;
@@ -151,13 +167,6 @@ export default function TimerPage() {
             .order("solve_time", { ascending: true })
 
         if (data) {
-            if (session) { // check if user has already solved this weeks scramble
-                data.find((solve) => {
-                    if (solve.user_id === session.user.id) {
-                        setSolved(true);
-                    }
-                })
-            }
 
             const formattedData = await Promise.all(data.map(async (solve, index) => ({
                 rank: index + 1,
