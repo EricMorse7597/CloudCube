@@ -56,8 +56,6 @@ export default function TimerPage() {
     const [solved, setSolved] = useState(false);
     const [solveTimes, setSolveTimes] = useState<any[]>([])
 
-    const [seed, setSeed] = useState(1);
-
     const toast = useToast();
     const { session } = useAuth();
 
