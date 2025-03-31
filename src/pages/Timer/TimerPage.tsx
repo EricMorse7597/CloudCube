@@ -11,12 +11,10 @@ import {
 } from "@chakra-ui/react";
 import UserSolveTable from "src/components/User/UserSolveTable";
 import { useAuth } from "src/utils/AuthContext";
+import styled from "styled-components";
 
 export default function TimerPage() {
-    const [isRunning, setIsRunning] = useState(false);
     const [scramble, setScramble] = useState("");
-    const [isHolding, setIsHolding] = useState(false);
-    const [spaceDownTime, setSpaceDownTime] = useState(0);
     const [selectedValue, setSelectedValue] = useState("333");
 
     const [entries, setEntries] = useState<any[]>([]);
@@ -123,8 +121,30 @@ export default function TimerPage() {
         fetchRecentSolves();
     }, [session]);
 
+    const AveragesWrapper = styled.div`
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        margin-top: 1rem;
+        gap: 1rem;
+
+        & > * {
+            flex-grow: 1;
+        }
+    `;
+
+    const averages = [
+        {name: "Average of 3",
+        value: averageOf3},
+        {name: "Average of 5",
+        value: averageOf5},
+        {name: "Average of 12",
+        value: averageOf12}
+    ];
+
     return (
-        <Stack justify="center" marginBottom="2rem" spacing={4} mt={4}>
+        <Stack justify="center" p="0 1rem" marginBottom="2rem" spacing={4} mt={4} maxWidth="1000px" width="100%" mx="auto">
             <Timer
                 showDropDown={true}
                 scramble={scramble}
@@ -138,22 +158,19 @@ export default function TimerPage() {
             )}
 
             {session && (
-            <HStack align="center" justify="center" spacing={5}>
-                <Card p="1rem" w="auto" textAlign="center">
-                    <Heading size="md">Average of 3: {averageOf3 ? `${averageOf3}s` : '—'}</Heading>
-                </Card>
+            <AveragesWrapper>
+                {averages.map(({name, value}) => {
 
-                <Card p="1rem" w="auto" textAlign="center">
-                    <Heading size="md">Average of 5: {averageOf5 ? `${averageOf5}s` : '—'}</Heading>
-                </Card>
-
-                <Card p="1rem" w="auto" textAlign="center">
-                    <Heading size="md">Average of 12: {averageOf12 ? `${averageOf12}s` : '—'}</Heading>
-                </Card>
-            </HStack>
+                    return (
+                        <Card key={name} p="1rem" w="auto" textAlign="center">
+                            <Heading size="md" fontWeight={200}>{name}: <b>{value? `${value}s` : '—'}</b></Heading>
+                        </Card>
+                    );
+                })}
+            </AveragesWrapper>
             )}
 
-            <Card ml={"15%"} mr={"15%"} >
+            <Card>
                 {/* passing entries as solves */}
                 {session && (
                     <UserSolveTable solves={entries} />

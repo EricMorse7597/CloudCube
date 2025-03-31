@@ -4,6 +4,7 @@ import {
 } from "@chakra-ui/react";
 
 import styled from "styled-components";
+import { useBreakpointValue } from "@chakra-ui/react";
 
 const InfoWrapper = styled.div`
     display: flex;
@@ -48,18 +49,32 @@ export default function DefinitionCard({ rank, playerName, time, isUser }: { ran
     const minWidth = window.innerWidth / 3 > 400 ? "400px" : "50vw";
 
     return (
-        <Card borderWidth={isUser ? "3px" : "0"} borderColor={"red.400"} w={"50%"} style={{ minWidth: minWidth }}>
+        <Card borderWidth={isUser ? "3px" : "0"} borderColor={"red.400"} w={{ base: "85%", md: "50%" }} style={{ minWidth: minWidth }}>
             <Flex
-                gap={6}
+                gap={{ base: "3", md: "6" }}
                 p={4}
-                wrap={"wrap"}
+                wrap={"nowrap"} // Prevent wrapping
                 justify={"space-between"}
-                align={"stretch"}
+                align={"center"} // Vertically center items
+                direction={"row"}
             >
-                <p>{rank}</p>
-                <p>{playerName}</p>
-                <p>{isNaN(parseFloat(time)) ? "Time" : parseFloat(time).toFixed(3)}</p>
+                <p style={{ flex: 1, textAlign: "center" }}>{rank}</p>
+                <p
+                    style={{
+                        flex: useBreakpointValue({ base: 2, md: 5 }),
+                        textAlign: "center",
+                        overflow: "scroll", // Hide overflowing text
+                        whiteSpace: "nowrap", // Prevent text from wrapping
+                        overflowX: "scroll", // Hide overflowing text
+                    }}
+                    title={playerName} // Show full name on hover
+                >
+                    {playerName}
+                </p>
+                <p style={{ flex: 1, textAlign: "center" }}>
+                    {isNaN(parseFloat(time)) ? "Time" : parseFloat(time).toFixed(3)}
+                </p>
             </Flex>
-        </Card >
+        </Card>
     );
 }

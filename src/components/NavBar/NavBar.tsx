@@ -125,7 +125,7 @@ export default function NavBar() {
               <Text
                 textAlign={useBreakpointValue({ base: "center", md: "left" })}
                 fontFamily="heading"
-                fontSize="lg"
+                fontSize="md"
                 color={useColorModeValue("gray.800", "white")}
                 fontWeight="semibold"
                 as={RouterLink}
@@ -154,13 +154,18 @@ export default function NavBar() {
                       fontWeight={500}
                       color={linkColor}
                       bg="none"
-                      onClick={() => navigate("/profile")}
+                      onClick={() => {
+                        
+                        navigate("/profile");  
+                      }}
                       _hover={{
                         textDecoration: "none",
                         color: linkHoverColor,
                         bg: buttonColor,
                         boxShadow: "10px 0 0 0 " + buttonColor,
                       }}
+
+                    
                     >
                       {userName}
                       <Flex justify="center">
@@ -178,8 +183,8 @@ export default function NavBar() {
                           />
                         ) : (
                           <Image
-                            boxSize="32px" // Ensure it's a square
-                            borderRadius="full" // Makes it circular
+                            boxSize="32px" 
+                            borderRadius="full" 
                             src="/assets/default.png"
                             alt="Default Avatar"
                             ml={10}
@@ -213,8 +218,8 @@ export default function NavBar() {
                 </Popover></>
               ) : (
                 <Flex>
-                  <NavButton href="/login" text="Sign In" color="blue" size="sm" />
-                  <NavButton href="/register" text="Sign Up" color="teal" size="sm" />
+                  <NavButton href="/login" text="Sign In" color="blue" size="sm" isMobile={false} />
+                  <NavButton href="/register" text="Sign Up" color="teal" size="sm" isMobile={false}/>
                 </Flex>
               )}
             </Flex>
@@ -222,7 +227,14 @@ export default function NavBar() {
         </Flex>
 
         <Collapse in={isOpen} animateOpacity>
-          <MobileNav isMod={isMod} onClose={onClose} />
+          <MobileNav
+            isMod={isMod}
+            avatarUrl={avatarUrl}
+            userName={userName}
+            isAuthenticated={isAuthenticated}
+            logout={logout}
+            onClose={onClose}
+          />
         </Collapse>
       </Container>
     </Box>
@@ -256,6 +268,7 @@ const DesktopNav = ({ isMod }: { isMod: boolean }) => {
                     color: linkHoverColor,
                     bg: buttonColor,
                   }}
+               
                 >
                   {navItem.label}
                 </Button>
@@ -328,18 +341,63 @@ const DesktopSubNav = ({ label, href, subLabel, onClick }: NavItem & { onClick?:
 interface MobileNavProps {
   onClose: () => void;
 }
-const MobileNav = ({ isMod, onClose }: { isMod: boolean } & MobileNavProps) => {
+const MobileNav = ({
+  isMod,
+  avatarUrl,
+  userName,
+  isAuthenticated,
+  logout,
+  onClose,
+}: {
+  isMod: boolean;
+  avatarUrl: string | null;
+  userName: string | null;
+  isAuthenticated: boolean;
+  logout: () => Promise<void>;
+  onClose: () => void;
+  
+}) => {
+  const navigate = useNavigate();
+  const bucketUrl = "https://mxvnbjoezxeubbcwdnqh.supabase.co/storage/v1/object/public/avatars";
+  const fullAvatarUrl = avatarUrl ? `${bucketUrl}/${avatarUrl}` : "/assets/default.png";
+
   return (
-    <Stack
-      bg={useColorModeValue("white", "gray.800")}
-      p={4}
-      display={{ md: "none" }}
-    >
-      {NAV_ITEMS.map((navItem) => (
-        (navItem.label === "Mod Page" && isMod) || navItem.label != "Mod Page" ? (
-          <MobileNavItem key={navItem.label} {...navItem} onClose={onClose} />
-        ) : null
-      ))}
+    <Stack bg={useColorModeValue("white", "gray.800")} p={4} display={{ md: "none" }}>
+      {isAuthenticated && userName ? (
+        <HStack   onClick={() => {onClose(); navigate("/profile");}} cursor="pointer" mb={4}>
+          <Image boxSize="40px" borderRadius="full" src={fullAvatarUrl} />
+          <Text fontWeight="bold">{userName}</Text>
+        </HStack>
+      ) : (
+        <Flex justify="center" mb={4} >
+          <NavButton href="/login" text="Sign In" color="blue" size="sm" isMobile={true}  onClick={onClose}/>
+          <NavButton href="/register" text="Sign Up" color="teal" size="sm" isMobile={true}  onClick={onClose}/>
+        </Flex>
+      )}
+
+      {/* Navigation Items */}
+      {NAV_ITEMS.map(
+        (navItem) =>
+          (navItem.label === "Mod Page" && isMod) || navItem.label !== "Mod Page" ? (
+            <MobileNavItem key={navItem.label} {...navItem} onClose={onClose} />
+          ) : null
+      )}
+
+      {isAuthenticated && (
+        <Button
+          w="full"
+          mt={4}
+          colorScheme="red"
+          onClick={async () => {
+            await logout();
+            setTimeout(() => {
+              window.location.assign("/login"); // Ensures a full page reload
+            }, 100);
+          }}
+        >
+          Logout
+        </Button>
+      )}
     </Stack>
   );
 };

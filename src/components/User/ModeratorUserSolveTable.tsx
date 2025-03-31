@@ -17,10 +17,11 @@ import {
     Heading,
     Stack,
     ModalCloseButton,
-    ModalHeader
+    useColorModeValue
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { supabase } from "src/utils/SupabaseClient";
+import emailjs from 'emailjs-com'; 
 
 export default function UserSolveTable({ user_id }: { user_id: string }) {
     const [isLoading, setIsLoading] = useState(true);
@@ -59,30 +60,71 @@ export default function UserSolveTable({ user_id }: { user_id: string }) {
             }
     };
 
+    // Delete selected solve and send email
     const deleteSelected = async () => {
         try {
-            const { error } = await supabase
-                .from('solve')
+            // Delete the solve from Supabase
+            const { error: deleteError } = await supabase
+                .from("solve")
                 .delete()
-                .eq('user_id', user_id)
-                .eq('scramble', rowEntry.scramble)
-            
-            if (error) {
-                throw error
-            }
-            console.log("rowEntry", rowEntry)
+                .eq("user_id", user_id)
+                .eq("scramble", rowEntry.scramble);
 
-            console.log("Solve deleted:", rowEntry)
-            toast({
-                title: "Data Deleted",
-                description: `User has had their solve deleted`,
-                status: "success",
-                duration: 5000,
-                isClosable: true,
-            });
-    
+            if (deleteError) throw deleteError;
+
+            // Fetch user email from Supabase
+            const { data: userData, error: userError } = await supabase
+                .from("profiles")
+                .select("email")
+                .eq("id", user_id)
+                .single();
+
+            if (userError || !userData) {
+                toast({
+                    title: "Error",
+                    description: "User email not found.",
+                    status: "error",
+                    duration: 5000,
+                    isClosable: true,
+                });
+                return;
+            }
+
+            // sending the email using EmailJS
+            emailjs
+                .send("service_27az50e","template_ue3amim", {
+                    user_name: userData.email,
+                    scramble: rowEntry.scramble,
+                    solve_time: rowEntry.solve_time,
+                    email: userData.email
+                }, "gTwa0_dWfYuWIhxcw")
+                .then(
+                    () => {
+                        toast({
+                            title: "Data Deleted",
+                            description: "Solve deleted and user notified.",
+                            status: "success",
+                            duration: 5000,
+                            isClosable: true,
+                        });
+                    },
+                    (error) => {
+                        if (error?.text) {
+                            console.error("EmailJS error text:", error.text);
+                        }
+                        console.error("Error sending email:", error);
+                        toast({
+                            title: "Error",
+                            description: "Failed to send email.",
+                            status: "error",
+                            duration: 5000,
+                            isClosable: true,
+                        });
+                    }
+                );
+
+            await fetchSolves(); 
         } catch (error) {
-            console.error("Error deleting solve data:", error)
             toast({
                 title: "Error",
                 description: "Failed to delete solve data.",
@@ -91,9 +133,7 @@ export default function UserSolveTable({ user_id }: { user_id: string }) {
                 isClosable: true,
             });
         }
-
-        await fetchSolves()
-    }
+    };
 
     useEffect(() => {
         fetchSolves()
@@ -104,10 +144,10 @@ export default function UserSolveTable({ user_id }: { user_id: string }) {
             (<p>Loading...</p>)
             :
             (<div>
-                <TableContainer maxHeight="600px" overflowY="auto">
+                <TableContainer maxHeight="calc(100vh - 250px)" overflowY="auto">
                     <Table>
                         <Thead>
-                            <Tr>
+                            <Tr position={"sticky"} top={0} bg={useColorModeValue("#ffffff","#2D3748")} zIndex={1} boxShadow={"md"}>
                                 <Th>Scramble</Th>
                                 <Th>Solve Time (seconds)</Th>
                                 <Th>Date Added</Th>
@@ -145,7 +185,7 @@ export default function UserSolveTable({ user_id }: { user_id: string }) {
                 </Flex>
                 <Modal isOpen={isOpen} onClose={onClose} size={"6xl"} >
                     <ModalOverlay />
-                    <ModalContent p={4}>
+                    <ModalContent m={"auto"} p={4} maxWidth="min(calc(100vw - 2rem), 1200px)" >
                         <ModalCloseButton />
                         <ModalBody>
                             <Stack mt={4} justify="center" gap={4}>

@@ -25,19 +25,35 @@ import DropDown from "../DropDown";
 import styled from "styled-components";
 
 const ScrambleWrapper = styled.div`
-        display:grid;
-        place-items:center;
-        gap:1rem;
-        grid-template-columns:1fr auto 1fr;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem 2rem;
+    
+    & > * {
+        width: auto;
+        text-align: center;
+    }
+    & > :first-child, & > :last-child {
+        flex-shrink: 0;
+        width: 160px;
+        height: 40px;
+    }
+    @media (max-width: 768px) {
+        flex-wrap: wrap;
+        justify-content: center;
         & > :first-child {
-        margin-right: auto;
+            order: 1;
+            
         }
 
-    `
+        & > :first-child, & > :last-child {
+            width: 100%;
+        }
 
-const Scramble = styled.h1`
-        grid-column-start: 2;
-    `
+    }
+`;
 
 type TimerProps = {
     scramble: string;
@@ -253,63 +269,83 @@ export default function Timer({ scramble, lobbyID, showDropDown = false, onValue
         }
     }, [isHolding]);
 
+    const MobileTouchOn = () => {
+        if (isRunning) {
+            if (scramble && time > 0 && session != null) {
+                updateSolves();
+            }
+            setIsRunning(false);
+            onTimerStop();
+        } else {
+            setIsHolding(true);
+            setSpaceDownTime(Date.now());
+        }
+    };
+
+    const MobileTouchOff = () => {
+        if (isHolding) {
+            setIsHolding(false);
+            const holdDuration = Date.now() - spaceDownTime;
+            if (holdDuration > 300) {
+                setIsRunning(true);
+            }
+        }
+    };
+
+    const isMobileDevice = /Mobi|Android|iPhone|iPad|iPod|BlackBerry|Windows Phone/i.test(navigator.userAgent);
+
     const color = useColorModeValue("black", "white");
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [isChecked, setChecked] = useState(false);
 
-
-
     return (
-        <Stack align="center" >
-            <HStack spacing={4}>
-                <Heading size="md">Timer</Heading>
+        <Stack align="center" m="0 auto" gap="1rem" w="100%">
+            <HStack justifyContent="center">
+            <Heading  size="md">Timer</Heading>
             </HStack>
-            <Card p="1.5rem" w="75%">
-                <ScrambleWrapper>
+            <Card p="1.5rem" w="100%">
+            <ScrambleWrapper>
                     {showDropDown && <DropDown onValueChange={(value) => {
                         setSelectedValue(value);
                         onValueChange(value);
                     }} />}
-                    <Scramble>Scramble: {scramble}</Scramble>
+                    <h1><b>Scramble:</b><br/><span>{scramble}</span></h1>
                     <Button
-                        height={"38px"}
-                        width={"157px"}
-                        variant={"outline"}
-                        colorScheme={"blue"}
-                        onClick={onOpen}
-                        ml={10}
+                    variant={"outline"}
+                    colorScheme={"blue"} 
+                    onClick={onOpen}
                     >
                         Show
                     </Button>
                 </ScrambleWrapper>
             </Card>
 
-            <Card id="timer" p="6.5rem" w="40%" textAlign="center" data-time={pushedTime}>
+            <Card id="timer" p="1rem" justifyContent="center" minH={"250px"} w="100%" textAlign="center" data-time={pushedTime} onTouchStart={MobileTouchOn} onTouchEnd={MobileTouchOff}>
                 <Heading style={{ fontVariantNumeric: "tabular-nums", color: isHolding ? (colorDelay ? 'green' : 'yellow') : color }} size="4xl">{time.toFixed(2)}s</Heading>
             </Card>
-            <p>Press spacebar {isConnected ? "or Stackmat" : ""} to start/stop the timer</p>
+            <p>Press {isMobileDevice? "timer": "spacebar"} {isConnected? "or Stackmat": ""} to start/stop the timer</p>
             <br />
             <Modal isOpen={isOpen} onClose={onClose} >
-                <ModalOverlay />
-                <ModalContent
-                    maxW={"50rem"}
-                    maxH={"50rem"}
-                    //textAlign={"center"} 
-                    // justifyContent={"center"} 
-                    alignItems={"center"}
-                    p={4}
-                >
-                    Scramble: {scramble}
-                    <Card p="1.5rem" w="75%">
-                        <TwistyTimer
-                            puzzle={selectedValue === "333" ? "3x3x3" : "2x2x2"}
-                            key={isChecked ? "PG3D" : "2D"}
-                            alg={scramble}
-                            visualization={isChecked ? "PG3D" : "2D"}
-                            background="none"
-                            controlPanel="none"
-                            viewerLink="twizzle"
-                            cameraDistance={6}
+            <ModalOverlay />
+            <ModalContent 
+            maxW={"50rem"} 
+            maxH={"50rem"}
+            m="1rem"
+            textAlign={"center"} 
+            alignItems={"center"} 
+            p={4}
+            >
+                <h1><b>Scramble:</b><br/><span>{scramble}</span></h1>
+                <Card p="1.5rem" w="75%">
+                    <TwistyTimer
+                        puzzle={selectedValue === "333" ? "3x3x3" : "2x2x2"}
+                        key={isChecked ? "PG3D" : "2D"}
+                        alg={scramble}
+                        visualization={isChecked ? "PG3D" : "2D"}
+                        background="none"
+                        controlPanel="none"
+                        viewerLink="twizzle"
+                        cameraDistance={6}
                         />
                     </Card>
                     <FormControl p={"0.5rem"} as={VStack}>

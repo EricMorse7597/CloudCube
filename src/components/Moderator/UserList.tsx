@@ -16,14 +16,13 @@ import {
     Button,
     ModalCloseButton,
     Heading,
-    Stack
+    Stack,
+    useColorModeValue
 } from "@chakra-ui/react";
-import styled from "styled-components";
 
 import { supabase } from "src/utils/SupabaseClient";
 import { useAuth } from "src/utils/AuthContext";
 import { useEffect, useState } from "react";
-import UserSolveTable from "../User/UserSolveTable";
 import UserSolveTable2 from "../User/ModeratorUserSolveTable";
 
 export default function UserList() {
@@ -46,8 +45,6 @@ export default function UserList() {
 
     // This functon gets a list of all users.
     const fetchUsers = async () => {
-        console.log("component getting session");
-        console.log("session logged as mod")
         try {
             const { data, error } = await supabase
             .from("profiles_with_created_at")
@@ -73,7 +70,6 @@ export default function UserList() {
                 throw error
             }
     
-            console.log("User deleted:", rowEntry)
             toast({
                 title: "Data Deleted",
                 description: `User ${rowEntry.username} has had their solves deleted`,
@@ -103,10 +99,10 @@ export default function UserList() {
     return (
         (<div> 
             <Heading textAlign={"center"} padding={"4"}>All Users</Heading>
-            <TableContainer maxHeight="600px" overflowY="auto">
+            <TableContainer marginBottom={"0.5rem"} maxHeight="calc(100vh - 260px)" overflowY="auto">
                 <Table>
                     <Thead>
-                        <Tr>
+                        <Tr position={"sticky"} top={0} bg={useColorModeValue("#ffffff","#2D3748")} zIndex={1} boxShadow={"md"}>
                             <Th>User ID</Th>
                             <Th>Username</Th>
                             <Th>Join Date</Th>
@@ -124,7 +120,6 @@ export default function UserList() {
                             onClick={() => {
                                 setSelectedRow(rowIndex)
                                 setRowEntry(entry)
-                                console.log("selected", entry)
                             }}
                             onDoubleClick={() => {
                                 onOpen()
@@ -138,15 +133,15 @@ export default function UserList() {
                     </Tbody>
                 </Table>
             </TableContainer>
-            <Flex mt={4} justify="center" gap={4}>
-                <Button colorScheme="blue" onClick={() => {
+            <Flex justify="center" gap={4}>
+                <Button flex={1} maxWidth={"200px"} colorScheme="blue" onClick={() => {
                     onOpen()
                     setSelectedUser(rowEntry)
                 }}
                 isDisabled={selectedRow === null}>
                     View Solves
                 </Button>
-                <Button colorScheme="red" onClick={() => {
+                <Button flex={1} maxWidth={"200px"} colorScheme="red" onClick={() => {
                     onConfirmOpen()
                 }}
                 isDisabled={selectedRow === null}>
@@ -156,14 +151,16 @@ export default function UserList() {
             <Modal isOpen={isOpen} onClose={onClose} size={"6xl"} >
                 <ModalOverlay />
                     
-                <ModalContent p={4}>
+                <ModalContent m={"auto"} maxWidth="min(calc(100vw - 2rem), 1200px)">
                     <ModalCloseButton />
                     <ModalBody>
                         {selectedUser ? (
                             <div style={{textAlign: "center"}}>
-                                <p><strong>User ID:</strong> {selectedUser.id}</p>
-                                <p><strong>Username:</strong> {selectedUser.username}</p>
-                                <p><strong>Join Date:</strong> {new Date(selectedUser.created_at).toLocaleDateString()}</p>
+                                <div style={{padding: "2rem"}}>
+                                    <p><strong>User ID:</strong> {selectedUser.id}</p>
+                                    <p><strong>Username:</strong> {selectedUser.username}</p>
+                                    <p><strong>Join Date:</strong> {new Date(selectedUser.created_at).toLocaleDateString()}</p>
+                                </div>
                                 <UserSolveTable2 user_id={selectedUser.id}/>
                             </div>
                         ) : (
@@ -174,25 +171,24 @@ export default function UserList() {
             </Modal>
             <Modal isOpen={isConfirmOpen} onClose={onConfirmClose} size={"6xl"} >
                 <ModalOverlay />
-                <ModalContent p={4}>
+                <ModalContent m={"auto"} p={4} maxWidth="min(calc(100vw - 2rem), 1200px)">
                     <ModalCloseButton />
                     <ModalBody>
-                        <Stack mt={4} justify="center" gap={4}>
+                        <Stack justify="center" gap={4}>
                             <Heading textAlign={"center"}>
                                 Are you sure?
                             </Heading>
                             <Button colorScheme="red" onClick={() => {
-                                console.log("selected", rowEntry)
                                 banSelected();
-                                setRowEntry(null)
-                                setSelectedRow(null)
-                                onConfirmClose()
+                                setRowEntry(null);
+                                setSelectedRow(null);
+                                onConfirmClose();
                             }}
                             isDisabled={selectedRow === null}>
                                 Yes
                             </Button>
                             <Button colorScheme="blue" onClick={() => {
-                                onConfirmClose()
+                                onConfirmClose();
                             }}
                             isDisabled={selectedRow === null}>
                                 No

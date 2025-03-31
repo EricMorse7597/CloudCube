@@ -96,8 +96,7 @@ export default function LoginPage() {
     };
 
     return (
-
-        <div>
+        <div className="element-style">
             <form onSubmit={handleSubmit}>
                 <Flex
                     marginTop={"2rem"}
