@@ -80,14 +80,15 @@ export default function TimerPage() {
             .subscribe()
         //
         // this ensures channels are unsubscribed from on page change
-        window.addEventListener('beforeunload', async () => {
-            await supabase.removeAllChannels()
-        })
+        
         console.log("session: " + session + " gameID: " + gameID);
         if (session && gameID) {
             fetchScramble();
             fetchSolves();
         }
+        return () => {
+            supabase.removeChannel(solves_channel);
+        };
     }, [session]);
 
     const checkComplete = async () => {
