@@ -74,6 +74,7 @@ export default function TimerPage() {
             }, payload => {
                 console.log("new update for game session")
                 fetchSolves()
+                checkComplete()
             })
             .subscribe()
         //
@@ -87,6 +88,26 @@ export default function TimerPage() {
             fetchSolves();
         }
     }, [session]);
+
+    const checkComplete = async () => {
+        if (!gameID) return;
+        const { data, error } = await supabase
+            .from('solve')
+            .select('*')
+            .eq('racing_session', gameID)
+        if (data != null && data.length > 2) {
+            console.log("session complete");
+            completeSession();
+        }
+    }
+
+    const completeSession = async () => {
+        if (!gameID) return;
+        const { data, error } = await supabase
+            .from('racing_session')
+            .update({status: 'completed'})
+            .eq('racing_session', gameID)
+    }
 
     const fetchScramble = async () => {
         if (!gameID) return;
