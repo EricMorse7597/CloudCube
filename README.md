@@ -1,8 +1,20 @@
-# crystalcube
+CloudCube
 
 A collection of unique speedcubing tools
 
 ![screenshot of crystalcube](public/assets/mockup-dark.webp)
+
+## Timer
+
+Time your solves with WCA approved scrambles. See how much your improving day by day, and try to beat your best time!
+
+## Leaderboards
+
+Feeling a little board? Fear not! Compete agaisnt many others in the weekly leaderboard!
+
+## Multiplayer
+
+Want to see whos faster? Multiplayer is the tool for you. Invite your friends to 1v1 races to see who can complete solves the fastest
 
 ## CFOP Cross & ZZ EO Trainers
 
@@ -20,14 +32,6 @@ Generates fair scrambles that are easy to do one-handed
 - `<R, U, F, L, D, B>` moves are translated to `<R, U, F, r, u f>`
 - Supports both conventions for wide moves (Rw, r)
 - Modes for left or right hand
-
-## Cube solver library
-
-The trainer is powered by `crystalcube`'s own cube library with some functionality from [`cubing.js`](https://github.com/cubing/cubing.js). It's focused on generating solutions for the first step of ZZ and CFOP, and can also solve first steps of any method you define!
-
-- This library is still being developed and doesn't have documentation yet, and it could be replaced by cubing.js in the future
-
----
 
 ## Development
 
