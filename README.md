@@ -51,7 +51,7 @@ yarn dev
 
 ## Acknowledgements
 
-Thanks to **[Contributors](https://github.com/ericx20/crystalcube/graphs/contributors)**!
+Thanks to [Eric Xu](https://github.com/ericx20) and all his **[Contributors](https://github.com/ericx20/crystalcube/graphs/contributors)**!
 
 **Zhouheng (Jeffrey) Sun**
 
